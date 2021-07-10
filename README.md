@@ -1,1 +1,3 @@
 # MCsniperGO
+
+> This does not function at all, and any attempts to making it function will fail, seeing as it doesn't have any code implemented to snipe, gather droptime, etc...
