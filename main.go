@@ -62,7 +62,7 @@ func main() {
 
 	var wg sync.WaitGroup
 	for _, acc := range accounts {
-		for i := 0; i < 3; i++ {
+		for i := 0; i < 2; i++ {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
