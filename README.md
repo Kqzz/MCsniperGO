@@ -1,3 +1,9 @@
 # MCsniperGO
 
-> This does not function at all, and any attempts to making it function will fail, seeing as it doesn't have any code implemented to snipe, gather droptime, etc...
+This is not intended to be used yet, as it is missing some features. basic usage is as follows:
+```sh
+git clone https://github.com/Kqzz/MCsniperGO
+cd MCsniperGO
+go run .
+
+```
