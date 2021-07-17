@@ -59,7 +59,6 @@ func main() {
 	changeTime := droptime.Add(-time.Millisecond * time.Duration(offset))
 
 	var wg sync.WaitGroup
-	logs := []mcgo.NameChangeReturn{}
 	for _, acc := range accounts {
 		for i := 0; i < 2; i++ {
 			wg.Add(1)
