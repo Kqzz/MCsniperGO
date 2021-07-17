@@ -60,6 +60,10 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 				Username:          "",
 			}
 		}
+	default:
+		{
+			return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer")
+		}
 	}
 	return account, nil
 }
@@ -70,11 +74,31 @@ func loadAccSlice(accSlice []string) []mcgo.MCaccount {
 		acc, err := loadAccStr(accStr)
 		if err != nil {
 			if !errors.Is(err, commentedError) {
-				fmt.Printf("[err] got error %v while loading acc on line %v", err, i+1)
+				logErr(fmt.Sprintf(`got error "%v" while loading acc on line %v\n`, err, i+1))
 			}
 			continue
 		}
 		accounts = append(accounts, acc)
 	}
 	return accounts
+}
+
+func genHeader() string {
+	header := `
+███╗   ███╗ ██████╗███████╗███╗   ██╗██╗██████╗ ███████╗██████╗  ██████╗  ██████╗ 
+████╗ ████║██╔════╝██╔════╝████╗  ██║██║██╔══██╗██╔════╝██╔══██╗██╔════╝ ██╔═══██╗
+██╔████╔██║██║     ███████╗██╔██╗ ██║██║██████╔╝█████╗  ██████╔╝██║  ███╗██║   ██║
+██║╚██╔╝██║██║     ╚════██║██║╚██╗██║██║██╔═══╝ ██╔══╝  ██╔══██╗██║   ██║██║   ██║
+██║ ╚═╝ ██║╚██████╗███████║██║ ╚████║██║██║     ███████╗██║  ██║╚██████╔╝╚██████╔╝
+╚═╝     ╚═╝ ╚═════╝╚══════╝╚═╝  ╚═══╝╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ 
+<fg=white>Created by Kqzz#0001</>
+`
+
+	for _, char := range []string{"╗", "║", "╝", "╔", "═"} {
+		header = strings.ReplaceAll(header, char, fmt.Sprintf("<fg=white>%v</>", char))
+	}
+
+	header = strings.ReplaceAll(header, "█", "<fg=cyan>█</>")
+
+	return header
 }
