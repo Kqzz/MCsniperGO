@@ -33,7 +33,7 @@ func main() {
 
 	targetName := userInput("target username")
 	offsetStr := userInput("offset")
-	offset, err := strconv.Atoi(offsetStr)
+	offset, err := strconv.ParseFloat(offsetStr, 64)
 	if err != nil {
 		logFatal(fmt.Sprintf("%v is not a valid integer", offsetStr))
 	}
