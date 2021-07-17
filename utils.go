@@ -10,7 +10,7 @@ import (
 	"github.com/kqzz/mcgo"
 )
 
-var commentedError error = errors.New("acc is commented out")
+var errCommented error = errors.New("acc is commented out")
 
 // readLines reads a whole file into memory
 // and returns a slice of its lines.
@@ -31,7 +31,7 @@ func readLines(path string) ([]string, error) {
 
 func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strings.HasPrefix(accStr, "#") {
-		return mcgo.MCaccount{}, commentedError
+		return mcgo.MCaccount{}, errCommented
 	}
 	var account mcgo.MCaccount
 	strSplit := strings.Split(accStr, ":")
@@ -39,25 +39,16 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	case 2:
 		{
 			account = mcgo.MCaccount{
-				Email:             strSplit[0],
-				Password:          strSplit[1],
-				SecurityQuestions: []mcgo.SqAnswer{},
-				SecurityAnswers:   []string{},
-				Bearer:            "",
-				UUID:              "",
-				Username:          "",
+				Email:    strSplit[0],
+				Password: strSplit[1],
 			}
 		}
 	case 5:
 		{
 			account = mcgo.MCaccount{
-				Email:             strSplit[0],
-				Password:          strSplit[1],
-				SecurityQuestions: []mcgo.SqAnswer{},
-				SecurityAnswers:   strSplit[2:5],
-				Bearer:            "",
-				UUID:              "",
-				Username:          "",
+				Email:           strSplit[0],
+				Password:        strSplit[1],
+				SecurityAnswers: strSplit[2:5],
 			}
 		}
 	default:
@@ -68,17 +59,17 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	return account, nil
 }
 
-func loadAccSlice(accSlice []string) []mcgo.MCaccount {
-	var accounts []mcgo.MCaccount
+func loadAccSlice(accSlice []string) []*mcgo.MCaccount {
+	var accounts []*mcgo.MCaccount
 	for i, accStr := range accSlice {
 		acc, err := loadAccStr(accStr)
 		if err != nil {
-			if !errors.Is(err, commentedError) {
+			if !errors.Is(err, errCommented) {
 				logErr(fmt.Sprintf(`got error "%v" while loading acc on line %v\n`, err, i+1))
+				continue
 			}
-			continue
 		}
-		accounts = append(accounts, acc)
+		accounts = append(accounts, &acc)
 	}
 	return accounts
 }

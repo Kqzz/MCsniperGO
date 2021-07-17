@@ -10,7 +10,7 @@ import (
 	"github.com/kqzz/mcgo"
 )
 
-var accounts []mcgo.MCaccount
+var accounts []*mcgo.MCaccount
 
 func init() {
 	color.Printf(genHeader())
@@ -46,15 +46,15 @@ func main() {
 	time.Sleep(time.Until(droptime.Add(-time.Hour * 8))) // sleep until 8 hours before droptime
 
 	for _, acc := range accounts {
-		err := acc.MojangAuthenticate()
-		if err != nil {
+		authErr := acc.MojangAuthenticate()
+		if authErr != nil {
 			logErr(fmt.Sprintf("Failed to authenticate %v, %v", acc.Email, err.Error()))
 		} else {
 			logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
 		}
 	}
 
-	changeTime := droptime.Add(-time.Millisecond * time.Duration(offset*1000000))
+	changeTime := droptime.Add(-time.Millisecond * time.Duration(offset))
 
 	var wg sync.WaitGroup
 	for _, acc := range accounts {
