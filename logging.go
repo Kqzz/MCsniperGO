@@ -12,6 +12,10 @@ func logInfo(m string) {
 	color.Printf("<fg=white>[</><fg=cyan;op=bold>info</><fg=white>]</> » %s\n", m)
 }
 
+func logSuccess(m string) {
+	color.Printf("<fg=white>[</><fg=green;op=bold>success</><fg=white>]</> » %s\n", m)
+}
+
 func logErr(m string) {
 	color.Printf("<fg=white>[</><fg=red;op=bold>err</><fg=white>]</> » %s\n", m)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gookit/color"
@@ -47,8 +48,30 @@ func main() {
 	for _, acc := range accounts {
 		err := acc.MojangAuthenticate()
 		if err != nil {
-			logErr(err.Error())
+			logErr(fmt.Sprintf("Failed to authenticate %v, %v", acc.Email, err.Error()))
+		} else {
+			logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
 		}
 	}
+
+	changeTime := droptime.Add(-time.Millisecond * time.Duration(offset*1000000))
+
+	var wg sync.WaitGroup
+	for _, acc := range accounts {
+		for i := 0; i < 3; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				resp, err := acc.ChangeName(targetName, changeTime, false)
+				if err != nil {
+					logErr(fmt.Sprintf("encountered err on nc for %v: %v", acc.Email, err.Error()))
+				} else {
+					logInfo(fmt.Sprintf("[%v] @ %v", resp.StatusCode, resp.ReceiveTime))
+				}
+			}()
+		}
+	}
+
+	wg.Wait()
 
 }
