@@ -27,6 +27,10 @@ func main() {
 		logFatal("Please put one account in the accounts.txt file!")
 	}
 
+	if len(accounts) > 1 {
+		logWarn("Using more than 1 account is not recommended")
+	}
+
 	targetName := userInput("target username")
 	offsetStr := userInput("offset")
 	offset, err := strconv.Atoi(offsetStr)

@@ -65,7 +65,7 @@ func loadAccSlice(accSlice []string) []*mcgo.MCaccount {
 		acc, err := loadAccStr(accStr)
 		if err != nil {
 			if !errors.Is(err, errCommented) {
-				logErr(fmt.Sprintf(`got error "%v" while loading acc on line %v\n`, err, i+1))
+				logErr(fmt.Sprintf(`got error "%v" while loading acc on line %v`, err, i+1))
 				continue
 			}
 		}
