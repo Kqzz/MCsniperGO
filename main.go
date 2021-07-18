@@ -56,9 +56,12 @@ func main() {
 		}
 	}
 
-	changeTime := droptime.Add(-time.Millisecond * time.Duration(offset))
+	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
 
 	var wg sync.WaitGroup
+
+	var resps []mcgo.NameChangeReturn
+
 	for _, acc := range accounts {
 		for i := 0; i < 2; i++ {
 			wg.Add(1)
@@ -68,12 +71,20 @@ func main() {
 				if err != nil {
 					logErr(fmt.Sprintf("encountered err on nc for %v: %v", acc.Email, err.Error()))
 				} else {
-					logInfo(fmt.Sprintf("[%v] @ %v", resp.StatusCode, resp.ReceiveTime))
+					resps = append(resps, resp)
 				}
 			}()
 		}
 	}
 
 	wg.Wait()
+
+	for _, resp := range resps {
+		logInfo(fmt.Sprintf("sent @ %v", resp.SendTime))
+	}
+
+	for _, resp := range resps {
+		logInfo(fmt.Sprintf("[%v] recv @ %v", resp.StatusCode, resp.ReceiveTime))
+	}
 
 }
