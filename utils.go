@@ -82,14 +82,14 @@ func genHeader() string {
 ██║╚██╔╝██║██║     ╚════██║██║╚██╗██║██║██╔═══╝ ██╔══╝  ██╔══██╗██║   ██║██║   ██║
 ██║ ╚═╝ ██║╚██████╗███████║██║ ╚████║██║██║     ███████╗██║  ██║╚██████╔╝╚██████╔╝
 ╚═╝     ╚═╝ ╚═════╝╚══════╝╚═╝  ╚═══╝╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ 
-<fg=white>Created by Kqzz#0001</>
+<fg=cyan>https://mcsniperpy.com</>
 `
 
 	for _, char := range []string{"╗", "║", "╝", "╔", "═"} {
 		header = strings.ReplaceAll(header, char, fmt.Sprintf("<fg=white>%v</>", char))
 	}
 
-	header = strings.ReplaceAll(header, "█", "<fg=cyan>█</>")
+	header = strings.ReplaceAll(header, "█", "<fg=blue>█</>")
 
 	return header
 }
