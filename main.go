@@ -35,7 +35,7 @@ func main() {
 	offsetStr := userInput("offset")
 	offset, err := strconv.ParseFloat(offsetStr, 64)
 	if err != nil {
-		logFatal(fmt.Sprintf("%v is not a valid integer", offsetStr))
+		logFatal(fmt.Sprintf("%v is not a valid number", offsetStr))
 	}
 
 	droptime, err := coolkidmachoDroptime(targetName)
@@ -48,9 +48,14 @@ func main() {
 	time.Sleep(time.Until(droptime.Add(-time.Hour * 8))) // sleep until 8 hours before droptime
 
 	for _, acc := range accounts {
-		authErr := acc.MojangAuthenticate()
+		var authErr error
+		if acc.Type == mcgo.Mj {
+			authErr = acc.MojangAuthenticate()
+		} else {
+			authErr = acc.MicrosoftAuthenticate()
+		}
 		if authErr != nil {
-			logErr(fmt.Sprintf("Failed to authenticate %v, %v", acc.Email, err.Error()))
+			logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
 		} else {
 			logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
 		}
@@ -61,6 +66,13 @@ func main() {
 	var wg sync.WaitGroup
 
 	var resps []mcgo.NameChangeReturn
+
+	for time.Now().Before(droptime.Add(-time.Second * 40)) {
+		color.Printf("sniping in <fg=blue>%vs</>       \r", time.Until(droptime).Round(time.Second).Seconds())
+		time.Sleep(time.Second * 1)
+	}
+
+	fmt.Print("\n\n")
 
 	for _, acc := range accounts {
 		for i := 0; i < 2; i++ {
