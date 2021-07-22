@@ -49,15 +49,20 @@ func main() {
 
 	for _, acc := range accounts {
 		var authErr error
-		if acc.Type == mcgo.Mj {
-			authErr = acc.MojangAuthenticate()
+		if acc.Bearer != "" {
+			logSuccess(fmt.Sprintf("successfully authenticated %v thru manual bearer", acc.Email))
+			logWarn("There are no guarentees that this bearer is correct, as it was manually inputted.")
 		} else {
-			authErr = acc.MicrosoftAuthenticate()
-		}
-		if authErr != nil {
-			logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
-		} else {
-			logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
+			if acc.Type == mcgo.Mj {
+				authErr = acc.MojangAuthenticate()
+			} else {
+				authErr = acc.MicrosoftAuthenticate()
+			}
+			if authErr != nil {
+				logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
+			} else {
+				logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
+			}
 		}
 	}
 

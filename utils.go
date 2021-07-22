@@ -38,10 +38,23 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	switch len(strSplit) {
 	case 2:
 		{
-			account = mcgo.MCaccount{
-				Email:    strSplit[0],
-				Password: strSplit[1],
-				Type:     mcgo.Mj,
+			if strSplit[1] == "bearer" || strSplit[1] == "br" {
+				var accType mcgo.AccType = mcgo.Mj
+				for _, v := range strSplit {
+					if strings.ToLower(v) == "ms" {
+						accType = mcgo.Ms
+					}
+				}
+				account = mcgo.MCaccount{
+					Bearer: strSplit[0],
+					Type:   accType,
+				}
+			} else {
+				account = mcgo.MCaccount{
+					Email:    strSplit[0],
+					Password: strSplit[1],
+					Type:     mcgo.Mj,
+				}
 			}
 		}
 	case 5:
