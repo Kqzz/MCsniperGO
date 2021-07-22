@@ -67,12 +67,12 @@ func main() {
 
 	var resps []mcgo.NameChangeReturn
 
-	for time.Now().Before(droptime.Add(-time.Second * 40)) {
+	for time.Now().Before(changeTime.Add(-time.Second * 40)) {
 		color.Printf("sniping in <fg=blue>%vs</>       \r", time.Until(droptime).Round(time.Second).Seconds())
 		time.Sleep(time.Second * 1)
 	}
 
-	fmt.Print("\n\n")
+	fmt.Print("\n")
 
 	for _, acc := range accounts {
 		for i := 0; i < 2; i++ {
@@ -98,5 +98,7 @@ func main() {
 	for _, resp := range resps {
 		logInfo(fmt.Sprintf("[%v] recv @ %v", resp.StatusCode, resp.ReceiveTime))
 	}
+
+	fmt.Print("\n")
 
 }
