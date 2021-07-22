@@ -53,13 +53,25 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 				Type:            mcgo.Mj,
 			}
 		}
-	case 3:
+	case 3, 4:
 		{
 			if strings.ToLower(strSplit[2]) == "ms" {
+				var prename bool = false
+				for _, v := range strSplit {
+					if strings.ToLower(v) == "prename" {
+						prename = true
+					}
+				}
+				var accType mcgo.AccType
+				if prename {
+					accType = mcgo.MsPr
+				} else {
+					accType = mcgo.Ms
+				}
 				account = mcgo.MCaccount{
 					Email:    strSplit[0],
 					Password: strSplit[1],
-					Type:     mcgo.Ms,
+					Type:     accType,
 				}
 			} else {
 				return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer or, for ms acc, email:password:ms (dont replace ms with anything)")

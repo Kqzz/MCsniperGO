@@ -77,9 +77,10 @@ func main() {
 	for _, acc := range accounts {
 		for i := 0; i < 2; i++ {
 			wg.Add(1)
+			prename := acc.Type == mcgo.MsPr
 			go func() {
 				defer wg.Done()
-				resp, err := acc.ChangeName(targetName, changeTime, false)
+				resp, err := acc.ChangeName(targetName, changeTime, prename)
 				if err != nil {
 					logErr(fmt.Sprintf("encountered err on nc for %v: %v", acc.Email, err.Error()))
 				} else {
