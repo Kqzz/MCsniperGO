@@ -58,7 +58,8 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 			if strings.ToLower(strSplit[2]) == "ms" {
 				var prename bool = false
 				for _, v := range strSplit {
-					if strings.ToLower(v) == "prename" {
+					v = strings.ToLower(v)
+					if v == "prename" || v == "pr" {
 						prename = true
 					}
 				}
