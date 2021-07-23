@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"os"
-	"strings"
 
 	"github.com/gookit/color"
 )
@@ -33,6 +32,9 @@ func logFatal(m string) {
 func userInput(m string) string {
 	reader := bufio.NewReader(os.Stdin)
 	color.Printf("<fg=white>[</><fg=cyan;op=bold>input</><fg=white>]</> %s » ", m)
-	out, _ := reader.ReadString('\n')
-	return strings.ReplaceAll(out, "\n", "")
+	out, err := reader.ReadString('\n')
+	if err != nil {
+		logFatal(err.Error())
+	}
+	return out
 }
