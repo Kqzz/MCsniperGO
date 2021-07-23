@@ -15,7 +15,7 @@ var accounts []*mcgo.MCaccount
 
 func init() {
 	color.Printf(genHeader())
-	if _, err := os.Stat("/path/to/whatever"); os.IsNotExist(err) {
+	if _, err := os.Stat("accounts.txt"); os.IsNotExist(err) {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
 			logFatal(fmt.Sprintf("while creating accounts.txt, %s", err.Error()))
