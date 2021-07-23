@@ -32,12 +32,13 @@ func logFatal(m string) {
 
 func userInput(m string) string {
 	reader := bufio.NewReader(os.Stdin)
+	var out string
 	color.Printf("<fg=white>[</><fg=cyan;op=bold>input</><fg=white>]</> %s » ", m)
 	out, err := reader.ReadString('\n')
 	if err != nil {
 		logFatal(err.Error())
 	}
-	out = strings.Trim(out, "\r")
-	out = strings.Trim(out, "\n")
+	out = strings.TrimSuffix(out, "\r\n")
+	out = strings.TrimSuffix(out, "\n")
 	return out
 }
