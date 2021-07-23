@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
+	"strings"
 
 	"github.com/gookit/color"
 )
@@ -36,5 +37,7 @@ func userInput(m string) string {
 	if err != nil {
 		logFatal(err.Error())
 	}
+	out = strings.Trim(out, "\r")
+	out = strings.Trim(out, "\n")
 	return out
 }

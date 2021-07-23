@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -14,6 +15,13 @@ var accounts []*mcgo.MCaccount
 
 func init() {
 	color.Printf(genHeader())
+	if _, err := os.Stat("/path/to/whatever"); os.IsNotExist(err) {
+		_, err := os.Create("accounts.txt")
+		if err != nil {
+			logFatal(fmt.Sprintf("while creating accounts.txt, %s", err.Error()))
+		}
+	}
+
 	accStrs, err := readLines("accounts.txt")
 	if err != nil {
 		logFatal(err.Error())
