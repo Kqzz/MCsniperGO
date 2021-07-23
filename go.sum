@@ -2,10 +2,6 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gookit/color v1.4.2 h1:tXy44JFSFkKnELV6WaMo/lLfu/meqITX3iAV52do7lk=
 github.com/gookit/color v1.4.2/go.mod h1:fqRyamkC1W8uxl+lxCQxOT09l/vYfZ+QeiX3rKQHCoQ=
-github.com/kqzz/mcgo v0.2.5 h1:lwyNTUl7dSUrV42wibC2tkBj0ntWu2Da7SLlfoLM10o=
-github.com/kqzz/mcgo v0.2.5/go.mod h1:erm7cf6gW/VYeOnuzQ8GE8C/Xq7s787MEGO4TL12N38=
-github.com/kqzz/mcgo v0.2.61 h1:bI6H4hqZbey1JhHSM0u26Bpfde1Uwk1vPmtXzcLfUdo=
-github.com/kqzz/mcgo v0.2.61/go.mod h1:erm7cf6gW/VYeOnuzQ8GE8C/Xq7s787MEGO4TL12N38=
 github.com/kqzz/mcgo v0.2.62 h1:XwX46lRfhiik1roC6IBkSiY89IBHLyXYU0VlnBLh0DU=
 github.com/kqzz/mcgo v0.2.62/go.mod h1:erm7cf6gW/VYeOnuzQ8GE8C/Xq7s787MEGO4TL12N38=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
