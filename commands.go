@@ -14,11 +14,17 @@ import (
 func snipeCommand() {
 
 	color.Printf(genHeader())
-	if _, err := os.Stat("accounts.txt"); os.IsNotExist(err) {
+	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
 			logFatal(fmt.Sprintf("while creating accounts.txt, %s", err.Error()))
+		} else {
+			logInfo("created accounts.txt, please restart the sniper once accounts are added!")
 		}
+	}
+
+	if !fileExists("config.toml") {
+		defaultConfig()
 	}
 
 	accStrs, err := readLines("accounts.txt")

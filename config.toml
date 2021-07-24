@@ -1,0 +1,25 @@
+[sniper]
+timing_system_preference = 'ckm'
+cycle_timing_systems = true
+auto_claim_namemc = false
+snipe_requests = 2
+prename_requests = 6
+
+[accounts]
+max_accounts = 1
+prename_max_accounts = 10
+start_auth = 720
+
+[skin]
+change_skin_on_snipe = false
+skin_change_type = 'url'
+skin = ''
+
+[announce]
+mcsnipergo_announce_code = ''
+webhook_url = ''
+webhook_format = ''
+private_webhook_url = ''
+private_webhook_format = 'sniped {name} with {searches} searches and {offset} offset'
+private_webhook_include_acc = false
+
