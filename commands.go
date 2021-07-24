@@ -43,7 +43,7 @@ func snipeCommand() {
 		logFatal(fmt.Sprintf("%v is not a valid number", offsetStr))
 	}
 
-	droptime, err := coolkidmachoDroptime(targetName)
+	droptime, err := getDroptime(targetName, "ckm")
 	if err != nil {
 		logFatal(err.Error())
 	}
