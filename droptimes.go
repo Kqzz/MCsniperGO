@@ -127,7 +127,7 @@ func getDroptime(username, preference string) (time.Time, error) {
 	}
 
 	if droptime.IsZero() {
-		return time.Time{}, errors.New("all droptime APIs failed to grab droptime!")
+		return time.Time{}, errors.New("all droptime APIs failed to grab droptime")
 	}
 
 	return droptime, nil
