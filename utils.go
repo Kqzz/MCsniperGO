@@ -10,7 +10,7 @@ import (
 	"github.com/kqzz/mcgo"
 )
 
-var errCommented error = errors.New("acc is commented out")
+var errAccIgnored error = errors.New("account was ignored, either commented or otherwise")
 
 // readLines reads a whole file into memory
 // and returns a slice of its lines.
@@ -43,7 +43,7 @@ func strSliceContainsMultiOption(s []string, strs []string) bool {
 
 func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strings.HasPrefix(accStr, "#") {
-		return mcgo.MCaccount{}, errCommented
+		return mcgo.MCaccount{}, errAccIgnored
 	}
 	var account mcgo.MCaccount
 	strSplit := strings.Split(accStr, ":")
@@ -82,7 +82,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 					account = mcgo.MCaccount{
 						Email:           strSplit[0],
 						Password:        strSplit[1],
-						SecurityAnswers: strSplit[2:4],
+						SecurityAnswers: strSplit[2:5],
 					}
 				}
 			default:
@@ -168,7 +168,7 @@ func loadAccSlice(accSlice []string) []*mcgo.MCaccount {
 	for i, accStr := range accSlice {
 		acc, err := loadAccStr(accStr)
 		if err != nil {
-			if !errors.Is(err, errCommented) {
+			if !errors.Is(err, errAccIgnored) {
 				logErr(fmt.Sprintf(`got error "%v" while loading acc on line %v`, err, i+1))
 				continue
 			}
