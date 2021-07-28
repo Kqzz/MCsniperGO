@@ -51,18 +51,52 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 
 	var AccType mcgo.AccType
 
-	if strSliceContainsMultiOption(strSplit, []string{"ms", "msa"}) {
+	if strSliceContainsMultiOption(strSplitLower, []string{"ms", "msa"}) {
 		AccType = mcgo.Ms
-	} else if strSliceContainsMultiOption(strSplit, []string{"prename", "msprename", "msaprename", "pr"}) {
+	} else if strSliceContainsMultiOption(strSplitLower, []string{"prename", "msprename", "msaprename", "pr"}) {
 		AccType = mcgo.MsPr
 	} else {
 		AccType = mcgo.Mj
 	}
 
-	if strSliceContainsMultiOption(strSplit, []string{"bearer"}) {
+	if strSliceContainsMultiOption(strSplitLower, []string{"bearer"}) {
 		account = mcgo.MCaccount{
 			Bearer: strSplit[0],
 		}
+		return account, nil
+	}
+
+	switch AccType {
+	case mcgo.Mj:
+		{
+			switch len(strSplit) {
+			case 2:
+				{
+					account = mcgo.MCaccount{
+						Email:    strSplit[0],
+						Password: strSplit[1],
+					}
+				}
+			case 5:
+				{
+					account = mcgo.MCaccount{
+						Email:           strSplit[0],
+						Password:        strSplit[1],
+						SecurityAnswers: strSplit[2:4],
+					}
+				}
+			default:
+				return account, fmt.Errorf("invalid split count of %v", len(strSplit))
+			}
+		}
+	case mcgo.Ms, mcgo.MsPr:
+		{
+			account = mcgo.MCaccount{
+				Email:    strSplit[0],
+				Password: strSplit[1],
+			}
+		}
+
 	}
 
 	// switch len(strSplit) {
