@@ -29,73 +29,103 @@ func readLines(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
+func strSliceContainsMultiOption(s []string, strs []string) bool {
+	for _, str := range strs {
+		for _, v := range s {
+			if v == str {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strings.HasPrefix(accStr, "#") {
 		return mcgo.MCaccount{}, errCommented
 	}
 	var account mcgo.MCaccount
 	strSplit := strings.Split(accStr, ":")
-	switch len(strSplit) {
-	case 2:
-		{
-			if strSplit[1] == "bearer" || strSplit[1] == "br" {
-				var accType mcgo.AccType = mcgo.Mj
-				for _, v := range strSplit {
-					if strings.ToLower(v) == "ms" {
-						accType = mcgo.Ms
-					}
-				}
-				account = mcgo.MCaccount{
-					Bearer: strSplit[0],
-					Type:   accType,
-				}
-			} else {
-				account = mcgo.MCaccount{
-					Email:    strSplit[0],
-					Password: strSplit[1],
-					Type:     mcgo.Mj,
-				}
-			}
-		}
-	case 5:
-		{
-			account = mcgo.MCaccount{
-				Email:           strSplit[0],
-				Password:        strSplit[1],
-				SecurityAnswers: strSplit[2:5],
-				Type:            mcgo.Mj,
-			}
-		}
-	case 3, 4:
-		{
-			if strings.ToLower(strSplit[2]) == "ms" {
-				var prename bool = false
-				for _, v := range strSplit {
-					v = strings.ToLower(v)
-					if v == "prename" || v == "pr" {
-						prename = true
-					}
-				}
-				var accType mcgo.AccType
-				if prename {
-					accType = mcgo.MsPr
-				} else {
-					accType = mcgo.Ms
-				}
-				account = mcgo.MCaccount{
-					Email:    strSplit[0],
-					Password: strSplit[1],
-					Type:     accType,
-				}
-			} else {
-				return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer or, for ms acc, email:password:ms (dont replace ms with anything)")
-			}
-		}
-	default:
-		{
-			return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer")
+	strSplitLower := strings.Split(strings.ToLower(accStr), ":")
+
+	var AccType mcgo.AccType
+
+	if strSliceContainsMultiOption(strSplit, []string{"ms", "msa"}) {
+		AccType = mcgo.Ms
+	} else if strSliceContainsMultiOption(strSplit, []string{"prename", "msprename", "msaprename", "pr"}) {
+		AccType = mcgo.MsPr
+	} else {
+		AccType = mcgo.Mj
+	}
+
+	if strSliceContainsMultiOption(strSplit, []string{"bearer"}) {
+		account = mcgo.MCaccount{
+			Bearer: strSplit[0],
 		}
 	}
+
+	// switch len(strSplit) {
+	// case 2:
+	// 	{
+	// 		if strSplit[1] == "bearer" || strSplit[1] == "br" {
+	// 			var accType mcgo.AccType = mcgo.Mj
+	// 			for _, v := range strSplit {
+	// 				if strings.ToLower(v) == "ms" {
+	// 					accType = mcgo.Ms
+	// 				}
+	// 			}
+	// 			account = mcgo.MCaccount{
+	// 				Bearer: strSplit[0],
+	// 				Type:   accType,
+	// 			}
+	// 		} else {
+	// 			account = mcgo.MCaccount{
+	// 				Email:    strSplit[0],
+	// 				Password: strSplit[1],
+	// 				Type:     mcgo.Mj,
+	// 			}
+	// 		}
+	// 	}
+	// case 5:
+	// 	{
+	// 		account = mcgo.MCaccount{
+	// 			Email:           strSplit[0],
+	// 			Password:        strSplit[1],
+	// 			SecurityAnswers: strSplit[2:5],
+	// 			Type:            mcgo.Mj,
+	// 		}
+	// 	}
+	// case 3, 4:
+	// 	{
+	// 		if strings.ToLower(strSplit[2]) == "ms" {
+	// 			var prename bool = false
+	// 			for _, v := range strSplit {
+	// 				v = strings.ToLower(v)
+	// 				if v == "prename" || v == "pr" {
+	// 					prename = true
+	// 				}
+	// 			}
+	// 			var accType mcgo.AccType
+	// 			if prename {
+	// 				accType = mcgo.MsPr
+	// 			} else {
+	// 				accType = mcgo.Ms
+	// 			}
+	// 			account = mcgo.MCaccount{
+	// 				Email:    strSplit[0],
+	// 				Password: strSplit[1],
+	// 				Type:     accType,
+	// 			}
+	// 		} else {
+	// 			return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer or, for ms acc, email:password:ms (dont replace ms with anything)")
+	// 		}
+	// 	}
+	// default:
+	// 	{
+	// 		return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer")
+	// 	}
+	// }
 	return account, nil
 }
 
