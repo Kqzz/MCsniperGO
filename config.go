@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 )
 
@@ -80,4 +81,11 @@ func defaultConfig() error {
 	}
 	return nil
 
+}
+
+func getConfig() (ConfigStruct, error) {
+	if !fileExists("config.toml") {
+		return ConfigStruct{}, errors.New("config file does not exist")
+	}
+	return ConfigStruct{}, nil
 }
