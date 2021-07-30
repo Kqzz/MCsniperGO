@@ -26,18 +26,13 @@ func logWarn(m string) {
 
 func logFatal(m string) {
 	color.Printf("<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</> » %s\n", m)
-	color.Printf("<fg=red>Exiting...</>\n")
-	os.Exit(0)
 }
 
 func userInput(m string) string {
 	reader := bufio.NewReader(os.Stdin)
 	var out string
 	color.Printf("<fg=white>[</><fg=cyan;op=bold>input</><fg=white>]</> %s » ", m)
-	out, err := reader.ReadString('\n')
-	if err != nil {
-		logFatal(err.Error())
-	}
+	out, _ = reader.ReadString('\n')
 	out = strings.TrimSuffix(out, "\r\n")
 	out = strings.TrimSuffix(out, "\n")
 	return out

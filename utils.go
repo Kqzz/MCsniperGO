@@ -62,6 +62,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strSliceContainsMultiOption(strSplitLower, []string{"bearer"}) {
 		account = mcgo.MCaccount{
 			Bearer: strSplit[0],
+			Type:   AccType,
 		}
 		return account, nil
 	}
@@ -75,6 +76,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 					account = mcgo.MCaccount{
 						Email:    strSplit[0],
 						Password: strSplit[1],
+						Type:     AccType,
 					}
 				}
 			case 5:
@@ -83,6 +85,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 						Email:           strSplit[0],
 						Password:        strSplit[1],
 						SecurityAnswers: strSplit[2:5],
+						Type:            AccType,
 					}
 				}
 			default:
@@ -94,72 +97,12 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 			account = mcgo.MCaccount{
 				Email:    strSplit[0],
 				Password: strSplit[1],
+				Type:     AccType,
 			}
 		}
 
 	}
 
-	// switch len(strSplit) {
-	// case 2:
-	// 	{
-	// 		if strSplit[1] == "bearer" || strSplit[1] == "br" {
-	// 			var accType mcgo.AccType = mcgo.Mj
-	// 			for _, v := range strSplit {
-	// 				if strings.ToLower(v) == "ms" {
-	// 					accType = mcgo.Ms
-	// 				}
-	// 			}
-	// 			account = mcgo.MCaccount{
-	// 				Bearer: strSplit[0],
-	// 				Type:   accType,
-	// 			}
-	// 		} else {
-	// 			account = mcgo.MCaccount{
-	// 				Email:    strSplit[0],
-	// 				Password: strSplit[1],
-	// 				Type:     mcgo.Mj,
-	// 			}
-	// 		}
-	// 	}
-	// case 5:
-	// 	{
-	// 		account = mcgo.MCaccount{
-	// 			Email:           strSplit[0],
-	// 			Password:        strSplit[1],
-	// 			SecurityAnswers: strSplit[2:5],
-	// 			Type:            mcgo.Mj,
-	// 		}
-	// 	}
-	// case 3, 4:
-	// 	{
-	// 		if strings.ToLower(strSplit[2]) == "ms" {
-	// 			var prename bool = false
-	// 			for _, v := range strSplit {
-	// 				v = strings.ToLower(v)
-	// 				if v == "prename" || v == "pr" {
-	// 					prename = true
-	// 				}
-	// 			}
-	// 			var accType mcgo.AccType
-	// 			if prename {
-	// 				accType = mcgo.MsPr
-	// 			} else {
-	// 				accType = mcgo.Ms
-	// 			}
-	// 			account = mcgo.MCaccount{
-	// 				Email:    strSplit[0],
-	// 				Password: strSplit[1],
-	// 				Type:     accType,
-	// 			}
-	// 		} else {
-	// 			return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer or, for ms acc, email:password:ms (dont replace ms with anything)")
-	// 		}
-	// 	}
-	// default:
-	// 	{
-	// 		return account, errors.New("wrong number of values, needs to be formatted email:password or email:password:answer:answer:answer")
-	// 	}
-	// }
 	return account, nil
 }
 

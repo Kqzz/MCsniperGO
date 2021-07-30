@@ -15,6 +15,7 @@ func main() {
 		Usage: "mcsnipergo",
 		Action: func(c *cli.Context) error {
 			snipeCommand()
+			userInput("press enter to exit")
 			return nil
 		},
 		Commands: []*cli.Command{

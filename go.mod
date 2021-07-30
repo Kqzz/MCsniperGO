@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/gookit/color v1.4.2
-	github.com/kqzz/mcgo v0.2.62
-	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942 // indirect
+	github.com/kqzz/mcgo v0.2.8-dev0
+	github.com/pelletier/go-toml/v2 v2.0.0-beta.3
 	github.com/urfave/cli/v2 v2.3.0
 )
