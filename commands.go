@@ -12,7 +12,6 @@ import (
 )
 
 func snipeCommand() {
-
 	color.Printf(genHeader())
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
@@ -56,7 +55,6 @@ func snipeCommand() {
 
 	var offsetStr string
 	var offset float64
-
 	var offsetErr error
 
 	for offsetStr == "" || offsetErr != nil {
@@ -94,7 +92,7 @@ func snipeCommand() {
 			}
 		}
 
-		logInfo(fmt.Sprintf("Bearer: %v", censor(acc.Bearer, 60)))
+		logInfo(fmt.Sprintf("Bearer: %v", censor(acc.Bearer, 180)))
 	}
 
 	fmt.Print("\n")
@@ -150,5 +148,5 @@ func snipeCommand() {
 }
 
 func pingCommand() {
-	logInfo("PING PING PING")
+	logInfo("Coming soon™")
 }

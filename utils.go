@@ -149,8 +149,8 @@ func fileExists(filename string) bool {
 
 func censor(str string, amt int) string {
 	out := []rune(str)
-	for i, _ := range out {
-		if i >= amt {
+	for i := range out {
+		if i >= amt && amt >= 0 {
 			break
 		}
 		out[i] = '*'
