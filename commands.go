@@ -87,7 +87,6 @@ func snipeCommand() {
 			} else {
 				authErr = acc.MicrosoftAuthenticate()
 			}
-			fmt.Println(acc.Email, acc.Password, acc.SecurityAnswers, acc.Bearer)
 			if authErr != nil {
 				logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
 			} else {

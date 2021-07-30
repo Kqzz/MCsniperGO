@@ -62,6 +62,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strSliceContainsMultiOption(strSplitLower, []string{"bearer"}) {
 		account = mcgo.MCaccount{
 			Bearer: strSplit[0],
+			Type:   AccType,
 		}
 		return account, nil
 	}
@@ -75,6 +76,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 					account = mcgo.MCaccount{
 						Email:    strSplit[0],
 						Password: strSplit[1],
+						Type:     AccType,
 					}
 				}
 			case 5:
@@ -83,6 +85,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 						Email:           strSplit[0],
 						Password:        strSplit[1],
 						SecurityAnswers: strSplit[2:5],
+						Type:            AccType,
 					}
 				}
 			default:
@@ -94,6 +97,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 			account = mcgo.MCaccount{
 				Email:    strSplit[0],
 				Password: strSplit[1],
+				Type:     AccType,
 			}
 		}
 
