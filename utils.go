@@ -146,3 +146,14 @@ func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
+
+func censor(str string, amt int) string {
+	out := []rune(str)
+	for i, _ := range out {
+		if i >= amt {
+			break
+		}
+		out[i] = '*'
+	}
+	return string(out)
+}

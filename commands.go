@@ -93,6 +93,8 @@ func snipeCommand() {
 				logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
 			}
 		}
+
+		logInfo(fmt.Sprintf("Bearer: %v", censor(acc.Bearer, 60)))
 	}
 
 	fmt.Print("\n")
