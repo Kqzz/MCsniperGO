@@ -18,6 +18,7 @@ func snipeCommand() {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
 			logFatal(fmt.Sprintf("while creating accounts.txt, %s", err.Error()))
+			return
 		} else {
 			logInfo("created accounts.txt, please restart the sniper once accounts are added!")
 		}
@@ -27,15 +28,24 @@ func snipeCommand() {
 		defaultConfig()
 	}
 
+	_, err := getConfig()
+
+	if err != nil {
+		logFatal(fmt.Sprintf("error while getting config, %v", err))
+		return
+	}
+
 	accStrs, err := readLines("accounts.txt")
 	if err != nil {
 		logFatal(err.Error())
+		return
 	}
 
 	accounts = loadAccSlice(accStrs)
 
 	if len(accounts) < 1 {
 		logFatal("Please put one account in the accounts.txt file!")
+		return
 	}
 
 	if len(accounts) > 1 {
@@ -43,10 +53,18 @@ func snipeCommand() {
 	}
 
 	targetName := userInput("target username")
-	offsetStr := userInput("offset")
-	offset, err := strconv.ParseFloat(offsetStr, 64)
-	if err != nil {
-		logFatal(fmt.Sprintf("%v is not a valid number", offsetStr))
+
+	var offsetStr string
+	var offset float64
+
+	var offsetErr error
+
+	for offsetStr == "" || offsetErr != nil {
+		offsetStr = userInput("offset")
+		offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
+		if offsetErr != nil {
+			logErr(fmt.Sprintf("%v is not a valid number", offsetStr))
+		}
 	}
 
 	droptime, err := getDroptime(targetName, "ckm")
@@ -69,6 +87,7 @@ func snipeCommand() {
 			} else {
 				authErr = acc.MicrosoftAuthenticate()
 			}
+			fmt.Println(acc.Email, acc.Password, acc.SecurityAnswers, acc.Bearer)
 			if authErr != nil {
 				logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
 			} else {
@@ -90,12 +109,19 @@ func snipeCommand() {
 		time.Sleep(time.Second * 1)
 	}
 
-	fmt.Print("\n")
+	fmt.Println("\nstarting...")
 
 	for _, acc := range accounts {
-		for i := 0; i < 2; i++ {
+		reqCount := 2
+		if acc.Type == mcgo.MsPr {
+			reqCount = 6
+		}
+		for i := 0; i < reqCount; i++ {
 			wg.Add(1)
-			prename := acc.Type == mcgo.MsPr
+			prename := false
+			if acc.Type == mcgo.MsPr {
+				prename = true
+			}
 			go func() {
 				defer wg.Done()
 				resp, err := acc.ChangeName(targetName, changeTime, prename)

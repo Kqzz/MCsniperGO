@@ -2,7 +2,10 @@ package main
 
 import (
 	"errors"
+	"io/ioutil"
 	"os"
+
+	"github.com/pelletier/go-toml/v2"
 )
 
 type ConfigStruct struct {
@@ -87,5 +90,19 @@ func getConfig() (ConfigStruct, error) {
 	if !fileExists("config.toml") {
 		return ConfigStruct{}, errors.New("config file does not exist")
 	}
-	return ConfigStruct{}, nil
+
+	confBytes, err := ioutil.ReadFile("config.toml")
+
+	if err != nil {
+		return ConfigStruct{}, err
+	}
+
+	var cfg ConfigStruct
+	err = toml.Unmarshal(confBytes, &cfg)
+
+	if err != nil {
+		return ConfigStruct{}, err
+	}
+
+	return cfg, nil
 }
