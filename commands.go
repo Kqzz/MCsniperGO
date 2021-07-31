@@ -27,7 +27,7 @@ func snipeCommand() {
 		defaultConfig()
 	}
 
-	_, err := getConfig()
+	config, err := getConfig()
 
 	if err != nil {
 		logFatal(fmt.Sprintf("error while getting config, %v", err))
@@ -74,6 +74,7 @@ func snipeCommand() {
 
 	time.Sleep(time.Until(droptime.Add(-time.Hour * 8))) // sleep until 8 hours before droptime
 
+	// auth
 	for _, acc := range accounts {
 		var authErr error
 		if acc.Bearer != "" {
@@ -110,10 +111,11 @@ func snipeCommand() {
 
 	fmt.Println("\nstarting...")
 
+	// snipe
 	for _, acc := range accounts {
-		reqCount := 2
+		reqCount := config.Sniper.SnipeRequests
 		if acc.Type == mcgo.MsPr {
-			reqCount = 6
+			reqCount = config.Sniper.PrenameRequests
 		}
 		for i := 0; i < reqCount; i++ {
 			wg.Add(1)
@@ -141,6 +143,18 @@ func snipeCommand() {
 
 	for _, resp := range resps {
 		logInfo(fmt.Sprintf("[%v] recv @ %v", resp.StatusCode, resp.ReceiveTime))
+		if resp.StatusCode < 300 {
+			logSuccess(fmt.Sprintf("sniped %v onto %v", resp.Username, resp.Account.Email))
+			logInfo("if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
+			if config.Sniper.AutoClaimNamemc {
+				claimUrl, err := resp.Account.ClaimNamemc()
+				if err != nil {
+					logErr(fmt.Sprintf("failed to claim namemc: %v", err))
+				} else {
+					logInfo(fmt.Sprintf("namemc claim url: <fg=blue;op=underline>%v</>", claimUrl))
+				}
+			}
+		}
 	}
 
 	fmt.Print("\n")
