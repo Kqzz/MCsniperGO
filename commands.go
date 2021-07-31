@@ -96,7 +96,7 @@ func snipeCommand(targetName string, offset float64) {
 			}
 		}
 
-		logInfo(fmt.Sprintf("Bearer: %v", censor(acc.Bearer, 180)))
+		logInfo(fmt.Sprintf("Bearer: %v", censor(acc.Bearer, 260)))
 	}
 
 	fmt.Print("\n")
