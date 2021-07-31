@@ -14,7 +14,7 @@ func main() {
 		Name:  "MCsniperGO",
 		Usage: "mcsnipergo",
 		Action: func(c *cli.Context) error {
-			snipeCommand()
+			snipeCommand("", 0)
 			userInput("press enter to exit")
 			return nil
 		},
@@ -24,8 +24,22 @@ func main() {
 				Aliases: []string{"s", "run", "start"},
 				Usage:   "start MCsniperGO",
 				Action: func(c *cli.Context) error {
-					snipeCommand()
+					snipeCommand(c.String("username"), c.Float64("offset"))
 					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "username",
+						Aliases: []string{"u", "user", "name"},
+						Usage:   "username to snipe",
+						Value:   "",
+					},
+					&cli.Float64Flag{
+						Name:    "offset",
+						Aliases: []string{"o", "delay", "time-offset"},
+						Usage:   "snipe x ms early",
+						Value:   0,
+					},
 				},
 			},
 			{

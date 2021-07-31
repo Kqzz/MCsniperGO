@@ -11,7 +11,7 @@ import (
 	"github.com/kqzz/mcgo"
 )
 
-func snipeCommand() {
+func snipeCommand(targetName string, offset float64) {
 	color.Printf(genHeader())
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
@@ -51,17 +51,20 @@ func snipeCommand() {
 		logWarn("Using more than 1 account is not recommended")
 	}
 
-	targetName := userInput("target username")
+	if targetName == "" {
+		targetName = userInput("target username")
+	}
 
-	var offsetStr string
-	var offset float64
-	var offsetErr error
+	if offset == 0 {
+		var offsetStr string
+		var offsetErr error
 
-	for offsetStr == "" || offsetErr != nil {
-		offsetStr = userInput("offset")
-		offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
-		if offsetErr != nil {
-			logErr(fmt.Sprintf("%v is not a valid number", offsetStr))
+		for offsetStr == "" || offsetErr != nil {
+			offsetStr = userInput("offset")
+			offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
+			if offsetErr != nil {
+				logErr(fmt.Sprintf("%v is not a valid number", offsetStr))
+			}
 		}
 	}
 
