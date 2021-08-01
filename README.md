@@ -30,13 +30,17 @@ EMAIL:PASS
 EMAIL:PASS:ANSWER:ANSWER:ANSWER
 
 ## Microsoft account
+## IT IS NOT RECOMMENDED TO USE THIS, INSTEAD MANUALLY GRAB THE BEARER TOKEN AND USE THE BEARER METHOD.
 
 EMAIL:PASS:ms
 ### OR FOR PRENAME
-EMAIL:PASS:ms:prename
+EMAIL:PASS:prename
 
 ## Manual bearer
 BEARERHERE:bearer
+
+# You can add :prename for a prename snipe w/ manual bearer
+
 ```
 
 ## MCsniperPY vs MCsniperGO
