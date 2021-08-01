@@ -2,8 +2,7 @@
 
 ## Usage
 
-> This is not intended for proper use yet, as it is not complete.
-> if you are able to debug and dont mind bugs, then feel free to follow that usage below.
+> This sniper is in it's *beta* stage, meaning bugs should be expected.
 
 install git & go before running below commands
 
