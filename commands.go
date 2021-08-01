@@ -71,6 +71,7 @@ func snipeCommand(targetName string, offset float64) {
 	droptime, err := getDroptime(targetName, "ckm")
 	if err != nil {
 		logFatal(err.Error())
+		return
 	}
 
 	logInfo(fmt.Sprintf("Sniping %v at %v\n", targetName, droptime.Format("2006/01/02 15:04:05")))
