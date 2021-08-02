@@ -19,6 +19,7 @@
   - for linux, you will have to open a terminal and use `cd` to navigate to the correct directory, then run `./binary_name_here`
 - the sniper will now prompt you for a username and offset. enter those and then the sniper will authenticate (this is run 8 hours before snipe) and then count down.
 
+> A video guide will be made once this sniper is stabler
 
 ### Compiling from source (not recommended)
 
