@@ -2,11 +2,28 @@
 
 ## Usage
 
-> This is not intended for proper use yet, as it is not complete.
-> if you are able to debug and dont mind bugs, then feel free to follow that usage below.
+> This sniper is in it's *beta* stage, meaning bugs should be expected.
 
-install git & go before running below commands
+### Easy installation
 
+- download the latest release for your operating system in the [releases](https://github.com/Kqzz/MCsniperGO/releases/) tab
+- move that file to it's own folder (recommended, issues may arise if not done)
+- run that file once, 2 files will appear in that folder, `accounts.txt` and `config.toml`. `config.toml` can be ignored for now.
+  - on windows, you can double click the executable file to run.
+  - on macos, you must [open a terminal in the folder you moved the binary to](https://www.stugon.com/open-terminal-in-current-folder-location-mac/) and run `./binary_name_here` in the terminal
+  - on linux, you must open a terminal and use `cd` to navigate to the folder where the binary is located, you may have to run `chmod +x ./binary_name_here`, and then run `./binary_name_here`
+- open accounts.txt and add your accounts according to the formatting specified [below](https://github.com/Kqzz/MCsniperGO#accounts-file-format)
+- run the sniper again with the same commands used before
+  - for windows, you can double click the executable
+  - for macos, you will have to open the terminal in the correct directory (as shown above) and run `./binary_name_here`
+  - for linux, you will have to open a terminal and use `cd` to navigate to the correct directory, then run `./binary_name_here`
+- the sniper will now prompt you for a username and offset. enter those and then the sniper will authenticate (this is run 8 hours before snipe) and then count down.
+
+> A video guide will be made once this sniper is stabler
+
+### Compiling from source (not recommended)
+
+install [git](https://git-scm.com/) and [go](https://golang.org/dl/) 1.16 or later.
 ```sh
 git clone https://github.com/Kqzz/MCsniperGO
 cd MCsniperGO
@@ -30,13 +47,17 @@ EMAIL:PASS
 EMAIL:PASS:ANSWER:ANSWER:ANSWER
 
 ## Microsoft account
+## IT IS NOT RECOMMENDED TO USE THIS, INSTEAD MANUALLY GRAB THE BEARER TOKEN AND USE THE BEARER METHOD.
 
 EMAIL:PASS:ms
 ### OR FOR PRENAME
-EMAIL:PASS:ms:prename
+EMAIL:PASS:prename
 
 ## Manual bearer
 BEARERHERE:bearer
+
+# You can add :prename for a prename snipe w/ manual bearer
+
 ```
 
 ## MCsniperPY vs MCsniperGO
