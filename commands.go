@@ -82,7 +82,7 @@ func snipeCommand(targetName string, offset float64) {
 	for _, acc := range accounts {
 		var authErr error
 		if acc.Bearer != "" {
-			logSuccess(fmt.Sprintf("successfully authenticated %v thru manual bearer | %v acc", acc.Email, acc.Type))
+			logSuccess(fmt.Sprintf("successfully authenticated %v thru manual bearer", acc.Email))
 			logWarn("There are no guarentees that this bearer is correct, as it was manually inputted.")
 		} else {
 			if acc.Type == mcgo.Mj {
@@ -93,11 +93,11 @@ func snipeCommand(targetName string, offset float64) {
 			if authErr != nil {
 				logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
 			} else {
-				logSuccess(fmt.Sprintf("successfully authenticated %v | %v acc", acc.Email, acc.Type))
+				logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
 			}
 		}
 
-		logInfo(fmt.Sprintf("Bearer: %v", censor(acc.Bearer, 260)))
+		logInfo(fmt.Sprintf("Acc Type: %v | Bearer: %v", acc.Type, censor(acc.Bearer, 260)))
 	}
 
 	fmt.Print("\n")
