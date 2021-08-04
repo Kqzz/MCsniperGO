@@ -137,6 +137,7 @@ func snipeCommand(targetName string, offset float64) {
 				}
 			}()
 		}
+		time.Sleep(time.Millisecond * 1)
 	}
 
 	wg.Wait()
