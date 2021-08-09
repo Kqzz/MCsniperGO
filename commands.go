@@ -68,7 +68,7 @@ func snipeCommand(targetName string, offset float64) {
 		}
 	}
 
-	droptime, err := getDroptime(targetName, "ckm")
+	droptime, err := getDroptime(targetName, config.Sniper.TimingSystemPreference)
 	if err != nil {
 		logFatal(err.Error())
 		return

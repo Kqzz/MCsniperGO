@@ -6,15 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 )
 
 // Feel free to add your droptime API to this file, the more droptime APIS that are used, the more stable this sniper should be (theoretically)
-
-var (
-	allApis = []string{"api.coolkidmacho.com", "drops.peet.ws"}
-)
 
 type coolkidmachoRespStruct struct {
 	Unix int64 `json:"UNIX"`
@@ -48,87 +43,71 @@ func coolkidmachoDroptime(username string) (time.Time, error) {
 	return time.Time{}, fmt.Errorf("failed to grab droptime with status %v and body %v", resp.Status, string(respBytes))
 }
 
-// TODO: implement grabbing droptime from drops.peet.ws once that API is fixed
-
-type peetResponse struct {
-	Unix int64  `json:"UNIX,omitempty"`
-	Err  string `json:"error,omitempty"`
+type starShoppingResponseStruct struct {
+	Unix int64 `json:"unix"`
 }
 
-func peetDroptime(username string) (time.Time, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://drops.peet.ws/droptime?name=%v", username), nil)
+func starShoppingDroptime(username string) (time.Time, error) {
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.star.shopping/droptime/%v", username), nil)
+
 	if err != nil {
 		return time.Time{}, err
 	}
 
-	req.Header.Set("User-Agent", "PiratSnipe")
+	req.Header.Set("User-Agent", "Sniper")
 
 	resp, err := http.DefaultClient.Do(req)
+
 	if err != nil {
 		return time.Time{}, err
 	}
-
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return time.Time{}, fmt.Errorf("got status %v", resp.StatusCode)
-	}
-	body, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
 		return time.Time{}, err
 	}
 
-	var peetResp peetResponse
+	if resp.StatusCode < 300 {
+		var starShoppingResponse starShoppingResponseStruct
+		err = json.Unmarshal(respBytes, &starShoppingResponse)
+		if err != nil {
+			return time.Time{}, err
+		}
 
-	err = json.Unmarshal(body, &peetResp)
-	if err != nil {
-		return time.Time{}, err
+		return time.Unix(starShoppingResponse.Unix, 0), nil
 	}
 
-	return time.Unix(peetResp.Unix, 0), nil
-}
-
-func apiFromStr(name string) func(string) (time.Time, error) {
-	var api func(string) (time.Time, error)
-	switch strings.ToLower(name) {
-	case "ckm", "coolkid", "coolkidmacho", "api.coolkidmacho.com":
-		api = coolkidmachoDroptime
-	case "peet", "peet.ws", "drops.peet.ws":
-		api = peetDroptime
-	default:
-		api = coolkidmachoDroptime
-	}
-	return api
+	return time.Time{}, fmt.Errorf("failed to grab droptime with status %v and body \"%v\"", resp.Status, string(respBytes))
 }
 
 func getDroptime(username, preference string) (time.Time, error) {
-	dropFuncs := []func(string) (time.Time, error){}
-	var droptime time.Time
-	var err error
-
-	prefApi := apiFromStr(preference)
-
-	dropFuncs = append(dropFuncs, prefApi)
-
-	for _, api := range allApis {
-		dropFuncs = append(dropFuncs, apiFromStr(api))
+	apis := map[string]func(string) (time.Time, error){
+		"ckm":               coolkidmachoDroptime,
+		"coolkidmacho":      coolkidmachoDroptime,
+		"star.shopping":     starShoppingDroptime,
+		"api.star.shopping": starShoppingDroptime,
+	}
+	allApis := []func(string) (time.Time, error){coolkidmachoDroptime, starShoppingDroptime}
+	apisToUse := []func(string) (time.Time, error){}
+	if val, ok := apis[preference]; ok {
+		apisToUse = append(apisToUse, val)
 	}
 
-	for _, grabDrop := range dropFuncs {
-		droptime, err = grabDrop(username)
+	apisToUse = append(apisToUse, allApis...)
+
+	for _, api := range apisToUse {
+		droptime, err := api(username)
 		if err != nil {
-			logErr(fmt.Sprintf("got err \"%v\" while requesting droptime...", err))
+			logErr(fmt.Sprintf("failed to grab droptime: %v", err))
+			logInfo("trying next API")
 			time.Sleep(time.Second * 1)
-			logInfo("trying next droptime api...")
-		} else {
-			break
+			continue
 		}
+		return droptime, nil
 	}
 
-	if droptime.IsZero() {
-		return time.Time{}, errors.New("all droptime APIs failed to grab droptime")
-	}
-
-	return droptime, nil
+	return time.Time{}, errors.New("failed to grab droptime from all APIs")
 }

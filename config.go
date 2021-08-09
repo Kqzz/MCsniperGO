@@ -39,7 +39,7 @@ type ConfigStruct struct {
 const (
 	defaultConfigString = `
 	[sniper]
-timing_system_preference = "ckm"
+timing_system_preference = "star.shopping"
 cycle_timing_systems = true # Go through each timing system until droptime is successfully grabbed
 auto_claim_namemc = false
 
