@@ -1,4 +1,5 @@
 # MCsniperGO
+This project was made possible by my [donators](https://kqzz.me/donators)
 
 ## Usage
 
@@ -57,42 +58,5 @@ EMAIL:PASS:prename
 BEARERHERE:bearer
 
 # You can add :prename for a prename snipe w/ manual bearer
-
-```
-
-## MCsniperPY vs MCsniperGO
-
-```txt
-
-[MCsniperGO]
-
-### PROS ###
-
-* faster (go rather than py)
-* microsoft auth support
-* manual bearer
-* prename sniping
-
-### CONS ###
-
-* low or no support
-* brand new, not proven to be good.
-* not tested well, very tiny userbase.
-* basically in beta or alpha
-
-[MCsniperPY]
-
-### PROS ###
-
-* proven to get names
-* very well trusted and old
-* huge discord server who can offer support
-
-### CONS ###
-
-* slower than MCsniperGO
-* no MS auth
-* no prename
-* no manual bearer, for the few people who want that.
 
 ```
