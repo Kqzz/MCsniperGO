@@ -15,7 +15,7 @@ type ConfigStruct struct {
 		AutoClaimNamemc        bool   `toml:"auto_claim_namemc"`
 		SnipeRequests          int    `toml:"snipe_requests"`
 		PrenameRequests        int    `toml:"prename_requests"`
-		Spead                  int    `toml:"spread"`
+		Spread                 int    `toml:"spread"`
 	} `toml:"sniper"`
 	Accounts struct {
 		MaxAccounts        int `toml:"max_accounts"`

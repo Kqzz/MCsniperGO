@@ -105,7 +105,6 @@ func snipeCommand(targetName string, offset float64) {
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
 
 	var wg sync.WaitGroup
-
 	var resps []mcgo.NameChangeReturn
 
 	for time.Now().Before(changeTime.Add(-time.Second * 40)) {
@@ -114,6 +113,8 @@ func snipeCommand(targetName string, offset float64) {
 	}
 
 	fmt.Println("\nstarting...")
+	var currentDelay int // keep track of delay on an account level
+	var tmpDelay int     // keep track of dely on a request leveö
 
 	// snipe
 	for _, acc := range accounts {
@@ -121,7 +122,10 @@ func snipeCommand(targetName string, offset float64) {
 		if acc.Type == mcgo.MsPr {
 			reqCount = config.Sniper.PrenameRequests
 		}
+		currentDelay += reqCount * config.Sniper.Spread
+		tmpDelay = 0
 		for i := 0; i < reqCount; i++ {
+			tmpDelay += config.Sniper.Spread
 			wg.Add(1)
 			prename := false
 			if acc.Type == mcgo.MsPr {
@@ -130,6 +134,8 @@ func snipeCommand(targetName string, offset float64) {
 			go func() {
 				defer wg.Done()
 				resp, err := acc.ChangeName(targetName, changeTime, prename)
+				// logInfo(fmt.Sprintf("%v", currentDelay+tmpDelay))
+				// resp, err := acc.ChangeName(targetName, changeTime, prename, currentDelay + tmpDelay)
 				if err != nil {
 					logErr(fmt.Sprintf("encountered err on nc for %v: %v", acc.Email, err.Error()))
 				} else {
