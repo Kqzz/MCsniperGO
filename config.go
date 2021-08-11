@@ -15,6 +15,7 @@ type ConfigStruct struct {
 		AutoClaimNamemc        bool   `toml:"auto_claim_namemc"`
 		SnipeRequests          int    `toml:"snipe_requests"`
 		PrenameRequests        int    `toml:"prename_requests"`
+		Spead                  int    `toml:"spread"`
 	} `toml:"sniper"`
 	Accounts struct {
 		MaxAccounts        int `toml:"max_accounts"`
@@ -45,6 +46,8 @@ auto_claim_namemc = false
 
 snipe_requests = 2 # requests to be sent per acc for normal sniping
 prename_requests = 6 # requests to be sent per acc for prename sniping
+
+spread = 5 # delay between requests in milliseconds
 
 [accounts]
 max_accounts = 1
