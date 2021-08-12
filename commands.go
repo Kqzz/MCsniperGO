@@ -79,6 +79,7 @@ func snipeCommand(targetName string, offset float64) {
 	time.Sleep(time.Until(droptime.Add(-time.Hour * 8))) // sleep until 8 hours before droptime
 
 	// auth
+	var authedAccounts []*mcgo.MCaccount
 	for _, acc := range accounts {
 		var authErr error
 		if acc.Bearer != "" {
@@ -94,6 +95,7 @@ func snipeCommand(targetName string, offset float64) {
 				logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
 			} else {
 				logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
+				authedAccounts = append(authedAccounts, acc)
 			}
 		}
 
@@ -101,6 +103,11 @@ func snipeCommand(targetName string, offset float64) {
 	}
 
 	fmt.Print("\n")
+
+	if len(authedAccounts) == 0 {
+		logErr("0 accounts authenticated successfully - stopping snipe.")
+		return
+	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
 
@@ -117,7 +124,7 @@ func snipeCommand(targetName string, offset float64) {
 	var tmpDelay int     // keep track of dely on a request leveö
 
 	// snipe
-	for _, acc := range accounts {
+	for _, acc := range authedAccounts {
 		reqCount := config.Sniper.SnipeRequests
 		if acc.Type == mcgo.MsPr {
 			reqCount = config.Sniper.PrenameRequests
@@ -134,8 +141,12 @@ func snipeCommand(targetName string, offset float64) {
 			go func() {
 				defer wg.Done()
 				resp, err := acc.ChangeName(targetName, changeTime, prename)
+				// currentDelay + tmpDelay should be the delay used.
+				// TODO: add delay to mcgo library
+
+				// resp, err := acc.ChangeName(targetName, changeTime, prename)
 				// logInfo(fmt.Sprintf("%v", currentDelay+tmpDelay))
-				// resp, err := acc.ChangeName(targetName, changeTime, prename, currentDelay + tmpDelay)
+
 				if err != nil {
 					logErr(fmt.Sprintf("encountered err on nc for %v: %v", acc.Email, err.Error()))
 				} else {
