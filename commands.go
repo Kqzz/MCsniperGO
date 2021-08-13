@@ -79,6 +79,7 @@ func snipeCommand(targetName string, offset float64) {
 	time.Sleep(time.Until(droptime.Add(-time.Hour * 8))) // sleep until 8 hours before droptime
 
 	// auth
+	var authedAccounts []*mcgo.MCaccount
 	for _, acc := range accounts {
 		var authErr error
 		if acc.Bearer != "" {
@@ -94,6 +95,7 @@ func snipeCommand(targetName string, offset float64) {
 				logErr(fmt.Sprintf("Failed to authenticate %v, err: \"%v\"", acc.Email, authErr.Error()))
 			} else {
 				logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
+				authedAccounts = append(authedAccounts, acc)
 			}
 		}
 
@@ -102,10 +104,14 @@ func snipeCommand(targetName string, offset float64) {
 
 	fmt.Print("\n")
 
+	if len(authedAccounts) == 0 {
+		logErr("0 accounts authenticated successfully - stopping snipe.")
+		return
+	}
+
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
 
 	var wg sync.WaitGroup
-
 	var resps []mcgo.NameChangeReturn
 
 	for time.Now().Before(changeTime.Add(-time.Second * 40)) {
@@ -114,14 +120,16 @@ func snipeCommand(targetName string, offset float64) {
 	}
 
 	fmt.Println("\nstarting...")
+	var totalReqCount int // keep track of the total requests for the spread
 
 	// snipe
-	for _, acc := range accounts {
+	for _, acc := range authedAccounts {
 		reqCount := config.Sniper.SnipeRequests
 		if acc.Type == mcgo.MsPr {
 			reqCount = config.Sniper.PrenameRequests
 		}
 		for i := 0; i < reqCount; i++ {
+			totalReqCount++
 			wg.Add(1)
 			prename := false
 			if acc.Type == mcgo.MsPr {
@@ -129,7 +137,9 @@ func snipeCommand(targetName string, offset float64) {
 			}
 			go func() {
 				defer wg.Done()
-				resp, err := acc.ChangeName(targetName, changeTime, prename)
+				spread := totalReqCount * config.Sniper.Spread
+				resp, err := acc.ChangeName(targetName, changeTime.Add(time.Millisecond*time.Duration(spread)), prename)
+
 				if err != nil {
 					logErr(fmt.Sprintf("encountered err on nc for %v: %v", acc.Email, err.Error()))
 				} else {
