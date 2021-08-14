@@ -13,6 +13,8 @@ github.com/gookit/color v1.4.2/go.mod h1:fqRyamkC1W8uxl+lxCQxOT09l/vYfZ+QeiX3rKQ
 github.com/iancoleman/strcase v0.1.3/go.mod h1:SK73tn/9oHe+/Y0h39VT4UCxmurVJkR5NA7kMEAOgSE=
 github.com/kqzz/mcgo v0.2.82 h1:x/X5Bz7BJfJ3TPS6LXKI44CzQiTQBkp4SXddIwYTyzU=
 github.com/kqzz/mcgo v0.2.82/go.mod h1:DXKHGjsnNM8bcvPEBZ258gFOzkhsaHq8eU+iNvsEkbo=
+github.com/kqzz/mcgo v0.2.83 h1:YXmiHT7CCjtDxRgWfgkiwGB8R+1xkh45s5tR3LSvrAo=
+github.com/kqzz/mcgo v0.2.83/go.mod h1:DXKHGjsnNM8bcvPEBZ258gFOzkhsaHq8eU+iNvsEkbo=
 github.com/mattn/go-colorable v0.1.8/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/pelletier/go-toml/v2 v2.0.0-beta.3 h1:PNCTU4naEJ8mKal97P3A2qDU74QRQGlv4FXiL1XDqi4=
