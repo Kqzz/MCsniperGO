@@ -157,3 +157,11 @@ func censor(str string, amt int) string {
 	}
 	return string(out)
 }
+
+func prettyAccType(acc mcgo.AccType) string {
+	return map[mcgo.AccType]string{
+		mcgo.Mj:   "mojang",
+		mcgo.Ms:   "microsoft",
+		mcgo.MsPr: "microsoft prename",
+	}[acc] + " account"
+}

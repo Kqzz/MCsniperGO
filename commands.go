@@ -99,7 +99,7 @@ func snipeCommand(targetName string, offset float64) {
 			}
 		}
 
-		logInfo(fmt.Sprintf("Acc Type: %v | Bearer: %v", acc.Type, censor(acc.Bearer, 260)))
+		logInfo(fmt.Sprintf("Acc Type: %v | Bearer: %v", prettyAccType(acc.Type), censor(acc.Bearer, 260)))
 	}
 
 	fmt.Print("\n")
@@ -115,7 +115,7 @@ func snipeCommand(targetName string, offset float64) {
 	var resps []mcgo.NameChangeReturn
 
 	for time.Now().Before(changeTime.Add(-time.Second * 40)) {
-		color.Printf("sniping in <fg=blue>%vs</>       \r", time.Until(droptime).Round(time.Second).Seconds())
+		color.Printf("sniping in <fg=blue>%s</>       \r", time.Until(droptime).Round(time.Second))
 		time.Sleep(time.Second * 1)
 	}
 
