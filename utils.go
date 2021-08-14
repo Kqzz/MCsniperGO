@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/kqzz/mcgo"
 )
@@ -185,4 +186,8 @@ func countAccounts(accounts []*mcgo.MCaccount) (int, int) {
 		}
 	}
 	return normCount, prenameCount
+}
+
+func fmtTimestamp(timestamp time.Time) string {
+	return timestamp.Format("15:04:05.999")
 }

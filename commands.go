@@ -159,11 +159,11 @@ func snipeCommand(targetName string, offset float64) {
 	wg.Wait()
 
 	for _, resp := range resps {
-		logInfo(fmt.Sprintf("sent @ %v", resp.SendTime))
+		logInfo(fmt.Sprintf("sent @ %v", fmtTimestamp(resp.SendTime)))
 	}
 
 	for _, resp := range resps {
-		logInfo(fmt.Sprintf("[%v] recv @ %v", resp.StatusCode, resp.ReceiveTime))
+		logInfo(fmt.Sprintf("[%v] received @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime)))
 		if resp.StatusCode < 300 {
 			logSuccess(fmt.Sprintf("sniped %v onto %v", resp.Username, resp.Account.Email))
 			logInfo("if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
