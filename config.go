@@ -21,6 +21,7 @@ type ConfigStruct struct {
 		MaxAccounts        int `toml:"max_accounts"`
 		PrenameMaxAccounts int `toml:"prename_max_accounts"`
 		StartAuth          int `toml:"start_auth"`
+		AuthDelay          int `toml:"auth_delay"`
 	} `toml:"accounts"`
 	Skin struct {
 		ChangeSkinOnSnipe bool   `toml:"change_skin_on_snipe"`
@@ -38,8 +39,7 @@ type ConfigStruct struct {
 }
 
 const (
-	defaultConfigString = `
-	[sniper]
+	defaultConfigString = `[sniper]
 timing_system_preference = "star.shopping"
 cycle_timing_systems = true # Go through each timing system until droptime is successfully grabbed
 auto_claim_namemc = false
@@ -54,6 +54,7 @@ max_accounts = 1
 prename_max_accounts = 10
 
 start_auth = 720 # start auth 720 minutes before drop
+auth_delay = 1 # time between acc auth
 
 [skin]
 change_skin_on_snipe = false

@@ -103,6 +103,7 @@ func snipeCommand(targetName string, offset float64) {
 				logSuccess(fmt.Sprintf("successfully authenticated %v", acc.Email))
 				authedAccounts = append(authedAccounts, acc)
 			}
+			time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Second)
 		}
 
 		logInfo(fmt.Sprintf("Acc Type: %v | Bearer: %v", prettyAccType(acc.Type), censor(acc.Bearer, 260)))
