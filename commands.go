@@ -47,8 +47,14 @@ func snipeCommand(targetName string, offset float64) {
 		return
 	}
 
-	if len(accounts) > 1 {
-		logWarn("Using more than 1 account is not recommended")
+	normCount, prenameCount := countAccounts(accounts)
+
+	if normCount > 1 {
+		logWarn("using more than one normal account is useless")
+	}
+
+	if prenameCount > 10 {
+		logWarn("using more than 10 prename accounts is useless")
 	}
 
 	if targetName == "" {

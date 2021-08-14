@@ -89,7 +89,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 					}
 				}
 			default:
-				return account, fmt.Errorf("invalid split count of %v", len(strSplit))
+				return account, fmt.Errorf("invalid split count of %v on line: %v", len(strSplit), accStr)
 			}
 		}
 	case mcgo.Ms, mcgo.MsPr:
@@ -109,6 +109,9 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 func loadAccSlice(accSlice []string) []*mcgo.MCaccount {
 	var accounts []*mcgo.MCaccount
 	for i, accStr := range accSlice {
+		if accStr == "" {
+			continue
+		}
 		acc, err := loadAccStr(accStr)
 		if err != nil {
 			if !errors.Is(err, errAccIgnored) {
@@ -164,4 +167,22 @@ func prettyAccType(acc mcgo.AccType) string {
 		mcgo.Ms:   "microsoft",
 		mcgo.MsPr: "microsoft prename",
 	}[acc] + " account"
+}
+
+func countAccounts(accounts []*mcgo.MCaccount) (int, int) {
+	normCount := 0
+	prenameCount := 0
+	for _, acc := range accounts {
+		switch acc.Type {
+		case mcgo.Mj, mcgo.Ms:
+			{
+				normCount += 1
+			}
+		case mcgo.MsPr:
+			{
+				prenameCount += 1
+			}
+		}
+	}
+	return normCount, prenameCount
 }
