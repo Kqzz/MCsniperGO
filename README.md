@@ -36,10 +36,12 @@ go run .
 
 You have to put accounts in accounts.txt before sniping, so follow the format shown below to add your accounts
 
-> in the code block shown below, replace any words fully capitalized with actual values, just leave the other words as is.
+> **in the code block shown below, replace any words fully capitalized with actual values, just leave the other words as is.**
 
 ```txt
 # You can comment out lines by including a # at the start
+# !! IMPORTANT !! ONLY REPLACE THE CAPITALIZED WORDS WITH THE CORRECT VALUE, EVERYTHING ELSE IS A "FLAG" FOR THE SNIPER TO KNOW WHAT TO DO WITH THE ACCOUNT.
+# for example, for a prename snipe with manual bearer, do BEARERHERE:bearer:prename and DO NOT REPLACE "bearer" or "prename" with anything.
 
 ## MOJANG ACCOUNT
 
