@@ -120,7 +120,7 @@ func snipeCommand(targetName string, offset float64) {
 	var wg sync.WaitGroup
 	var resps []mcgo.NameChangeReturn
 
-	for time.Now().Before(changeTime.Add(-time.Second * 40)) {
+	for time.Now().Before(changeTime.Add(-time.Second * 20)) {
 		color.Printf("sniping in <fg=blue>%s</>       \r", time.Until(droptime).Round(time.Second))
 		time.Sleep(time.Second * 1)
 	}
