@@ -59,7 +59,7 @@ auth_delay = 1 # time between acc auth
 [skin]
 change_skin_on_snipe = false
 skin_change_type = "url"
-skin = "" # this value depends onn the skin_change_type value
+skin = "" # this value depends on the skin_change_type value
 
 [announce]
 mcsnipergo_announce_code = "" # leave blank to not announce snipe
