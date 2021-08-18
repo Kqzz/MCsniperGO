@@ -91,6 +91,7 @@ func snipeCommand(targetName string, offset float64) {
 		if acc.Bearer != "" {
 			logSuccess(fmt.Sprintf("successfully authenticated %v thru manual bearer", acc.Email))
 			logWarn("There are no guarentees that this bearer is correct, as it was manually inputted.")
+			authedAccounts = append(authedAccounts, acc)
 		} else {
 			if acc.Type == mcgo.Mj {
 				authErr = acc.MojangAuthenticate()
