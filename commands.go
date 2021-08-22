@@ -161,7 +161,15 @@ func snipeCommand(targetName string, offset float64) {
 
 	wg.Wait()
 
-	logsSlice := []string{}
+	logsSlice := []string{
+		"accounts",
+	}
+
+	for _, acc := range accounts {
+		logsSlice = append(logsSlice, formatAccount(acc))
+	}
+
+	logsSlice = append(logsSlice, "logs")
 
 	for _, resp := range resps {
 		logInfo(fmt.Sprintf("sent @ %v", fmtTimestamp(resp.SendTime)))
