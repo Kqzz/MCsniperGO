@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -160,12 +161,24 @@ func snipeCommand(targetName string, offset float64) {
 
 	wg.Wait()
 
+	logsSlice := []string{
+		"accounts",
+	}
+
+	for _, acc := range accounts {
+		logsSlice = append(logsSlice, formatAccount(acc))
+	}
+
+	logsSlice = append(logsSlice, "logs")
+
 	for _, resp := range resps {
 		logInfo(fmt.Sprintf("sent @ %v", fmtTimestamp(resp.SendTime)))
+		logsSlice = append(logsSlice, fmt.Sprintf("sent @ %v", fmtTimestamp(resp.SendTime)))
 	}
 
 	for _, resp := range resps {
 		logInfo(fmt.Sprintf("[%v] received @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime)))
+		logsSlice = append(logsSlice, fmt.Sprintf("[%v] received @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime)))
 		if resp.StatusCode < 300 {
 			logSuccess(fmt.Sprintf("sniped %v onto %v", resp.Username, resp.Account.Email))
 			logInfo("if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
@@ -181,6 +194,22 @@ func snipeCommand(targetName string, offset float64) {
 	}
 
 	fmt.Print("\n")
+
+	if !fileExists("logs") {
+		err = os.Mkdir("logs", 0755)
+		if err != nil {
+			logFatal(fmt.Sprintf("Failed to create logs folder: %v", err))
+		}
+	}
+
+	logFile, err := os.OpenFile(fmt.Sprintf("logs/%v.txt", targetName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		logFatal(fmt.Sprintf("Failed to create log file: %v", err))
+	}
+
+	defer logFile.Close()
+
+	logFile.WriteString(strings.Join(logsSlice, "\n"))
 
 }
 

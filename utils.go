@@ -191,3 +191,7 @@ func countAccounts(accounts []*mcgo.MCaccount) (int, int) {
 func fmtTimestamp(timestamp time.Time) string {
 	return timestamp.Format("15:04:05.999")
 }
+
+func formatAccount(account *mcgo.MCaccount) string {
+	return fmt.Sprintf("%v:%v | Type: %v", account.Email, account.Password, prettyAccType(account.Type))
+}
