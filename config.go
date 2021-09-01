@@ -10,12 +10,12 @@ import (
 
 type ConfigStruct struct {
 	Sniper struct {
-		TimingSystemPreference string `toml:"timing_system_preference"`
-		CycleTimingSystems     bool   `toml:"cycle_timing_systems"`
-		AutoClaimNamemc        bool   `toml:"auto_claim_namemc"`
-		SnipeRequests          int    `toml:"snipe_requests"`
-		PrenameRequests        int    `toml:"prename_requests"`
-		Spread                 int    `toml:"spread"`
+		TimingSystemPreference string  `toml:"timing_system_preference"`
+		CycleTimingSystems     bool    `toml:"cycle_timing_systems"`
+		AutoClaimNamemc        bool    `toml:"auto_claim_namemc"`
+		SnipeRequests          int     `toml:"snipe_requests"`
+		PrenameRequests        int     `toml:"prename_requests"`
+		Spread                 float64 `toml:"spread"`
 	} `toml:"sniper"`
 	Accounts struct {
 		MaxAccounts        int `toml:"max_accounts"`

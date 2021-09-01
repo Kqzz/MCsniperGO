@@ -144,9 +144,9 @@ func snipeCommand(targetName string, offset float64) {
 			if acc.Type == mcgo.MsPr {
 				prename = true
 			}
+			spread := float64(totalReqCount) * config.Sniper.Spread
 			go func() {
 				defer wg.Done()
-				spread := totalReqCount * config.Sniper.Spread
 				resp, err := acc.ChangeName(targetName, changeTime.Add(time.Millisecond*time.Duration(spread)), prename)
 
 				if err != nil {
@@ -188,6 +188,16 @@ func snipeCommand(targetName string, offset float64) {
 					logErr(fmt.Sprintf("failed to claim namemc: %v", err))
 				} else {
 					logInfo(fmt.Sprintf("namemc claim url: <fg=blue;op=underline>%v</>", claimUrl))
+				}
+			}
+
+			if config.Announce.McsnipergoAnnounceCode != "" {
+				err := announceSnipe(targetName, config.Announce.McsnipergoAnnounceCode, &resp.Account)
+
+				if err != nil {
+					logSuccess("announced snipe!")
+				} else {
+					logErr(fmt.Sprintf("failed to announce snipe: %v", err))
 				}
 			}
 		}

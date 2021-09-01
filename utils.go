@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -194,4 +195,45 @@ func fmtTimestamp(timestamp time.Time) string {
 
 func formatAccount(account *mcgo.MCaccount) string {
 	return fmt.Sprintf("%v:%v | Type: %v", account.Email, account.Password, prettyAccType(account.Type))
+}
+
+func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
+	prename := "false"
+	if account.Type == mcgo.MsPr {
+		prename = "true"
+	}
+	url := fmt.Sprintf("http://api.mcsniperpy.com/announce?username=%v&prename=%v", username, prename)
+
+	req, err := http.NewRequest("POST", url, nil)
+
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", auth)
+
+	res, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	switch res.StatusCode {
+	case 401:
+		{
+			return errors.New("invalid auth code")
+		}
+	case 429:
+		{
+			return errors.New("too many requests (ask staff to manually announce)")
+		}
+	}
+
+	if res.StatusCode != 204 {
+		logErr(fmt.Sprintf("got unknown status code while announcing snipe: %v", res.StatusCode))
+	}
+
+	return nil
 }
