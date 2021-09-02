@@ -47,7 +47,7 @@ auto_claim_namemc = false
 snipe_requests = 2 # requests to be sent per acc for normal sniping
 prename_requests = 6 # requests to be sent per acc for prename sniping
 
-spread = 5 # delay between requests in milliseconds
+spread = 5.0 # delay between requests in milliseconds
 
 [accounts]
 max_accounts = 1
