@@ -190,7 +190,7 @@ func countAccounts(accounts []*mcgo.MCaccount) (int, int) {
 }
 
 func fmtTimestamp(timestamp time.Time) string {
-	return timestamp.Format("15:04:05.999")
+	return timestamp.Format("15:04:05.9999")
 }
 
 func formatAccount(account *mcgo.MCaccount) string {
@@ -202,7 +202,7 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 	if account.Type == mcgo.MsPr {
 		prename = "true"
 	}
-	url := fmt.Sprintf("http://api.mcsniperpy.com/announce?username=%v&prename=%v", username, prename)
+	url := fmt.Sprintf("https://api.mcsniperpy.com/announce?username=%v&prename=%v", username, prename)
 
 	req, err := http.NewRequest("POST", url, nil)
 
@@ -236,4 +236,17 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 	}
 
 	return nil
+}
+
+func removeAccount(slice []*mcgo.MCaccount, s int) []*mcgo.MCaccount {
+	return append(slice[:s], slice[s+1:]...)
+}
+
+func findAccByEmail(accounts []*mcgo.MCaccount, account *mcgo.MCaccount) int {
+	for i, acc := range accounts {
+		if acc.Email == account.Email {
+			return i
+		}
+	}
+	return -1
 }

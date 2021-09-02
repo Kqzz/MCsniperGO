@@ -91,8 +91,16 @@ func snipeCommand(targetName string, offset float64) {
 		var authErr error
 		if acc.Bearer != "" {
 			logSuccess(fmt.Sprintf("successfully authenticated %v thru manual bearer", acc.Email))
-			logWarn("There are no guarentees that this bearer is correct, as it was manually inputted.")
-			authedAccounts = append(authedAccounts, acc)
+			if acc.Type != mcgo.MsPr {
+				loadAccErr := acc.LoadAccountInfo()
+				if loadAccErr != nil {
+					logErr("failed to load account info! invalid bearer, most likely.")
+				} else {
+					authedAccounts = append(authedAccounts, acc)
+				}
+			} else {
+				logWarn("There are no guarentees that this bearer is correct, as it was manually inputted.")
+			}
 		} else {
 			if acc.Type == mcgo.Mj {
 				authErr = acc.MojangAuthenticate()
@@ -106,6 +114,24 @@ func snipeCommand(targetName string, offset float64) {
 				authedAccounts = append(authedAccounts, acc)
 			}
 			time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Second)
+		}
+
+		if acc.Type != mcgo.MsPr {
+			ncStatus, ncStatusErr := acc.NameChangeInfo()
+			if ncStatusErr != nil {
+				logWarn(fmt.Sprintf("failed to get name change info: %v", ncStatusErr))
+			}
+			if !ncStatus.Namechangeallowed {
+				logErr(fmt.Sprintf("%v is not allowed to name change!", acc.Username))
+				if acc.Email != "" {
+					accounts = removeAccount(accounts, findAccByEmail(accounts, acc))
+					// this might not work idk
+				} else {
+					logWarn("cannot remove acc due to manual bearer mode")
+				}
+			} else {
+				logSuccess(fmt.Sprintf("verified that %v can name change", acc.Email))
+			}
 		}
 
 		logInfo(fmt.Sprintf("Acc Type: %v | Bearer: %v", prettyAccType(acc.Type), censor(acc.Bearer, 260)))
