@@ -221,9 +221,9 @@ func snipeCommand(targetName string, offset float64) {
 				err := announceSnipe(targetName, config.Announce.McsnipergoAnnounceCode, &resp.Account)
 
 				if err != nil {
-					logSuccess("announced snipe!")
-				} else {
 					logErr(fmt.Sprintf("failed to announce snipe: %v", err))
+				} else {
+					logSuccess("announced snipe!")
 				}
 			}
 		}
