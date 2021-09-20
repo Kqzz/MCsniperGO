@@ -152,17 +152,6 @@ func fileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func censor(str string, amt int) string {
-	out := []rune(str)
-	for i := range out {
-		if i >= amt && amt >= 0 {
-			break
-		}
-		out[i] = '*'
-	}
-	return string(out)
-}
-
 func prettyAccType(acc mcgo.AccType) string {
 	return map[mcgo.AccType]string{
 		mcgo.Mj:   "mojang",
@@ -238,15 +227,69 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 	return nil
 }
 
-func removeAccount(slice []*mcgo.MCaccount, s int) []*mcgo.MCaccount {
-	return append(slice[:s], slice[s+1:]...)
+func accID(acc *mcgo.MCaccount) string {
+	if acc.Email != "" {
+		return acc.Email
+	}
+
+	if acc.Bearer != "" {
+		return acc.Bearer[len(acc.Bearer)-10:]
+	}
+
+	return "<unknown account>"
 }
 
-func findAccByEmail(accounts []*mcgo.MCaccount, account *mcgo.MCaccount) int {
-	for i, acc := range accounts {
-		if acc.Email == account.Email {
-			return i
+func authAccount(acc *mcgo.MCaccount) error {
+	// authenticating if bearer isn't loaded
+	if acc.Bearer == "" {
+		switch acc.Type {
+		case mcgo.MsPr, mcgo.Ms:
+			{
+				err := acc.MicrosoftAuthenticate()
+				if err != nil {
+					return err
+				}
+				logInfo("authing %s through ms auth", accID(acc))
+			}
+		case mcgo.Mj:
+			{
+				err := acc.MojangAuthenticate()
+				if err != nil {
+					return err
+				}
+				logInfo("authing %s through mojang auth", accID(acc))
+			}
+		}
+	} else {
+		logInfo("authing %s through manual bearer", accID(acc))
+	}
+
+	return nil
+}
+
+func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
+	switch acc.Type {
+	case mcgo.MsPr:
+		{
+			canCreateProfile, err := acc.HasGcApplied()
+
+			if err != nil {
+				return false, err
+			}
+
+			return canCreateProfile, nil
+		}
+	case mcgo.Mj, mcgo.Ms:
+		{
+			nameChangeInfo, err := acc.NameChangeInfo()
+
+			if err != nil {
+				return false, err
+			}
+
+			return nameChangeInfo.Namechangeallowed, nil
+
 		}
 	}
-	return -1
+	return false, nil
 }

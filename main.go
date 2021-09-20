@@ -14,7 +14,7 @@ func main() {
 		Name:  "MCsniperGO",
 		Usage: "mcsnipergo",
 		Action: func(c *cli.Context) error {
-			snipeCommand("", 0)
+			snipeCommand("", -10000)
 			userInput("press enter to exit")
 			return nil
 		},
@@ -38,7 +38,7 @@ func main() {
 						Name:    "offset",
 						Aliases: []string{"o", "delay", "time-offset"},
 						Usage:   "snipe x ms early",
-						Value:   0,
+						Value:   -10000,
 					},
 				},
 			},
