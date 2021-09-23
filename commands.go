@@ -102,7 +102,14 @@ func snipeCommand(targetName string, offset float64) {
 		if canSnipe {
 			logSuccess("verified that %v can snipe", accID(acc))
 			authedAccounts = append(authedAccounts, acc)
+		} else {
+			logErr("%v not ready to snipe", accID(acc))
 		}
+	}
+
+	if len(authedAccounts) == 0 {
+		logFatal("no accounts successfully authenticated!")
+		return
 	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
@@ -164,7 +171,7 @@ func snipeCommand(targetName string, offset float64) {
 	}
 
 	for _, resp := range resps {
-		logInfo("[%v] received @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime))
+		logInfo("[%v] received @ %v", prettyStatus(resp.StatusCode), fmtTimestamp(resp.ReceiveTime))
 		logsSlice = append(logsSlice, fmt.Sprintf("[%v] received @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime)))
 		if resp.StatusCode < 300 {
 			logSuccess("sniped %v onto %v", resp.Username, resp.Account.Email)

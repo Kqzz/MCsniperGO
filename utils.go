@@ -249,7 +249,7 @@ func authAccount(acc *mcgo.MCaccount) error {
 				if err != nil {
 					return err
 				}
-				logInfo("authing %s through ms auth", accID(acc))
+				logInfo("authenticating %s through ms auth", accID(acc))
 			}
 		case mcgo.Mj:
 			{
@@ -257,7 +257,7 @@ func authAccount(acc *mcgo.MCaccount) error {
 				if err != nil {
 					return err
 				}
-				logInfo("authing %s through mojang auth", accID(acc))
+				logInfo("authenticating %s through mojang auth", accID(acc))
 			}
 		}
 	} else {
@@ -292,4 +292,12 @@ func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+func prettyStatus(status int) string {
+	color := "red"
+	if status < 300 {
+		color = "green"
+	}
+	return fmt.Sprintf("<fg=%v;op=underscore>%v</>", color, status)
 }
