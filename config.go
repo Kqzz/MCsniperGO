@@ -18,8 +18,6 @@ type ConfigStruct struct {
 		Spread                 float64 `toml:"spread"`
 	} `toml:"sniper"`
 	Accounts struct {
-		MaxAccounts        int `toml:"max_accounts"`
-		PrenameMaxAccounts int `toml:"prename_max_accounts"`
 		StartAuth          int `toml:"start_auth"`
 		AuthDelay          int `toml:"auth_delay"`
 	} `toml:"accounts"`
@@ -50,10 +48,7 @@ prename_requests = 6 # requests to be sent per acc for prename sniping
 spread = 5.0 # delay between requests in milliseconds
 
 [accounts]
-max_accounts = 1
-prename_max_accounts = 10
-
-start_auth = 720 # start auth 720 minutes before drop
+start_auth = 15 # start auth 720 minutes before drop
 auth_delay = 1 # time between acc auth
 
 [skin]

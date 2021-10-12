@@ -83,7 +83,7 @@ func snipeCommand(targetName string, offset float64) {
 
 	logInfo("Sniping %v at %v\n", targetName, droptime.Format("2006/01/02 15:04:05"))
 
-	time.Sleep(time.Until(droptime.Add(-time.Hour * 8))) // sleep until 8 hours before droptime
+	time.Sleep(time.Until(droptime.Add(-time.Minute * time.Duration(config.Accounts.StartAuth)))) // sleep until 8 hours before droptime
 
 	var authedAccounts []*mcgo.MCaccount
 
