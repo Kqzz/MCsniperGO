@@ -294,6 +294,10 @@ func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
 	return false, nil
 }
 
+func estimatedProcess(send, recv time.Time) time.Time {
+	return time.UnixMilli((send.UnixMilli()+recv.UnixMilli())/2)
+}
+
 func prettyStatus(status int) string {
 	color := "red"
 	if status < 300 {
