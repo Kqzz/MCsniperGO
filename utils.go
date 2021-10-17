@@ -117,7 +117,7 @@ func loadAccSlice(accSlice []string) []*mcgo.MCaccount {
 		acc, err := loadAccStr(accStr)
 		if err != nil {
 			if !errors.Is(err, errAccIgnored) {
-				logErr(fmt.Sprintf(`got error "%v" while loading acc on line %v`, err, i+1))
+				logErr(`got error "%v" while loading acc on line %v`, err, i+1)
 			}
 			continue
 		}
@@ -221,7 +221,7 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 	}
 
 	if res.StatusCode != 204 {
-		logErr(fmt.Sprintf("got unknown status code while announcing snipe: %v", res.StatusCode))
+		logErr("got unknown status code while announcing snipe: %v", res.StatusCode)
 	}
 
 	return nil
