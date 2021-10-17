@@ -101,8 +101,8 @@ func getDroptime(username, preference string) (time.Time, error) {
 	for _, api := range apisToUse {
 		droptime, err := api(username)
 		if err != nil {
-			logErr("failed to grab droptime: %v", err)
-			logInfo("trying next API")
+			log("failed to grab droptime: %v", 2, err)
+			log("trying next API", 0)
 			time.Sleep(time.Second * 1)
 			continue
 		}

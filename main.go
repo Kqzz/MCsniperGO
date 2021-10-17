@@ -8,8 +8,14 @@ import (
 )
 
 var accounts []*mcgo.MCaccount
+var presets = make(map[int]string)
 
 func main() {
+	presets[0] = "<fg=white>[</><fg=cyan;op=bold>info</><fg=white>]</>"     //Info
+	presets[1] = "<fg=white>[</><fg=green;op=bold>success</><fg=white>]</>" //Succcess
+	presets[2] = "<fg=white>[</><fg=red;op=bold>err</><fg=white>]</>"       //Error
+	presets[3] = "<fg=white>[</><fg=yellow;op=bold>warn</><fg=white>]</>"   //Warn
+	presets[4] = "<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</>" //Fatal
 	app := &cli.App{
 		Name:  "MCsniperGO",
 		Usage: "mcsnipergo",
@@ -56,6 +62,6 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		logFatal(err.Error())
+		log(err.Error(), 2)
 	}
 }
