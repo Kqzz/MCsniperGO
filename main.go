@@ -8,14 +8,8 @@ import (
 )
 
 var accounts []*mcgo.MCaccount
-var logType = make(map[string]string)
 
 func main() {
-	logType["success"] = "<fg=white>[</><fg=green;op=bold>success</><fg=white>]</>"
-	logType["info"] = "<fg=white>[</><fg=cyan;op=bold>info</><fg=white>]</>"
-	logType["warn"] = "<fg=white>[</><fg=yellow;op=bold>warn</><fg=white>]</>"
-	logType["error"] = "<fg=white>[</><fg=red;op=bold>err</><fg=white>]</>"
-	logType["fatal"] = "<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</>"
 	app := &cli.App{
 		Name:  "MCsniperGO",
 		Usage: "mcsnipergo",

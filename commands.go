@@ -14,7 +14,6 @@ import (
 
 func snipeCommand(targetName string, offset float64) {
 	color.Printf(genHeader())
-	log("test", "error")
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
