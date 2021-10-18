@@ -117,7 +117,7 @@ func loadAccSlice(accSlice []string) []*mcgo.MCaccount {
 		acc, err := loadAccStr(accStr)
 		if err != nil {
 			if !errors.Is(err, errAccIgnored) {
-				logErr(`got error "%v" while loading acc on line %v`, err, i+1)
+				log(`got error "%v" while loading acc on line %v`, "error", err, i+1)
 			}
 			continue
 		}
@@ -221,7 +221,7 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 	}
 
 	if res.StatusCode != 204 {
-		logErr("got unknown status code while announcing snipe: %v", res.StatusCode)
+		log("got unknown status code while announcing snipe: %v", "error", res.StatusCode)
 	}
 
 	return nil
@@ -249,7 +249,7 @@ func authAccount(acc *mcgo.MCaccount) error {
 				if err != nil {
 					return err
 				}
-				logInfo("authenticating %s through ms auth", accID(acc))
+				log("authenticating %s through ms auth", "info", accID(acc))
 			}
 		case mcgo.Mj:
 			{
@@ -257,11 +257,11 @@ func authAccount(acc *mcgo.MCaccount) error {
 				if err != nil {
 					return err
 				}
-				logInfo("authenticating %s through mojang auth", accID(acc))
+				log("authenticating %s through mojang auth", "info", accID(acc))
 			}
 		}
 	} else {
-		logInfo("authing %s through manual bearer", accID(acc))
+		log("authing %s through manual bearer", "info", accID(acc))
 	}
 
 	return nil
@@ -295,7 +295,7 @@ func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
 }
 
 func estimatedProcess(send, recv time.Time) time.Time {
-	return time.UnixMilli((send.UnixMilli()+recv.UnixMilli())/2)
+	return time.UnixMilli((send.UnixMilli() + recv.UnixMilli()) / 2)
 }
 
 func prettyStatus(status int) string {

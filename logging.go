@@ -9,24 +9,8 @@ import (
 	"github.com/gookit/color"
 )
 
-func logInfo(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=cyan;op=bold>info</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logSuccess(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=green;op=bold>success</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logErr(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=red;op=bold>err</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logWarn(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=yellow;op=bold>warn</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logFatal(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
+func log(m string, t string, params ...interface{}) {
+	color.Printf((logType[t] + " » " + "%s\n"), fmt.Sprintf(m, params...))
 }
 
 func userInput(m string, params ...interface{}) string {
