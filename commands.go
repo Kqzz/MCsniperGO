@@ -162,6 +162,8 @@ func snipeCommand(targetName string, offset float64) {
 	for _, acc := range accounts {
 		logsSlice = append(logsSlice, formatAccount(acc))
 	}
+	
+	logsSlice = append(logsSlice, fmt.Sprintf("offset = %v",offset))
 
 	logsSlice = append(logsSlice, "logs")
 
