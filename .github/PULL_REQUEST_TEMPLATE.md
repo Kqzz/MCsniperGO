@@ -1,5 +1,7 @@
 # Pull Request
-<!-- Thanks for contributing to MCsniperGO! Please fill this out so the PR can be merged faster. -->
+<!-- Thanks for contributing to MCsniperGO! Please fill this out so the PR can be merged faster. 
+If this is a minor PR, don't bother with the template. Just CTRL-A + backspace and fill out as you wish.
+-->
 
 ## PR status
 <!-- This section has checkboxes for the status of the PR. Update them, add some, or remove some as needed. -->

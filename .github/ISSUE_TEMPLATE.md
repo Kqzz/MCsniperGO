@@ -4,6 +4,9 @@ Something went wrong and should be reported.
 All text put inside < !-- and -- > (spaces on bigger side removed) are not visible when submitted.
 Don't put any text for the actual bug report inside these.
 Check to make sure this isn't a duplicate issue.
+
+If you feel like this issue template is pointless for your issue (i.e. too small to put in it's own issue) just press CTRL-A and delete all the content.
+This is only a suggestion for how it should be done, you do not need to abide by it.
 -->
 
 ## Description
