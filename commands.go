@@ -219,6 +219,33 @@ func snipeCommand(targetName string, offset float64) error{
 
 	return nil
 }
+func autoSnipeCommand(offset float64) error{
+	for{
+		nameSlice, err := getNext3c()
+		if err != nil {
+			return err
+		}
+		for _, i := range nameSlice{
+
+			if offset == -10000 {
+				var offsetStr string
+				var offsetErr error
+
+				for offsetStr == "" || offsetErr != nil {
+					offsetStr = userInput("offset")
+					offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
+					if offsetErr != nil {
+						logErr("%v is not a valid number", offsetStr)
+					}
+				}
+			}
+			err = snipeCommand(i.Name,offset)
+			if err != nil {
+				return err
+			}
+		}
+	}
+}	
 func pingCommand() {
 	logInfo("Coming soon™")
 }
