@@ -111,3 +111,31 @@ func getDroptime(username, preference string) (time.Time, error) {
 
 	return time.Time{}, errors.New("failed to grab droptime from all APIs")
 }
+
+type next3RespStruct struct {
+	Name string `json:"name"`
+}
+func getNext3c() ([]next3RespStruct, error){
+	resp, err := http.Get("http://api.coolkidmacho.com/three")
+
+	if err != nil {
+		return []next3RespStruct{}, err
+	}
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return []next3RespStruct{}, err
+	}
+	
+	if resp.StatusCode < 300 {
+		var respSlice []next3RespStruct
+		err = json.Unmarshal(respBytes, &respSlice)
+		if err != nil {
+			return []next3RespStruct{}, err
+		}
+		return respSlice, nil
+	}
+	return []next3RespStruct{}, fmt.Errorf("failed to grab next 3c with status %v and body \"%v\"", resp.Status, string(respBytes))
+
+}
