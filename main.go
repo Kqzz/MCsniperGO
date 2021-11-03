@@ -30,7 +30,7 @@ func main() {
 				Usage:   "start MCsniperGO",
 				Action: func(c *cli.Context) error {
 					color.Printf(genHeader())
-					err := snipeCommand("", -10000)
+					err := snipeCommand(c.String("username"), c.Float64("offset"))
 					if err != nil{
 						logFatal(err.Error())
 					}
