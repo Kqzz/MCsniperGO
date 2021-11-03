@@ -12,13 +12,12 @@ import (
 	"github.com/kqzz/mcgo"
 )
 
-func snipeCommand(targetName string, offset float64) {
-	color.Printf(genHeader())
+func snipeCommand(targetName string, offset float64) error{
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
 			logFatal("while creating accounts.txt, %s", err.Error())
-			return
+			return err
 		} else {
 			logInfo("created accounts.txt, please restart the sniper once accounts are added!")
 		}
@@ -32,20 +31,21 @@ func snipeCommand(targetName string, offset float64) {
 
 	if err != nil {
 		logFatal("error while getting config, %v", err)
-		return
+		return err
 	}
 
 	accStrs, err := readLines("accounts.txt")
 	if err != nil {
 		logFatal(err.Error())
-		return
+		return err
 	}
 
 	accounts = loadAccSlice(accStrs)
 
 	if len(accounts) < 1 {
-		logFatal("Please put one account in the accounts.txt file!")
-		return
+		err := fmt.Errorf("Please put one account in the accounts.txt file!")
+		return err
+		
 	}
 
 	normCount, prenameCount := countAccounts(accounts)
@@ -78,10 +78,10 @@ func snipeCommand(targetName string, offset float64) {
 	droptime, err := getDroptime(targetName, config.Sniper.TimingSystemPreference)
 	if err != nil {
 		logFatal(err.Error())
-		return
+		return err
 	}
 
-	logInfo("Sniping %v at %v\n", targetName, droptime.Format("2006/01/02 15:04:05"))
+	logInfo("Sniping %v at %v with %vms offset\n", targetName, droptime.Format("2006/01/02 15:04:05"),offset)
 
 	time.Sleep(time.Until(droptime.Add(-time.Minute * time.Duration(config.Accounts.StartAuth)))) // sleep until 8 hours before droptime
 
@@ -108,8 +108,8 @@ func snipeCommand(targetName string, offset float64) {
 	}
 
 	if len(authedAccounts) == 0 {
-		logFatal("no accounts successfully authenticated!")
-		return
+		err := fmt.Errorf("no accounts successfully authenticated!")
+		return err
 	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
@@ -217,8 +217,8 @@ func snipeCommand(targetName string, offset float64) {
 
 	logFile.WriteString(strings.Join(logsSlice, "\n"))
 
+	return nil
 }
-
 func pingCommand() {
 	logInfo("Coming soon™")
 }
