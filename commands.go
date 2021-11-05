@@ -239,9 +239,13 @@ func autoSnipeCommand(offset float64) error{
 					}
 				}
 			}
-			err = snipeCommand(i.Name,offset)
-			if err != nil {
-				return err
+			_, err = starShoppingDroptime(i.Name)
+			if err == nil{
+				err = snipeCommand(i.Name,offset)
+				if err != nil {
+					return err
+				}
+
 			}
 		}
 	}
