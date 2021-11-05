@@ -245,7 +245,6 @@ func autoSnipeCommand(offset float64) error{
 				if err != nil {
 					return err
 				}
-
 			}
 		}
 	}
