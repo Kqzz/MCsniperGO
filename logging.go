@@ -17,7 +17,7 @@ var logType = map[string]string{
 	"fatal":   "<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</>",
 }
 
-func log(m string, t string, params ...interface{}) {
+func log(t, m string, params ...interface{}) {
 	color.Printf((logType[t] + " » " + "%s\n"), fmt.Sprintf(m, params...))
 }
 
