@@ -88,6 +88,6 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		logFatal(err.Error())
+		log("fatal", err.Error())
 	}
 }

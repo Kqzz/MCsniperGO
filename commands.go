@@ -16,10 +16,10 @@ func snipeCommand(targetName string, offset float64) error{
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
-			logFatal("while creating accounts.txt, %s", err.Error())
-			return err
+			log("fatal", "while creating accounts.txt, %s", err.Error())
+      return err
 		} else {
-			logInfo("created accounts.txt, please restart the sniper once accounts are added!")
+			log("info", "created accounts.txt, please restart the sniper once accounts are added!")
 		}
 	}
 
@@ -30,32 +30,30 @@ func snipeCommand(targetName string, offset float64) error{
 	config, err := getConfig()
 
 	if err != nil {
-		logFatal("error while getting config, %v", err)
+    log("fatal", "error while getting config, %v", err)
 		return err
 	}
 
 	accStrs, err := readLines("accounts.txt")
 	if err != nil {
-		logFatal(err.Error())
+    log("fatal", err.Error())
 		return err
 	}
 
 	accounts = loadAccSlice(accStrs)
 
 	if len(accounts) < 1 {
-		err := fmt.Errorf("Please put one account in the accounts.txt file!")
-		return err
-		
+		return fmt.Errorf("Please put one account in the accounts.txt file!")
 	}
 
 	normCount, prenameCount := countAccounts(accounts)
 
 	if normCount > 1 {
-		logWarn("using more than one normal account is useless")
+		log("warn", "using more than one normal account is useless")
 	}
 
 	if prenameCount > 10 {
-		logWarn("using more than 10 prename accounts is useless")
+		log("warn", "using more than 10 prename accounts is useless")
 	}
 
 	if targetName == "" {
@@ -70,18 +68,18 @@ func snipeCommand(targetName string, offset float64) error{
 			offsetStr = userInput("offset")
 			offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
 			if offsetErr != nil {
-				logErr("%v is not a valid number", offsetStr)
+				log("error", "%v is not a valid number", offsetStr)
 			}
 		}
 	}
 
 	droptime, err := getDroptime(targetName, config.Sniper.TimingSystemPreference)
 	if err != nil {
-		logFatal(err.Error())
+		log("fatal", err.Error()) // don't know if this line should be kept or not
 		return err
 	}
 
-	logInfo("Sniping %v at %v with %vms offset\n", targetName, droptime.Format("2006/01/02 15:04:05"),offset)
+	log("info", "Sniping %v at %v\n", targetName, droptime.Format("2006/01/02 15:04:05"))
 
 	time.Sleep(time.Until(droptime.Add(-time.Minute * time.Duration(config.Accounts.StartAuth)))) // sleep until 8 hours before droptime
 
@@ -89,27 +87,26 @@ func snipeCommand(targetName string, offset float64) error{
 
 	for _, acc := range accounts {
 		if authAccountErr := authAccount(acc); authAccountErr != nil {
-			logErr("failed to authenticate %v: %v", accID(acc), authAccountErr)
+			log("error", "failed to authenticate %v: %v", accID(acc), authAccountErr)
 		} else {
-			logSuccess("successfully authenticated %v", accID(acc))
+			log("success", "successfully authenticated %v", accID(acc))
 		}
 
 		canSnipe, canSnipeErr := accReadyToSnipe(acc)
 		if canSnipeErr != nil {
-			logErr("failed to verify that %v can snipe: %v", accID(acc), canSnipeErr)
+			log("error", "failed to verify that %v can snipe: %v", accID(acc), canSnipeErr)
 		}
 
 		if canSnipe {
-			logSuccess("verified that %v can snipe", accID(acc))
+			log("success", "verified that %v can snipe", accID(acc))
 			authedAccounts = append(authedAccounts, acc)
 		} else {
-			logErr("%v not ready to snipe", accID(acc))
+			log("error", "%v not ready to snipe", accID(acc))
 		}
 	}
 
 	if len(authedAccounts) == 0 {
-		err := fmt.Errorf("no accounts successfully authenticated!")
-		return err
+		return fmt.Errorf("no accounts successfully authenticated!")
 	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
@@ -144,7 +141,7 @@ func snipeCommand(targetName string, offset float64) error{
 				resp, err := acc.ChangeName(targetName, changeTime.Add(time.Millisecond*time.Duration(spread)), prename)
 
 				if err != nil {
-					logErr("encountered err on nc for %v: %v", acc.Email, err.Error())
+					log("error", "encountered err on nc for %v: %v", acc.Email, err.Error())
 				} else {
 					resps = append(resps, resp)
 				}
@@ -162,28 +159,28 @@ func snipeCommand(targetName string, offset float64) error{
 	for _, acc := range accounts {
 		logsSlice = append(logsSlice, formatAccount(acc))
 	}
-	
-	logsSlice = append(logsSlice, fmt.Sprintf("offset = %v",offset))
+
+	logsSlice = append(logsSlice, fmt.Sprintf("offset = %v", offset))
 
 	logsSlice = append(logsSlice, "logs")
 
 	for _, resp := range resps {
-		logInfo("sent @ %v", fmtTimestamp(resp.SendTime))
+		log("info", "sent @ %v", fmtTimestamp(resp.SendTime))
 		logsSlice = append(logsSlice, fmt.Sprintf("sent @ %v", fmtTimestamp(resp.SendTime)))
 	}
 
 	for _, resp := range resps {
-		logInfo("[%v] received @ %v | est process @ %v", prettyStatus(resp.StatusCode), fmtTimestamp(resp.ReceiveTime), fmtTimestamp(estimatedProcess(resp.SendTime, resp.ReceiveTime)))
+		log("info", "[%v] received @ %v | est process @ %v", prettyStatus(resp.StatusCode), fmtTimestamp(resp.ReceiveTime), fmtTimestamp(estimatedProcess(resp.SendTime, resp.ReceiveTime)))
 		logsSlice = append(logsSlice, fmt.Sprintf("[%v] received @ %v | est process @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime), fmtTimestamp(estimatedProcess(resp.SendTime, resp.ReceiveTime))))
 		if resp.StatusCode < 300 {
-			logSuccess("sniped %v onto %v", resp.Username, resp.Account.Email)
-			logInfo("if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
+			log("success", "sniped %v onto %v", resp.Username, resp.Account.Email)
+			log("info", "if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
 			if config.Sniper.AutoClaimNamemc {
 				claimUrl, err := resp.Account.ClaimNamemc()
 				if err != nil {
-					logErr("failed to claim namemc: %v", err)
+					log("error", "failed to claim namemc: %v", err)
 				} else {
-					logInfo("namemc claim url: <fg=blue;op=underline>%v</>", claimUrl)
+					log("info", "namemc claim url: <fg=blue;op=underline>%v</>", claimUrl)
 				}
 			}
 
@@ -191,9 +188,9 @@ func snipeCommand(targetName string, offset float64) error{
 				err := announceSnipe(targetName, config.Announce.McsnipergoAnnounceCode, &resp.Account)
 
 				if err != nil {
-					logErr("failed to announce snipe: %v", err)
+					log("error", "failed to announce snipe: %v", err)
 				} else {
-					logSuccess("announced snipe!")
+					log("success", "announced snipe!")
 				}
 			}
 		}
@@ -204,13 +201,13 @@ func snipeCommand(targetName string, offset float64) error{
 	if !fileExists("logs") {
 		err = os.Mkdir("logs", 0755)
 		if err != nil {
-			logFatal("Failed to create logs folder: %v", err)
+			return fmt.Errorf("Failed to create logs folder: %v", err)
 		}
 	}
 
 	logFile, err := os.OpenFile(fmt.Sprintf("logs/%v.txt", targetName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		logFatal("Failed to create log file: %v", err)
+    return fmt.Errorf("Failed to create log file: %v", err)
 	}
 
 	defer logFile.Close()
@@ -250,5 +247,5 @@ func autoSnipeCommand(offset float64) error{
 	}
 }	
 func pingCommand() {
-	logInfo("Coming soon™")
+	log("info", "Coming soon™")
 }
