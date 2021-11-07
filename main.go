@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/gookit/color"
 	"github.com/kqzz/mcgo"
 	"github.com/urfave/cli/v2"
 )
@@ -14,7 +15,11 @@ func main() {
 		Name:  "MCsniperGO",
 		Usage: "mcsnipergo",
 		Action: func(c *cli.Context) error {
-			snipeCommand("", -10000)
+			color.Printf(genHeader())
+			err := snipeCommand("", -10000)
+			if err != nil {
+				log("fatal", err.Error())
+			}
 			userInput("press enter to exit")
 			return nil
 		},
@@ -24,7 +29,12 @@ func main() {
 				Aliases: []string{"s", "run", "start"},
 				Usage:   "start MCsniperGO",
 				Action: func(c *cli.Context) error {
-					snipeCommand(c.String("username"), c.Float64("offset"))
+					color.Printf(genHeader())
+					err := snipeCommand(c.String("username"), c.Float64("offset"))
+					if err != nil {
+						log("fatal", err.Error())
+					}
+					userInput("press enter to exit")
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -34,6 +44,28 @@ func main() {
 						Usage:   "username to snipe",
 						Value:   "",
 					},
+					&cli.Float64Flag{
+						Name:    "offset",
+						Aliases: []string{"o", "delay", "time-offset"},
+						Usage:   "snipe x ms early",
+						Value:   -10000,
+					},
+				},
+			},
+			{
+				Name:    "autosnipe",
+				Aliases: []string{"as", "auto"},
+				Usage:   "Auto-snipe 3 character names",
+				Action: func(c *cli.Context) error {
+					color.Printf(genHeader())
+					err := autoSnipeCommand(c.Float64("offset"))
+					if err != nil {
+						log("fatal", err.Error())
+					}
+					userInput("press enter to exit")
+					return nil
+				},
+				Flags: []cli.Flag{
 					&cli.Float64Flag{
 						Name:    "offset",
 						Aliases: []string{"o", "delay", "time-offset"},
