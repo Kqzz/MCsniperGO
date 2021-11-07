@@ -9,24 +9,16 @@ import (
 	"github.com/gookit/color"
 )
 
-func logInfo(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=cyan;op=bold>info</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
+var logType = map[string]string{
+	"success": "<fg=white>[</><fg=green;op=bold>success</><fg=white>]</>",
+	"info":    "<fg=white>[</><fg=cyan;op=bold>info</><fg=white>]</>",
+	"warn":    "<fg=white>[</><fg=yellow;op=bold>warn</><fg=white>]</>",
+	"error":   "<fg=white>[</><fg=red;op=bold>err</><fg=white>]</>",
+	"fatal":   "<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</>",
 }
 
-func logSuccess(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=green;op=bold>success</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logErr(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=red;op=bold>err</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logWarn(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=yellow;op=bold>warn</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
-}
-
-func logFatal(m string, params ...interface{}) {
-	color.Printf("<fg=white>[</><fg=red;op=bold>fatal err</><fg=white>]</> » %s\n", fmt.Sprintf(m, params...))
+func log(t, m string, params ...interface{}) {
+	color.Printf((logType[t] + " » " + "%s\n"), fmt.Sprintf(m, params...))
 }
 
 func userInput(m string, params ...interface{}) string {
