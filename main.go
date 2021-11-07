@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
+	"github.com/gookit/color"
 	"github.com/kqzz/mcgo"
 	"github.com/urfave/cli/v2"
-	"github.com/gookit/color"
 )
 
 var accounts []*mcgo.MCaccount
@@ -17,8 +17,8 @@ func main() {
 		Action: func(c *cli.Context) error {
 			color.Printf(genHeader())
 			err := snipeCommand("", -10000)
-			if err != nil{
-				logFatal(err.Error())
+			if err != nil {
+				log("fatal", err.Error())
 			}
 			userInput("press enter to exit")
 			return nil
@@ -31,8 +31,8 @@ func main() {
 				Action: func(c *cli.Context) error {
 					color.Printf(genHeader())
 					err := snipeCommand(c.String("username"), c.Float64("offset"))
-					if err != nil{
-						logFatal(err.Error())
+					if err != nil {
+						log("fatal", err.Error())
 					}
 					userInput("press enter to exit")
 					return nil
@@ -54,13 +54,13 @@ func main() {
 			},
 			{
 				Name:    "autosnipe",
-				Aliases: []string{"as","auto"},
+				Aliases: []string{"as", "auto"},
 				Usage:   "Auto-snipe 3 character names",
 				Action: func(c *cli.Context) error {
 					color.Printf(genHeader())
 					err := autoSnipeCommand(c.Float64("offset"))
-					if err != nil{
-						logFatal(err.Error())
+					if err != nil {
+						log("fatal", err.Error())
 					}
 					userInput("press enter to exit")
 					return nil

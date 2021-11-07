@@ -12,12 +12,12 @@ import (
 	"github.com/kqzz/mcgo"
 )
 
-func snipeCommand(targetName string, offset float64) error{
+func snipeCommand(targetName string, offset float64) error {
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
 			log("fatal", "while creating accounts.txt, %s", err.Error())
-      return err
+			return err
 		} else {
 			log("info", "created accounts.txt, please restart the sniper once accounts are added!")
 		}
@@ -30,20 +30,20 @@ func snipeCommand(targetName string, offset float64) error{
 	config, err := getConfig()
 
 	if err != nil {
-    log("fatal", "error while getting config, %v", err)
+		log("fatal", "error while getting config, %v", err)
 		return err
 	}
 
 	accStrs, err := readLines("accounts.txt")
 	if err != nil {
-    log("fatal", err.Error())
+		log("fatal", err.Error())
 		return err
 	}
 
 	accounts = loadAccSlice(accStrs)
 
 	if len(accounts) < 1 {
-		return fmt.Errorf("Please put one account in the accounts.txt file!")
+		return fmt.Errorf("please put one account in the accounts.txt file")
 	}
 
 	normCount, prenameCount := countAccounts(accounts)
@@ -106,7 +106,7 @@ func snipeCommand(targetName string, offset float64) error{
 	}
 
 	if len(authedAccounts) == 0 {
-		return fmt.Errorf("no accounts successfully authenticated!")
+		return fmt.Errorf("no accounts successfully authenticated")
 	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
@@ -201,13 +201,13 @@ func snipeCommand(targetName string, offset float64) error{
 	if !fileExists("logs") {
 		err = os.Mkdir("logs", 0755)
 		if err != nil {
-			return fmt.Errorf("Failed to create logs folder: %v", err)
+			return fmt.Errorf("failed to create logs folder: %v", err)
 		}
 	}
 
 	logFile, err := os.OpenFile(fmt.Sprintf("logs/%v.txt", targetName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-    return fmt.Errorf("Failed to create log file: %v", err)
+		return fmt.Errorf("failed to create log file: %v", err)
 	}
 
 	defer logFile.Close()
@@ -216,13 +216,13 @@ func snipeCommand(targetName string, offset float64) error{
 
 	return nil
 }
-func autoSnipeCommand(offset float64) error{
-	for{
+func autoSnipeCommand(offset float64) error {
+	for {
 		nameSlice, err := getNext3c()
 		if err != nil {
 			return err
 		}
-		for _, i := range nameSlice{
+		for _, i := range nameSlice {
 
 			if offset == -10000 {
 				var offsetStr string
@@ -232,20 +232,20 @@ func autoSnipeCommand(offset float64) error{
 					offsetStr = userInput("offset")
 					offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
 					if offsetErr != nil {
-						logErr("%v is not a valid number", offsetStr)
+						log("error", "%v is not a valid number", offsetStr)
 					}
 				}
 			}
 			_, err = starShoppingDroptime(i.Name)
-			if err == nil{
-				err = snipeCommand(i.Name,offset)
+			if err == nil {
+				err = snipeCommand(i.Name, offset)
 				if err != nil {
 					return err
 				}
 			}
 		}
 	}
-}	
+}
 func pingCommand() {
 	log("info", "Coming soon™")
 }
