@@ -274,7 +274,7 @@ func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
 			canCreateProfile, err := acc.HasGcApplied()
 
 			if err != nil {
-				return false, err
+				return false, fmt.Errorf("prename acc: %v", err)
 			}
 
 			return canCreateProfile, nil
@@ -284,7 +284,7 @@ func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
 			nameChangeInfo, err := acc.NameChangeInfo()
 
 			if err != nil {
-				return false, err
+				return false, fmt.Errorf("mj / ms acc: %v", err)
 			}
 
 			return nameChangeInfo.Namechangeallowed, nil

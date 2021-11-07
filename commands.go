@@ -16,8 +16,7 @@ func snipeCommand(targetName string, offset float64) error {
 	if !fileExists("accounts.txt") {
 		_, err := os.Create("accounts.txt")
 		if err != nil {
-			log("fatal", "while creating accounts.txt, %s", err.Error())
-			return err
+			return fmt.Errorf("while creating accounts.txt, %s", err)
 		} else {
 			log("info", "created accounts.txt, please restart the sniper once accounts are added!")
 		}
@@ -30,13 +29,11 @@ func snipeCommand(targetName string, offset float64) error {
 	config, err := getConfig()
 
 	if err != nil {
-		log("fatal", "error while getting config, %v", err)
-		return err
+		return fmt.Errorf("error while getting config, %v", err)
 	}
 
 	accStrs, err := readLines("accounts.txt")
 	if err != nil {
-		log("fatal", err.Error())
 		return err
 	}
 
@@ -75,7 +72,6 @@ func snipeCommand(targetName string, offset float64) error {
 
 	droptime, err := getDroptime(targetName, config.Sniper.TimingSystemPreference)
 	if err != nil {
-		log("fatal", err.Error()) // don't know if this line should be kept or not
 		return err
 	}
 
@@ -85,6 +81,7 @@ func snipeCommand(targetName string, offset float64) error {
 
 	var authedAccounts []*mcgo.MCaccount
 
+	// auth + checking if ready to snipe
 	for _, acc := range accounts {
 		if authAccountErr := authAccount(acc); authAccountErr != nil {
 			log("error", "failed to authenticate %v: %v", accID(acc), authAccountErr)
