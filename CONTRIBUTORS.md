@@ -19,6 +19,10 @@ Here is a list of every contributor!
  - @PixelMelt
    - Fixed a typo in `config.go`.
      - Quick fix but less for others to type.
+  - @Talwat
+    - Improved logging
+  - @suvan1911
+    - 3char autosniping
 
 ## What is a contribution?
 
