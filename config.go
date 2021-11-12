@@ -49,18 +49,21 @@ spread = 5.0 # delay between requests in milliseconds
 
 [accounts]
 start_auth = 15 # start auth 720 minutes before drop
-auth_delay = 1 # time between acc auth
+auth_delay = 1 # seconds between auth
 
 [skin]
+# DOESNT WORK
 change_skin_on_snipe = false
 skin_change_type = "url"
 skin = "" # this value depends on the skin_change_type value
 
 [announce]
+# Might work but api is probably down
 mcsnipergo_announce_code = "" # leave blank to not announce snipe
 
 
 # discord webhook-related things
+# DOESNT WORK
 webhook_url = "" # public webhook url to announce snipe
 webhook_format = "sniped {name} with {searches} searches using MCsniperGO!"
 

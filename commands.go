@@ -77,7 +77,7 @@ func snipeCommand(targetName string, offset float64) error {
 
 	log("info", "Sniping %v at %v\n", targetName, droptime.Format("2006/01/02 15:04:05"))
 
-	time.Sleep(time.Until(droptime.Add(-time.Minute * time.Duration(config.Accounts.StartAuth)))) // sleep until 8 hours before droptime
+	time.Sleep(time.Until(droptime.Add(-time.Minute * time.Duration(config.Accounts.StartAuth)))) // sleep until StartAuth minutes before drop
 
 	var authedAccounts []*mcgo.MCaccount
 
@@ -100,6 +100,7 @@ func snipeCommand(targetName string, offset float64) error {
 		} else {
 			log("error", "%v not ready to snipe", accID(acc))
 		}
+		time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Minute)
 	}
 
 	if len(authedAccounts) == 0 {
