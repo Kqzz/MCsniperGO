@@ -100,7 +100,7 @@ func snipeCommand(targetName string, offset float64) error {
 		} else {
 			log("error", "%v not ready to snipe", accID(acc))
 		}
-		time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Minute)
+		time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Second)
 	}
 
 	if len(authedAccounts) == 0 {
