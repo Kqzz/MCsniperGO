@@ -11,7 +11,7 @@ This project was made possible by my [donators](https://kqzz.me/donators)
 - move that file to it's own folder (recommended, issues may arise if not done)
 - run that file once, 2 files will appear in that folder, `accounts.txt` and `config.toml`. `config.toml` can be ignored for now.
   - on windows, you can double click the executable file to run.
-  - on macos, you must [open a terminal in the folder you moved the binary to](https://www.stugon.com/open-terminal-in-current-folder-location-mac/) and run `./binary_name_here` in the terminal
+  - on macos, you must [open a terminal in the folder you moved the binary to](https://www.stugon.com/open-terminal-in-current-folder-location-mac/), run `chmod +x ./binary_name_here`, and then run`./binary_name_here` in the terminal
   - on linux, you must open a terminal and use `cd` to navigate to the folder where the binary is located, you may have to run `chmod +x ./binary_name_here`, and then run `./binary_name_here`
 - open accounts.txt and add your accounts according to the formatting specified [below](https://github.com/Kqzz/MCsniperGO#accounts-file-format)
 - run the sniper again with the same commands used before
