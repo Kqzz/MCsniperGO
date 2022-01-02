@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/gookit/color v1.5.0
-	github.com/kqzz/mcgo v0.2.85
+	github.com/kqzz/mcgo v0.2.92
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.4
 	github.com/urfave/cli/v2 v2.3.0
 )

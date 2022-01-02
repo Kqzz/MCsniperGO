@@ -21,6 +21,10 @@ github.com/iancoleman/strcase v0.2.0 h1:05I4QRnGpI0m37iZQRuskXh+w77mr6Z41lwQzuHL
 github.com/iancoleman/strcase v0.2.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
 github.com/kqzz/mcgo v0.2.85 h1:Z0nkhXizszqMx0M+nELtGygvJAk0pRRTKLHICQoQkus=
 github.com/kqzz/mcgo v0.2.85/go.mod h1:DXKHGjsnNM8bcvPEBZ258gFOzkhsaHq8eU+iNvsEkbo=
+github.com/kqzz/mcgo v0.2.91 h1:PjZIwQh0KYlPPYuZIV1FlBougP2nXAVpNi9cT/IdGzc=
+github.com/kqzz/mcgo v0.2.91/go.mod h1:DXKHGjsnNM8bcvPEBZ258gFOzkhsaHq8eU+iNvsEkbo=
+github.com/kqzz/mcgo v0.2.92 h1:/IWEjnY4Jmuq1c7aff6/MKdqRqov8f0Xv35DOwwujNc=
+github.com/kqzz/mcgo v0.2.92/go.mod h1:DXKHGjsnNM8bcvPEBZ258gFOzkhsaHq8eU+iNvsEkbo=
 github.com/mattn/go-colorable v0.1.8/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/pelletier/go-toml/v2 v2.0.0-beta.3 h1:PNCTU4naEJ8mKal97P3A2qDU74QRQGlv4FXiL1XDqi4=
