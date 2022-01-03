@@ -262,7 +262,10 @@ func authAccount(acc *mcgo.MCaccount) error {
 				if acc.Password == "oauth2-external" {
 					go msaAuthWrapperFunc(acc)
 				} else {
-					acc.MicrosoftAuthenticate()
+					err := acc.MicrosoftAuthenticate()
+					if err != nil {
+						return err
+					}
 				}
 				log("info", "authenticating %s through ms auth", accID(acc))
 			}
