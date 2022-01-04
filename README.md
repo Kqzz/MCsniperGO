@@ -43,22 +43,26 @@ You have to put accounts in accounts.txt before sniping, so follow the format sh
 # !! IMPORTANT !! ONLY REPLACE THE CAPITALIZED WORDS WITH THE CORRECT VALUE, EVERYTHING ELSE IS A "FLAG" FOR THE SNIPER TO KNOW WHAT TO DO WITH THE ACCOUNT.
 # for example, for a prename snipe with manual bearer, do BEARERHERE:bearer:prename and DO NOT REPLACE "bearer" or "prename" with anything.
 
-## MOJANG ACCOUNT
+# MOJANG ACCOUNT
 
 EMAIL:PASS
-### OR (if you have security questions)
+# OR (if you have security questions)
 EMAIL:PASS:ANSWER:ANSWER:ANSWER
 
-## Microsoft account
-## IT IS NOT RECOMMENDED TO USE THIS, INSTEAD MANUALLY GRAB THE BEARER TOKEN AND USE THE BEARER METHOD.
-
+# Microsoft account
+# THIS WILL PROMPT YOU TO LOGIN WHEN AUTHENTICATING, FOLLOW THE INSTRUCTIONS DISPLAYED WHEN YOU ARE PROMPTED.
+# there is no password input. it will always be shown as 'oauth2-external' when printing a password.
+IDENTIFYING_TEXT:ms
+# OR FOR PRENAME
+IDENTIFYING_TEXT:prename
+# IT IS NOT RECOMMENDED TO USE THE EMAIL:PASS METHOD FOR THIS, SHOWN BELOW.
 EMAIL:PASS:ms
-### OR FOR PRENAME
+# OR FOR PRENAME
 EMAIL:PASS:prename
 
-## Manual bearer
+# Manual bearer
 BEARERHERE:bearer
 
 # You can add :prename for a prename snipe w/ manual bearer
-
+BEARERHERE:bearer:prename
 ```

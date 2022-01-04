@@ -96,13 +96,20 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 		}
 	case mcgo.Ms, mcgo.MsPr:
 		{
-			account = mcgo.MCaccount{
-				Email:    strSplit[0],
-				Password: strSplit[1],
-				Type:     AccType,
+			if len(strSplit) == 2 {
+				account = mcgo.MCaccount{
+					Email:    strSplit[0],
+					Password: strSplit[1],
+					Type:     AccType,
+				}
+			} else {
+				account = mcgo.MCaccount{
+					Email:    strSplit[0],
+					Password: "oauth2-external",
+					Type:     AccType,
+				}
 			}
 		}
-
 	}
 
 	return account, nil
@@ -239,15 +246,26 @@ func accID(acc *mcgo.MCaccount) string {
 	return "<unknown account>"
 }
 
+func msaAuthWrapperFunc(acc *mcgo.MCaccount) {
+	err := acc.InitAuthFlow()
+	if err != nil {
+		log("error", err.Error())
+	}
+}
+
 func authAccount(acc *mcgo.MCaccount) error {
 	// authenticating if bearer isn't loaded
 	if acc.Bearer == "" {
 		switch acc.Type {
 		case mcgo.MsPr, mcgo.Ms:
 			{
-				err := acc.MicrosoftAuthenticate()
-				if err != nil {
-					return err
+				if acc.Password == "oauth2-external" {
+					go msaAuthWrapperFunc(acc)
+				} else {
+					err := acc.MicrosoftAuthenticate()
+					if err != nil {
+						return err
+					}
 				}
 				log("info", "authenticating %s through ms auth", accID(acc))
 			}
