@@ -246,26 +246,20 @@ func accID(acc *mcgo.MCaccount) string {
 	return "<unknown account>"
 }
 
-func msaAuthWrapperFunc(acc *mcgo.MCaccount) {
-	err := acc.InitAuthFlow()
-	if err != nil {
-		log("error", err.Error())
-	}
-}
-
 func authAccount(acc *mcgo.MCaccount) error {
 	// authenticating if bearer isn't loaded
 	if acc.Bearer == "" {
 		switch acc.Type {
 		case mcgo.MsPr, mcgo.Ms:
 			{
+				var err error
 				if acc.Password == "oauth2-external" {
-					go msaAuthWrapperFunc(acc)
+					err = acc.InitAuthFlow()
 				} else {
-					err := acc.MicrosoftAuthenticate()
-					if err != nil {
-						return err
-					}
+					err = acc.MicrosoftAuthenticate()
+				}
+				if err != nil {
+					return err
 				}
 				log("info", "authenticating %s through ms auth", accID(acc))
 			}
