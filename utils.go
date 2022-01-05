@@ -252,10 +252,11 @@ func authAccount(acc *mcgo.MCaccount) error {
 		switch acc.Type {
 		case mcgo.MsPr, mcgo.Ms:
 			{
+				var err Error
 				if acc.Password == "oauth2-external" {
-					err := acc.InitAuthFlow()
+					err = acc.InitAuthFlow()
 				} else {
-					err := acc.MicrosoftAuthenticate()
+					err = acc.MicrosoftAuthenticate()
 				}
 				if err != nil {
 					return err
