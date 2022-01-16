@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net/http"
@@ -13,6 +14,28 @@ import (
 )
 
 var errAccIgnored error = errors.New("account was ignored, either commented or otherwise")
+
+
+func pingMojang() (float64, error) {
+	payload := "PUT /minecraft/profile/name/test HTTP/1.1\r\nHost: api.minecraftservices.com\r\nAuthorization: Bearer BEARER" + "\r\n"
+	conn, err := tls.Dial("tcp", "api.minecraftservices.com:443", nil)
+	if err != nil {
+	}
+	var sumNanos int64
+	for i := 0; i < 3; i++ {
+		junk := make([]byte, 4096)
+		conn.Write([]byte(payload))
+		time1 := time.Now()
+		conn.Write([]byte("\r\n"))
+		conn.Read(junk)
+		duration := time.Now().Sub(time1)
+		sumNanos += duration.Nanoseconds()
+	}
+	conn.Close()
+	sumNanos /= 3
+	avgMillis := float64(sumNanos)/float64(1000000)
+	return avgMillis, nil
+}
 
 // readLines reads a whole file into memory
 // and returns a slice of its lines.

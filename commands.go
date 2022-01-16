@@ -83,22 +83,25 @@ func snipeCommand(targetName string, offset float64) error {
 
 	// auth + checking if ready to snipe
 	for _, acc := range accounts {
-		if authAccountErr := authAccount(acc); authAccountErr != nil {
+		authAccountErr := authAccount(acc)
+		if authAccountErr != nil {
 			log("error", "failed to authenticate %v: %v", accID(acc), authAccountErr)
 		} else {
 			log("success", "successfully authenticated %v", accID(acc))
 		}
 
-		canSnipe, canSnipeErr := accReadyToSnipe(acc)
-		if canSnipeErr != nil {
-			log("error", "failed to verify that %v can snipe: %v", accID(acc), canSnipeErr)
-		}
+		if authAccountErr == nil {
+			canSnipe, canSnipeErr := accReadyToSnipe(acc)
+			if canSnipeErr != nil {
+				log("error", "failed to verify that %v can snipe: %v", accID(acc), canSnipeErr)
+			}
 
-		if canSnipe {
-			log("success", "verified that %v can snipe", accID(acc))
-			authedAccounts = append(authedAccounts, acc)
-		} else {
-			log("error", "%v not ready to snipe", accID(acc))
+			if canSnipe {
+				log("success", "verified that %v can snipe", accID(acc))
+				authedAccounts = append(authedAccounts, acc)
+			} else {
+				log("error", "%v not ready to snipe", accID(acc))
+			}
 		}
 		time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Second)
 	}
@@ -245,5 +248,10 @@ func autoSnipeCommand(offset float64) error {
 	}
 }
 func pingCommand() {
-	log("info", "Coming soon™")
+	ping, err := pingMojang()
+	if err != nil {
+		log("fatal", "failed to ping mojang: %v", err)
+		return
+	}
+	log("info", "ping: %vms", ping)
 }

@@ -40,15 +40,15 @@ const (
 	defaultConfigString = `[sniper]
 timing_system_preference = "star.shopping"
 cycle_timing_systems = true # Go through each timing system until droptime is successfully grabbed
-auto_claim_namemc = false
+auto_claim_namemc = false # broken
 
 snipe_requests = 2 # requests to be sent per acc for normal sniping
 prename_requests = 6 # requests to be sent per acc for prename sniping
 
-spread = 5.0 # delay between requests in milliseconds
+spread = 0.0 # delay between requests in milliseconds (float)
 
 [accounts]
-start_auth = 15 # start auth 720 minutes before drop
+start_auth = 15 # start authenticating accounts x minutes before drop
 auth_delay = 1 # seconds between auth
 
 [skin]

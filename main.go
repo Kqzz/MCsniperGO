@@ -70,7 +70,7 @@ func main() {
 						Name:    "offset",
 						Aliases: []string{"o", "delay", "time-offset"},
 						Usage:   "snipe x ms early",
-						Value:   -10000,
+						Value:   20,
 					},
 				},
 			},
