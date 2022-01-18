@@ -185,6 +185,15 @@ func snipeCommand(targetName string, offset float64) error {
 				}
 			}
 
+			if config.Announce.WebhookURL != "" {
+				err := customServerAnnounce(targetName)
+					if err != nil {
+						log("error", "failed to announce snipe to your webhook: %v", err)
+					} else {
+						log("succes", "announced your snipe!")
+					}
+			}
+
 			if config.Announce.McsnipergoAnnounceCode != "" {
 				err := announceSnipe(targetName, config.Announce.McsnipergoAnnounceCode, &resp.Account)
 
