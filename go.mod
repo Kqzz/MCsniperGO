@@ -4,8 +4,8 @@ go 1.17
 
 require (
 	github.com/gookit/color v1.5.0
-	github.com/kqzz/mcgo v0.2.92
-	github.com/pelletier/go-toml/v2 v2.0.0-beta.4
+	github.com/kqzz/mcgo v0.2.93
+	github.com/pelletier/go-toml/v2 v2.0.0-beta.6
 	github.com/urfave/cli/v2 v2.3.0
 )
 
@@ -17,5 +17,5 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 )

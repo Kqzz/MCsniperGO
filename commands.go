@@ -165,25 +165,33 @@ func snipeCommand(targetName string, offset float64) error {
 
 	logsSlice = append(logsSlice, "logs")
 
-	for _, resp := range resps {
+	/* for _, resp := range resps {
 		log("info", "sent @ %v", fmtTimestamp(resp.SendTime))
 		logsSlice = append(logsSlice, fmt.Sprintf("sent @ %v", fmtTimestamp(resp.SendTime)))
-	}
+	} */
+
 
 	for _, resp := range resps {
-		log("info", "[%v] received @ %v | est process @ %v", prettyStatus(resp.StatusCode), fmtTimestamp(resp.ReceiveTime), fmtTimestamp(estimatedProcess(resp.SendTime, resp.ReceiveTime)))
-		logsSlice = append(logsSlice, fmt.Sprintf("[%v] received @ %v | est process @ %v", resp.StatusCode, fmtTimestamp(resp.ReceiveTime), fmtTimestamp(estimatedProcess(resp.SendTime, resp.ReceiveTime))))
+		log(
+			"info", "[%v] sent @ %v | recv @ %v | %v",
+			prettyStatus(resp.StatusCode),
+			fmtTimestamp(resp.SendTime),
+			fmtTimestamp(resp.ReceiveTime),
+			accID(&resp.Account),
+		)
+
+		logsSlice = append(logsSlice, fmt.Sprintf(
+			"[%v] sent @ %v | recv @ %v | %v",
+			prettyStatus(resp.StatusCode),
+			fmtTimestamp(resp.SendTime),
+			fmtTimestamp(resp.ReceiveTime),
+			accID(&resp.Account),
+		))
+
 		if resp.StatusCode < 300 {
+
 			log("success", "sniped %v onto %v", resp.Username, resp.Account.Email)
 			log("info", "if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
-			if config.Sniper.AutoClaimNamemc {
-				claimUrl, err := resp.Account.ClaimNamemc()
-				if err != nil {
-					log("error", "failed to claim namemc: %v", err)
-				} else {
-					log("info", "namemc claim url: <fg=blue;op=underline>%v</>", claimUrl)
-				}
-			}
 
 			if config.Announce.McsnipergoAnnounceCode != "" {
 				err := announceSnipe(targetName, config.Announce.McsnipergoAnnounceCode, &resp.Account)

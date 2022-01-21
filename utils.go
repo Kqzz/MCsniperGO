@@ -119,7 +119,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 		}
 	case mcgo.Ms, mcgo.MsPr:
 		{
-			if len(strSplit) == 2 {
+			if len(strSplit) == 3 {
 				account = mcgo.MCaccount{
 					Email:    strSplit[0],
 					Password: strSplit[1],
@@ -209,7 +209,7 @@ func countAccounts(accounts []*mcgo.MCaccount) (int, int) {
 }
 
 func fmtTimestamp(timestamp time.Time) string {
-	return timestamp.Format("15:04:05.9999")
+	return timestamp.Format("05.99999")
 }
 
 func formatAccount(account *mcgo.MCaccount) string {
