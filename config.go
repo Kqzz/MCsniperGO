@@ -58,15 +58,14 @@ skin_change_type = "url"
 skin = "" # this value depends on the skin_change_type value
 
 [announce]
+# discord webhook-related things 
+# WORKING NOW
+webhook_url = "" # public webhook url to announce snipes in your own server, leave empty to not announce
+
 # Might work but api is probably down
 mcsnipergo_announce_code = "" # leave blank to not announce snipe
 
-
-# discord webhook-related things
 # DOESNT WORK
-webhook_url = "" # public webhook url to announce snipe
-webhook_format = "sniped {name} with {searches} searches using MCsniperGO!"
-
 private_webhook_url = "" # webhook url where PRIVATE information will be sent, DO NOT MAKE THIS IN A PUBLIC DISCORD CHANNEL.
 private_webhook_format = "sniped {name} with {searches} searches and {offset} offset!"
 private_webhook_include_acc = false # include acc details in webhook`

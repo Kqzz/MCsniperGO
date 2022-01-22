@@ -20,6 +20,7 @@ func main() {
 			if err != nil {
 				log("fatal", err.Error())
 			}
+
 			userInput("press enter to exit")
 			return nil
 		},

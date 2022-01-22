@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/kqzz/mcgo"
+	"github.com/ecnepsnai/discord"
 )
 
 var errAccIgnored error = errors.New("account was ignored, either commented or otherwise")
@@ -254,6 +255,30 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 		log("error", "got unknown status code while announcing snipe: %v", res.StatusCode)
 	}
 
+	return nil
+}
+
+func customServerAnnounce(name string) error {
+	config, err := getConfig()
+		if err != nil {
+			panic(err)
+		}
+	discord.WebhookURL = config.Announce.WebhookURL
+
+	discord.Post(discord.PostOptions{
+		Embeds: []discord.Embed{
+			{	
+				Footer: &discord.Footer{
+					Text: "MCsniperGO",
+					IconURL: "https://cdn.discordapp.com/icons/734794891258757160/a_011d19e6e17a5eb46d108fd45b28dc9d.webp?size=96",
+				},
+					Title: "Successful Snipe",
+					URL: "https://github.com/Kqzz/MCsniperGO",
+					Color: 3118847,
+					Description: fmt.Sprintf("Name: [`%v`](https://namemc.com/search?q=%v)", name, name),
+				},
+			},
+	})
 	return nil
 }
 
