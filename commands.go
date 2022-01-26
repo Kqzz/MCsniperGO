@@ -54,6 +54,16 @@ func main() {
 				},
 			},
 			{
+				Name: 		"queue",
+				Aliases: 	[]string{"q", "list", "snipelist", "snipequeue"},
+				Usage:		"queue list of names to auto snipe",
+				Action: 	func(c *cli.Context) error {
+					color.Printf(genHeader())
+					snipeList()
+					return nil
+				},
+			},
+			{
 				Name:    "autosnipe",
 				Aliases: []string{"as", "auto"},
 				Usage:   "Auto-snipe 3 character names",
@@ -85,6 +95,7 @@ func main() {
 				},
 			},
 		},
+			
 	}
 
 	err := app.Run(os.Args)

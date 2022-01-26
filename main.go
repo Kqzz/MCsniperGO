@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"bufio"
 
 	"github.com/gookit/color"
 	"github.com/kqzz/mcgo"
@@ -266,4 +267,41 @@ func pingCommand() {
 		return
 	}
 	log("info", "ping: %vms", ping)
+}
+func snipeList() {
+	offsetStr := userInput("offset")
+		offset, err := strconv.ParseFloat(offsetStr, 64)
+			if err !=  nil {
+				log("error", "invalid offset number: %v", err)
+			}
+
+	if !fileExists("names.txt") {
+		_, err := os.Create("names.txt")
+		if err != nil {
+			log("fatal", "failed to create names.txt: %v", err)
+		} else {
+			log("info", "created names.txt")
+		}
+	}
+
+	file, err := os.Open("names.txt")
+		if err != nil {
+		log("error", "failed to open 'names.txt': %v", err)
+		}
+
+		var names []string
+	fileScanner := bufio.NewScanner(file)
+	for fileScanner.Scan() {
+		names = append(names, fileScanner.Text())
+	}
+	if len(names) > 0 {
+		for _, name := range names {
+		snipeCommand(name, offset)
+		}
+		log("info", "finished sniping each name on your list")
+		userInput("press enter to exit")
+	} else {
+		log("error", "Your names.txt file is empty! One name per line.")
+		userInput("press enter to exit")
+	}
 }
