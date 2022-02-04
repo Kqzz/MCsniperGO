@@ -165,7 +165,6 @@ func snipeCommand(targetName string, offset float64) error {
 
 	logsSlice = append(logsSlice, "logs")
 
-
 	for _, resp := range resps {
 		log(
 			"info", "[%v] sent @ %v | recv @ %v | %v",
@@ -200,14 +199,29 @@ func snipeCommand(targetName string, offset float64) error {
 
 			if config.Announce.WebhookURL != "" {
 				err := customServerAnnounce(targetName)
-					if err != nil {
-						log("error", "failed to announce snipe to your webhook: %v", err)
-					} else {
-						log("succes", "announced your snipe!")
-					}
+				if err != nil {
+					log("error", "failed to announce snipe to your webhook: %v", err)
+				} else {
+					log("succes", "announced your snipe!")
+				}
 			}
 		}
 	}
+
+	var (
+		start = time.Now()
+		end   time.Time
+	)
+
+	for _, resp := range resps {
+		if resp.SendTime.Before(start) {
+			start = resp.SendTime
+		} else if resp.SendTime.After(end) {
+			end = resp.SendTime
+		}
+	}
+
+	fmt.Printf("%.3f req/ms\n", float64(len(resps))/(float64(end.UnixMicro()-start.UnixMicro())/1000))
 
 	fmt.Print("\n")
 

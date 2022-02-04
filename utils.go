@@ -10,31 +10,33 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kqzz/mcgo"
 	"github.com/ecnepsnai/discord"
+	"github.com/kqzz/mcgo"
 )
 
 var errAccIgnored error = errors.New("account was ignored, either commented or otherwise")
 
-
+// from gosnipe lmao
 func pingMojang() (float64, error) {
 	payload := "PUT /minecraft/profile/name/test HTTP/1.1\r\nHost: api.minecraftservices.com\r\nAuthorization: Bearer BEARER" + "\r\n"
 	conn, err := tls.Dial("tcp", "api.minecraftservices.com:443", nil)
 	if err != nil {
+		return 0, err
 	}
 	var sumNanos int64
+
 	for i := 0; i < 3; i++ {
 		junk := make([]byte, 4096)
 		conn.Write([]byte(payload))
 		time1 := time.Now()
 		conn.Write([]byte("\r\n"))
 		conn.Read(junk)
-		duration := time.Now().Sub(time1)
+		duration := time.Since(time1)
 		sumNanos += duration.Nanoseconds()
 	}
 	conn.Close()
 	sumNanos /= 3
-	avgMillis := float64(sumNanos)/float64(1000000)
+	avgMillis := float64(sumNanos) / float64(1000000)
 	return avgMillis, nil
 }
 
@@ -260,24 +262,24 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 
 func customServerAnnounce(name string) error {
 	config, err := getConfig()
-		if err != nil {
-			panic(err)
-		}
+	if err != nil {
+		panic(err)
+	}
 	discord.WebhookURL = config.Announce.WebhookURL
 
 	discord.Post(discord.PostOptions{
 		Embeds: []discord.Embed{
-			{	
+			{
 				Footer: &discord.Footer{
-					Text: "MCsniperGO",
+					Text:    "MCsniperGO",
 					IconURL: "https://cdn.discordapp.com/icons/734794891258757160/a_011d19e6e17a5eb46d108fd45b28dc9d.webp?size=96",
 				},
-					Title: "Successful Snipe",
-					URL: "https://github.com/Kqzz/MCsniperGO",
-					Color: 3118847,
-					Description: fmt.Sprintf("Name: [`%v`](https://namemc.com/search?q=%v)", name, name),
-				},
+				Title:       "Successful Snipe",
+				URL:         "https://github.com/Kqzz/MCsniperGO",
+				Color:       3118847,
+				Description: fmt.Sprintf("Name: [`%v`](https://namemc.com/search?q=%v)", name, name),
 			},
+		},
 	})
 	return nil
 }
@@ -352,10 +354,6 @@ func accReadyToSnipe(acc *mcgo.MCaccount) (bool, error) {
 		}
 	}
 	return false, nil
-}
-
-func estimatedProcess(send, recv time.Time) time.Time {
-	return time.UnixMilli((send.UnixMilli() + recv.UnixMilli()) / 2)
 }
 
 func prettyStatus(status int) string {
