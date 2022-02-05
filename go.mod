@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/ecnepsnai/discord v1.2.1
 	github.com/gookit/color v1.5.0
-	github.com/kqzz/mcgo v0.2.93
+	github.com/kqzz/mcgo v0.2.94
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.6
 	github.com/urfave/cli/v2 v2.3.0
 )
