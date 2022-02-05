@@ -84,6 +84,25 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "turbo",
+				Aliases: []string{"t"},
+				Usage:   "Attempt to claim a username over and over again.",
+				Action: func(c *cli.Context) error {
+					color.Printf(genHeader())
+					turbo(c.String("username"))
+					userInput("press enter to exit")
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "username",
+						Aliases: []string{"u", "user", "name"},
+						Usage:   "username to snipe",
+						Value:   "",
+					},
+				},
+			},
 		},
 	}
 

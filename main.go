@@ -49,8 +49,8 @@ func snipeCommand(targetName string, offset float64) error {
 		log("warn", "using more than one normal account is useless")
 	}
 
-	if prenameCount > 10 {
-		log("warn", "using more than 10 prename accounts is useless")
+	if prenameCount > 5 {
+		log("warn", "using more than 5 prename accounts is useless")
 	}
 
 	if targetName == "" {
@@ -129,28 +129,27 @@ func snipeCommand(targetName string, offset float64) error {
 
 	// snipe
 	for _, acc := range authedAccounts {
-		reqCount := config.Sniper.SnipeRequests
-		if acc.Type == mcgo.MsPr {
-			reqCount = config.Sniper.PrenameRequests
-		}
-		for i := 0; i < reqCount; i++ {
-			totalReqCount++
-			wg.Add(1)
-			prename := false
+		for i := 0; i < func() int {
 			if acc.Type == mcgo.MsPr {
-				prename = true
+				return config.Sniper.PrenameRequests
+			} else {
+				return config.Sniper.SnipeRequests
 			}
-			spread := float64(totalReqCount) * config.Sniper.Spread
-			go func() {
+		}(); i++ {
+			wg.Add(1)
+			go func(acc *mcgo.MCaccount) {
 				defer wg.Done()
-				resp, err := acc.ChangeName(targetName, changeTime.Add(time.Millisecond*time.Duration(spread)), prename)
+				resp, err := acc.ChangeName(targetName, changeTime.Add(time.Millisecond*time.Duration(float64(totalReqCount)*config.Sniper.Spread)), acc.Type == mcgo.MsPr)
 
 				if err != nil {
 					log("error", "encountered err on nc for %v: %v", acc.Email, err.Error())
 				} else {
 					resps = append(resps, resp)
 				}
-			}()
+
+				totalReqCount++
+
+			}(acc)
 		}
 		time.Sleep(time.Millisecond * 1)
 	}
@@ -165,9 +164,7 @@ func snipeCommand(targetName string, offset float64) error {
 		logsSlice = append(logsSlice, formatAccount(acc))
 	}
 
-	logsSlice = append(logsSlice, fmt.Sprintf("offset = %v", offset))
-
-	logsSlice = append(logsSlice, "logs")
+	logsSlice = append(logsSlice, fmt.Sprintf("offset = %v\nlogs", offset))
 
 	for _, resp := range resps {
 		log(
@@ -249,35 +246,22 @@ func snipeCommand(targetName string, offset float64) error {
 }
 
 func autoSnipeCommand(offset float64) error {
+	if offset == -10000 {
+		offset, _ = pingMojang()
+	}
+
 	for {
 		nameSlice, err := getNext3c()
 		if err != nil {
 			return err
-		}
-		for _, i := range nameSlice {
-
-			if offset == -10000 {
-				var offsetStr string
-				var offsetErr error
-
-				for offsetStr == "" || offsetErr != nil {
-					offsetStr = userInput("offset")
-					offset, offsetErr = strconv.ParseFloat(offsetStr, 64)
-					if offsetErr != nil {
-						log("error", "%v is not a valid number", offsetStr)
-					}
-				}
-			}
-			_, err = starShoppingDroptime(i.Name)
-			if err == nil {
-				err = snipeCommand(i.Name, offset)
-				if err != nil {
-					return err
-				}
+		} else {
+			for _, i := range nameSlice {
+				snipeCommand(i.Name, offset)
 			}
 		}
 	}
 }
+
 func pingCommand() {
 	ping, err := pingMojang()
 	if err != nil {
@@ -285,4 +269,117 @@ func pingCommand() {
 		return
 	}
 	log("info", "ping: %vms", ping)
+}
+
+func turbo(username string) {
+	if !fileExists("accounts.txt") {
+		_, err := os.Create("accounts.txt")
+		if err == nil {
+			log("info", "created accounts.txt, please restart the sniper once accounts are added!")
+		}
+	}
+
+	if !fileExists("config.toml") {
+		defaultConfig()
+	}
+
+	for {
+
+		accStrs, _ := readLines("accounts.txt")
+		accounts = loadAccSlice(accStrs)
+		var authedAccounts []*mcgo.MCaccount
+		config, _ := getConfig()
+		var wg sync.WaitGroup
+		var resps []mcgo.NameChangeReturn
+
+		// auth + checking if ready to snipe
+		for _, acc := range accounts {
+			authAccountErr := authAccount(acc)
+			if authAccountErr != nil {
+				log("error", "failed to authenticate %v: %v", accID(acc), authAccountErr)
+			} else {
+				log("success", "successfully authenticated %v", accID(acc))
+			}
+
+			if authAccountErr == nil {
+				canSnipe, canSnipeErr := accReadyToSnipe(acc)
+				if canSnipeErr != nil {
+					log("error", "failed to verify that %v can snipe: %v", accID(acc), canSnipeErr)
+				}
+
+				if canSnipe {
+					log("success", "verified that %v can snipe", accID(acc))
+					authedAccounts = append(authedAccounts, acc)
+				} else {
+					msg := fmt.Sprintf("%v cannot change name: %v", accID(acc), canSnipeErr)
+					if acc.Type == mcgo.MsPr {
+						msg = fmt.Sprintf("%v cannot create profile: %v", accID(acc), canSnipeErr)
+					}
+					log("error", msg)
+				}
+			}
+			time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Second)
+		}
+
+		for _, acc := range authedAccounts {
+			for i := 0; i < func() int {
+				if acc.Type == mcgo.MsPr {
+					return config.Sniper.PrenameRequests
+				} else {
+					return config.Sniper.SnipeRequests
+				}
+			}(); i++ {
+				wg.Add(1)
+				go func(acc *mcgo.MCaccount) {
+					defer wg.Done()
+					resp, err := acc.ChangeName(username, time.Now(), acc.Type == mcgo.MsPr)
+
+					if err != nil {
+						log("error", "encountered err on nc for %v: %v", acc.Email, err.Error())
+					} else {
+						resps = append(resps, resp)
+					}
+				}(acc)
+			}
+			time.Sleep(time.Millisecond * 1)
+		}
+
+		wg.Wait()
+
+		for _, resp := range resps {
+			log(
+				"info", "[%v] sent @ %v | recv @ %v | %v",
+				prettyStatus(resp.StatusCode),
+				fmtTimestamp(resp.SendTime),
+				fmtTimestamp(resp.ReceiveTime),
+				accID(&resp.Account),
+			)
+
+			if resp.StatusCode < 300 {
+
+				log("success", "sniped %v onto %v", resp.Username, resp.Account.Email)
+				log("info", "if you like this sniper please consider donating @ <fg=green;op=underscore>https://mcsniperpy.com/donate</>")
+
+				if config.Announce.McsnipergoAnnounceCode != "" {
+					err := announceSnipe(username, config.Announce.McsnipergoAnnounceCode, &resp.Account)
+
+					if err != nil {
+						log("error", "failed to announce snipe: %v", err)
+					} else {
+						log("success", "announced snipe!")
+					}
+				}
+
+				if config.Announce.WebhookURL != "" {
+					err := customServerAnnounce(username)
+					if err != nil {
+						log("error", "failed to announce snipe to your webhook: %v", err)
+					} else {
+						log("succes", "announced your snipe!")
+					}
+				}
+			}
+		}
+		time.Sleep(time.Minute)
+	}
 }
