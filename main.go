@@ -100,7 +100,11 @@ func snipeCommand(targetName string, offset float64) error {
 				log("success", "verified that %v can snipe", accID(acc))
 				authedAccounts = append(authedAccounts, acc)
 			} else {
-				log("error", "%v not ready to snipe", accID(acc))
+				msg := fmt.Sprintf("%v cannot change name: %v", accID(acc), canSnipeErr)
+				if acc.Type == mcgo.MsPr {
+					msg = fmt.Sprintf("%v cannot create profile: %v", accID(acc), canSnipeErr)
+				}
+				log("error", msg)
 			}
 		}
 		time.Sleep(time.Duration(config.Accounts.AuthDelay) * time.Second)
@@ -243,6 +247,7 @@ func snipeCommand(targetName string, offset float64) error {
 
 	return nil
 }
+
 func autoSnipeCommand(offset float64) error {
 	for {
 		nameSlice, err := getNext3c()
