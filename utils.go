@@ -18,26 +18,23 @@ var errAccIgnored error = errors.New("account was ignored, either commented or o
 
 // from gosnipe lmao
 func pingMojang() (float64, error) {
-	payload := "PUT /minecraft/profile/name/test HTTP/1.1\r\nHost: api.minecraftservices.com\r\nAuthorization: Bearer BEARER" + "\r\n"
+	var sumNanos int64
 	conn, err := tls.Dial("tcp", "api.minecraftservices.com:443", nil)
 	if err != nil {
 		return 0, err
 	}
-	var sumNanos int64
 
+	defer conn.Close()
 	for i := 0; i < 3; i++ {
-		junk := make([]byte, 4096)
-		conn.Write([]byte(payload))
+		recv := make([]byte, 4096)
 		time1 := time.Now()
-		conn.Write([]byte("\r\n"))
-		conn.Read(junk)
-		duration := time.Since(time1)
-		sumNanos += duration.Nanoseconds()
+		conn.Write([]byte("PUT /minecraft/profile/name/test HTTP/1.1\r\nHost: api.minecraftservices.com\r\nAuthorization: Bearer TestToken\r\n\r\n"))
+		conn.Read(recv)
+		sumNanos += time.Since(time1).Milliseconds()
 	}
-	conn.Close()
+
 	sumNanos /= 3
-	avgMillis := float64(sumNanos) / float64(1000000)
-	return avgMillis, nil
+	return float64(sumNanos / 1000000), nil
 }
 
 // readLines reads a whole file into memory
@@ -73,6 +70,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strings.HasPrefix(accStr, "#") {
 		return mcgo.MCaccount{}, errAccIgnored
 	}
+
 	var account mcgo.MCaccount
 	strSplit := strings.Split(accStr, ":")
 	strSplitLower := strings.Split(strings.ToLower(accStr), ":")
@@ -220,13 +218,7 @@ func formatAccount(account *mcgo.MCaccount) string {
 }
 
 func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
-	prename := "false"
-	if account.Type == mcgo.MsPr {
-		prename = "true"
-	}
-	url := fmt.Sprintf("https://api.mcsniperpy.com/announce?username=%v&prename=%v", username, prename)
-
-	req, err := http.NewRequest("POST", url, nil)
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.mcsniperpy.com/announce?username=%v&prename=%v", username, account.Type == mcgo.MsPr), nil)
 
 	if err != nil {
 		return err
@@ -251,13 +243,9 @@ func announceSnipe(username, auth string, account *mcgo.MCaccount) error {
 		{
 			return errors.New("too many requests (ask staff to manually announce)")
 		}
+	default:
+		return errors.New(fmt.Sprintf("Got: %v Couldnt announce your snipe, please contact staff to manually post it.", res.StatusCode))
 	}
-
-	if res.StatusCode != 204 {
-		log("error", "got unknown status code while announcing snipe: %v", res.StatusCode)
-	}
-
-	return nil
 }
 
 func customServerAnnounce(name string) error {
@@ -287,13 +275,11 @@ func customServerAnnounce(name string) error {
 func accID(acc *mcgo.MCaccount) string {
 	if acc.Email != "" {
 		return acc.Email
-	}
-
-	if acc.Bearer != "" {
+	} else if acc.Bearer != "" {
 		return acc.Bearer[len(acc.Bearer)-10:]
+	} else {
+		return "<unknown account>"
 	}
-
-	return "<unknown account>"
 }
 
 func authAccount(acc *mcgo.MCaccount) error {
