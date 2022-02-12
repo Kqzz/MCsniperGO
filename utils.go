@@ -210,7 +210,7 @@ func countAccounts(accounts []*mcgo.MCaccount) (int, int) {
 }
 
 func fmtTimestamp(timestamp time.Time) string {
-	return timestamp.Format("05.99999")
+	return timestamp.Format("05.999999")
 }
 
 func formatAccount(account *mcgo.MCaccount) string {
