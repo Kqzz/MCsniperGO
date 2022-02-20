@@ -97,7 +97,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	case mcgo.Mj:
 		{
 			switch len(strSplit) {
-			case 2:
+			case 3:
 				{
 					account = mcgo.MCaccount{
 						Email:    strSplit[0],
@@ -105,7 +105,7 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 						Type:     AccType,
 					}
 				}
-			case 5:
+			case 6:
 				{
 					account = mcgo.MCaccount{
 						Email:           strSplit[0],
