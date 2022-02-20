@@ -15,6 +15,14 @@ type coolkidmachoRespStruct struct {
 	Unix int64 `json:"UNIX"`
 }
 
+type starShoppingResponseStruct struct {
+	Unix int64 `json:"unix"`
+}
+
+type next3RespStruct struct {
+	Name string `json:"name"`
+}
+
 // grabs droptime from api.coolkidmacho.com
 func coolkidmachoDroptime(username string) (time.Time, error) {
 	resp, err := http.Get(fmt.Sprintf("http://api.coolkidmacho.com/droptime/%v", username))
@@ -43,10 +51,7 @@ func coolkidmachoDroptime(username string) (time.Time, error) {
 	return time.Time{}, fmt.Errorf("failed to grab droptime with status %v and body %v", resp.Status, string(respBytes))
 }
 
-type starShoppingResponseStruct struct {
-	Unix int64 `json:"unix"`
-}
-
+// grabs droptime from api.star.shopping
 func starShoppingDroptime(username string) (time.Time, error) {
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.star.shopping/droptime/%v", username), nil)
@@ -112,10 +117,7 @@ func getDroptime(username, preference string) (time.Time, error) {
 	return time.Time{}, errors.New("failed to grab droptime from all APIs")
 }
 
-type next3RespStruct struct {
-	Name string `json:"name"`
-}
-func getNext3c() ([]next3RespStruct, error){
+func getNext3c() ([]next3RespStruct, error) {
 	resp, err := http.Get("http://api.coolkidmacho.com/three")
 
 	if err != nil {
@@ -127,7 +129,7 @@ func getNext3c() ([]next3RespStruct, error){
 	if err != nil {
 		return []next3RespStruct{}, err
 	}
-	
+
 	if resp.StatusCode < 300 {
 		var respSlice []next3RespStruct
 		err = json.Unmarshal(respBytes, &respSlice)
@@ -137,5 +139,4 @@ func getNext3c() ([]next3RespStruct, error){
 		return respSlice, nil
 	}
 	return []next3RespStruct{}, fmt.Errorf("failed to grab next 3c with status %v and body \"%v\"", resp.Status, string(respBytes))
-
 }
