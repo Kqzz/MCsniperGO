@@ -79,12 +79,12 @@ func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 
 	var AccType mcgo.AccType
 
-	if strSliceContainsMultiOption(strSplitLower, []string{"ms", "msa"}) {
-		AccType = mcgo.Ms
+	if strSliceContainsMultiOption(strSplitLower, []string{"mj"}) {
+		AccType = mcgo.Mj
 	} else if strSliceContainsMultiOption(strSplitLower, []string{"prename", "msprename", "msaprename", "pr"}) {
 		AccType = mcgo.MsPr
 	} else {
-		AccType = mcgo.Mj
+		AccType = mcgo.Ms
 	}
 
 	if strSliceContainsMultiOption(strSplitLower, []string{"bearer"}) {
