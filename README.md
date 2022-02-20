@@ -3,30 +3,36 @@
 
 This project was made possible by my [donators](https://kqzz.me/donators)
 
-## Usage
+## Installation
 
-> This sniper is in it's *beta* stage, meaning bugs should be expected.
+### Windows
 
-### Easy installation
+- Download the latest EXE from [releases](https://github.com/Kqzz/MCsniperGO/releases/)
+- Make a folder for sniping, move the exe into that folder
+- Run the exe by double clicking (windows defender may popup, that's normal) 
+- Open accounts.txt and **ADD YOUR ACCOUNTS** according to the [FORMAT HERE](https://github.com/Kqzz/MCsniperGO#accounts-file-format)
+- Run the sniper by double clicking
+- Enter the *dropping* username you want to snipe and your offset
+- Wait for the drop! good luck.
 
-- download the latest release for your operating system in the [releases](https://github.com/Kqzz/MCsniperGO/releases/) tab
-- move that file to it's own folder (recommended, issues may arise if not done)
-- run that file once, 2 files will appear in that folder, `accounts.txt` and `config.toml`. `config.toml` can be ignored for now.
-  - on windows, you can double click the executable file to run.
-  - on macos, you must [open a terminal in the folder you moved the binary to](https://www.stugon.com/open-terminal-in-current-folder-location-mac/), run `chmod +x ./binary_name_here`, and then run`./binary_name_here` in the terminal
-  - on linux, you must open a terminal and use `cd` to navigate to the folder where the binary is located, you may have to run `chmod +x ./binary_name_here`, and then run `./binary_name_here`
-- open accounts.txt and add your accounts according to the formatting specified [below](https://github.com/Kqzz/MCsniperGO#accounts-file-format)
-- run the sniper again with the same commands used before
-  - for windows, you can double click the executable
-  - for macos, you will have to open the terminal in the correct directory (as shown above) and run `./binary_name_here`
-  - for linux, you will have to open a terminal and use `cd` to navigate to the correct directory, then run `./binary_name_here`
-- the sniper will now prompt you for a username and offset. enter those and then the sniper will authenticate (this is run 8 hours before snipe) and then count down.
+### Linux
+> *this guide is very brief and assumes knowledge of linux*
 
-> A video guide will be made once this sniper is stabler
+- `wget` the binary link (`wget https://github-releases-url-here`) found in [releases](https://github.com/Kqzz/MCsniperGO/releases/)
+- Run `chmod +x ./binary_name_here`
+- Run `./binary_name_here`
+- Open accounts.txt (`nano accounts.txt`) and add your accounts [according the the format below](https://github.com/Kqzz/MCsniperGO#accounts-file-format)
+- Run `./binary_name_here`. Note: you need to leave the terminal session open for the sniper to keep running, use `tmux`, `./binary_name_here`, and then `<Ctrl>-<B> <D>` to run in tmux terminal session.
+- Wait for the drop! good luck.
+
+
+### Mac
+
+Download the mac binary, and then follow the Linux settings (ignore the wget step) using `terminal`. Make sure your terminal is in the same folder as the binary you downloaded.
 
 ### Compiling from source (not recommended)
 
-install [git](https://git-scm.com/) and [go](https://golang.org/dl/) 1.16 or later.
+Install [git](https://git-scm.com/) and [go](https://golang.org/dl/) 1.17 or later.
 ```sh
 git clone https://github.com/Kqzz/MCsniperGO
 cd MCsniperGO
