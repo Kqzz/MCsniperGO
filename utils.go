@@ -30,7 +30,7 @@ func pingMojang() (float64, error) {
 		time1 := time.Now()
 		conn.Write([]byte("PUT /minecraft/profile/name/test HTTP/1.1\r\nHost: api.minecraftservices.com\r\nAuthorization: Bearer TestToken\r\n\r\n"))
 		conn.Read(recv)
-		sumNanos += time.Since(time1).Milliseconds()
+		sumNanos += time.Since(time1).Nanoseconds()
 	}
 
 	sumNanos /= 3
