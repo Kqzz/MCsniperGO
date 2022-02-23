@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"crypto/tls"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -283,7 +285,7 @@ func accID(acc *mcgo.MCaccount) string {
 	}
 }
 
-func authAccount(acc *mcgo.MCaccount) error {
+func authAccount(acc *mcgo.MCaccount, droptime time.Time) error {
 	// authenticating if bearer isn't loaded
 	if acc.Bearer == "" {
 		switch acc.Type {
@@ -311,6 +313,22 @@ func authAccount(acc *mcgo.MCaccount) error {
 		}
 	} else {
 		log("info", "authing %s through manual bearer", accID(acc))
+
+		expAt, err := BearerExpiresAt(acc.Bearer)	
+
+		if err != nil {
+			log("warn", "failed to validate bearer: %v", err)
+		}
+
+		if droptime.After(expAt) {
+			expires := "expires"
+			if time.Now().After(expAt) {
+				expires = "expired"
+			}
+			return fmt.Errorf("bearer %v at %v, before droptime", expires, expAt)
+		} else {
+			log("info", "bearer expires in: %v", time.Until(expAt))
+		}
 	}
 
 	return nil
@@ -349,4 +367,29 @@ func prettyStatus(status int) string {
 		color = "green"
 	}
 	return fmt.Sprintf("<fg=%v;op=underscore>%v</>", color, status)
+}
+
+func BearerExpiresAt(bearer string) (time.Time, error) {
+
+	s := strings.Split(bearer, ".")
+	if len(s) < 2 {
+		return time.Time{}, errors.New("bearer not formatted properly")
+	}
+
+	decoded, err := base64.RawStdEncoding.DecodeString(s[1])
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	type Token struct {
+		Exp int64 `json:"exp"`
+	}
+
+	var token Token
+	err = json.Unmarshal(decoded, &token)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return time.Unix(token.Exp, 0), nil
 }

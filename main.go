@@ -43,15 +43,7 @@ func snipeCommand(targetName string, offset float64) error {
 		return fmt.Errorf("please put one account in the accounts.txt file")
 	}
 
-	normCount, prenameCount := countAccounts(accounts)
-
-	if normCount > 1 {
-		log("warn", "using more than one normal account is useless")
-	}
-
-	if prenameCount > 5 {
-		log("warn", "using more than 5 prename accounts is useless")
-	}
+	// normCount, prenameCount := countAccounts(accounts)
 
 	if targetName == "" {
 		targetName = userInput("target username")
@@ -83,7 +75,7 @@ func snipeCommand(targetName string, offset float64) error {
 
 	// auth + checking if ready to snipe
 	for _, acc := range accounts {
-		authAccountErr := authAccount(acc)
+		authAccountErr := authAccount(acc, droptime)
 		if authAccountErr != nil {
 			log("error", "failed to authenticate %v: %v", accID(acc), authAccountErr)
 		} else {
@@ -294,7 +286,7 @@ func turbo(username string) {
 
 		// auth + checking if ready to snipe
 		for _, acc := range accounts {
-			authAccountErr := authAccount(acc)
+			authAccountErr := authAccount(acc, time.Time{})
 			if authAccountErr != nil {
 				log("error", "failed to authenticate %v: %v", accID(acc), authAccountErr)
 			} else {
