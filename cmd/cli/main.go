@@ -1,7 +1,8 @@
 package main
 
-import "fmt"
+import "github.com/Kqzz/MCsniperGO/log"
 
 func main() {
-	fmt.Println("> MCSNIPERGO")
+	log.Log("", log.GetHeader())
+	log.Log("info", "v2 coming soon")
 }
