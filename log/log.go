@@ -1,8 +1,10 @@
 package log
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 
@@ -22,9 +24,10 @@ var formats = map[string]string{
 	/* "info": "<bg=8;fg=blue> info </> >> %s\n",
 	"err": "<bg=8;fg=red> err  </> >> %s\n",
 	"warn": "<bg=8;fg=yellow> warn </> >> %s\n", */
-	"info": "[<fg=blue>info</>] %s\n",
-	"err":  "[<fg=red>erro</>] %s\n",
-	"warn": "[<fg=yellow>warn</>] %s\n",
+	"info":  "[<fg=blue>info</>] %s\n",
+	"err":   "[<fg=red>erro</>] %s\n",
+	"warn":  "[<fg=yellow>warn</>] %s\n",
+	"input": "[<fg=blue>input</>] %s: ",
 }
 
 func Log(l, m string, params ...interface{}) {
@@ -34,6 +37,16 @@ func Log(l, m string, params ...interface{}) {
 	}
 
 	color.Printf(format, fmt.Sprintf(m, params...))
+}
+
+func Input(m string, params ...interface{}) string {
+	scanner := bufio.NewScanner(os.Stdin)
+	color.Printf(formats["input"], fmt.Sprintf(m, params...))
+
+	scanner.Scan()
+
+	t := scanner.Text()
+	return t
 }
 
 //go:embed headers.txt
