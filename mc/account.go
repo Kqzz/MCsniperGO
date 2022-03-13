@@ -212,11 +212,8 @@ func (account *MCaccount) MojangAuthenticate() error {
 	if err != nil {
 		return err
 	}
-	err = account.loadSecurityQuestions()
 
-	if err != nil {
-		return err
-	}
+	account.loadSecurityQuestions()
 
 	if len(account.SecurityQuestions) == 0 {
 		account.Authenticated = true

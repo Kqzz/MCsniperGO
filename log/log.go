@@ -18,16 +18,15 @@ type Logger struct {
 }
 
 var formats = map[string]string{
-	/* "info": "<bg=0099EF;fg=195> info </> %s\n",
-	"err": "<bg=c1494b;fg=195> err  </> %s\n",
-	"warn": "<bg=c18349;fg=195> warn </> %s\n", */
-	/* "info": "<bg=8;fg=blue> info </> >> %s\n",
-	"err": "<bg=8;fg=red> err  </> >> %s\n",
-	"warn": "<bg=8;fg=yellow> warn </> >> %s\n", */
-	"info":  "[<fg=blue>info</>] %s\n",
+	/* "info":  "[<fg=blue>info</>] %s\n",
 	"err":   "[<fg=red>erro</>] %s\n",
 	"warn":  "[<fg=yellow>warn</>] %s\n",
-	"input": "[<fg=blue>input</>] %s: ",
+	"input": "[<fg=blue>input</>] %s: ", */
+	"info":  "[<fg=blue>*</>] %s\n",
+	"err":   "[<fg=red>*</>] %s\n",
+	"warn":  "[<fg=yellow>*</>] %s\n",
+	"success": "[<fg=green>*</>] %s\n",
+	"input": "[<fg=blue>*</>] %s: ",
 }
 
 func Log(l, m string, params ...interface{}) {
@@ -59,4 +58,16 @@ func GetHeader() string {
 
 	i := rand.Intn(len(headers) - 1)
 	return fmt.Sprintf("\033[38;5;8m%v\033[0m\n\n<fg=blue>MCsniperGO</> - Made by kqzz (kqzz.me)\n\n", headers[i])
+}
+
+func FmtTimestamp(timestamp time.Time) string {
+	return strings.ReplaceAll(fmt.Sprintf("%-9s", timestamp.Format("05.999999")), " ", "0")
+}
+
+func PrettyStatus(status int) string {
+	color := "red"
+	if status < 300 && status > 199 {
+		color = "green"
+	}
+	return fmt.Sprintf("<fg=%v;op=underscore>%v</>", color, status)
 }
