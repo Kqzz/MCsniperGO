@@ -43,10 +43,10 @@ func snipe(username string, offset float64) error {
 
 	for {
 		if time.Until(droptime) > authOffset {
-			color.Printf("\r[<fg=blue>info</>] authing in %v    ", time.Until(droptime).Round(time.Second))
+			color.Printf("\r[<fg=blue>*</>] authing in %v    ", time.Until(droptime).Round(time.Second))
 			time.Sleep(time.Second * 1)
 		} else {
-			color.Printf("\r[<fg=blue>info</>] starting auth...\n")
+			color.Printf("\r[<fg=blue>*</>] starting auth...\n")
 			break
 		}
 	}
