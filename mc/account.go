@@ -292,6 +292,11 @@ func (account *MCaccount) HasGcApplied() (bool, error) {
 
 	}
 
+
+	if strings.Contains(string(bodyBytes), "Request blocked") {
+		return false, errors.New("blocked by cloudfront (ip block)")
+	}
+
 	return false, fmt.Errorf("got status: %v body: %v", resp.Status, string(bodyBytes)) 
 
 }

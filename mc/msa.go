@@ -90,7 +90,8 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			Renegotiation:      tls.RenegotiateOnceAsClient,
-			InsecureSkipVerify: true},
+			InsecureSkipVerify: true,
+		},
 	}
 
 	var redirect string
