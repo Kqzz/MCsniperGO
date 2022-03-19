@@ -91,7 +91,7 @@ func snipe(username string, offset float64) error {
 	if len(usableAccounts) == 0 {
 		return errors.New("no accounts successfully authenticated")
 	} else {
-		log.Log("success", "authenticated %d accounts\n", len(usableAccounts))
+		log.Log("success", "authenticated %d account(s)\n", len(usableAccounts))
 	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
