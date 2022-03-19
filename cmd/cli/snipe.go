@@ -143,16 +143,17 @@ func snipe(username string, offset float64) error {
 	for _, r := range resps {
 		log.Log(
 			"info",
-			"[%v] sent @ %v | recv @ %v",
+			"[%s] sent @ %s | recv @ %s | %s",
 			log.PrettyStatus(r.StatusCode),
 			log.FmtTimestamp(r.SendTime),
 			log.FmtTimestamp(r.ReceiveTime),
+			log.PrettyTimestampStatus(r.ReceiveTime, droptime, r.StatusCode),
 		)
 
 		if r.StatusCode < 300 && r.StatusCode > 199 {
 			log.Log(
 				"success",
-				"sniped %v onto %v",
+				"sniped %s onto %s",
 				username,
 				r.Account.Email,
 			)
