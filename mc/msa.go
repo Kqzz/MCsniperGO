@@ -15,8 +15,6 @@ import (
 	"time"
 )
 
-// Old implementation of msa (oauth2, not needed for this pkg) available @ https://gist.github.com/Kqzz/02d33be5868bb4d8bb2a3aa03f72052c
-
 type xBLSignInBody struct {
 	Properties struct {
 		Authmethod string `json:"AuthMethod"`
@@ -81,6 +79,9 @@ type msGetMojangBearerResponse struct {
 }
 
 func (account *MCaccount) MicrosoftAuthenticate() error {
+
+	fmt.Println(account.Email, account.Password)
+
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return err
@@ -145,7 +146,7 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 	defer resp.Body.Close()
 
 	if resp.Request.URL.String() == urlPost && strings.Contains(resp.Request.URL.String(), "access_token") {
-		return errors.New("failed microsoft authentication, invalid credentials")
+		return errors.New("invalid credentials, no access_token")
 	}
 
 	respBytes, err = ioutil.ReadAll(resp.Body)
@@ -157,21 +158,15 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 	respStr := string(respBytes)
 
 	if strings.Contains(respStr, "Sign in to") {
-		return errors.New("invalid credentials")
-	}
-
-	if strings.Contains(respStr, "https://account.live.com/Abuse") {
-		return errors.New("account is probably locked")
+		return errors.New("invalid credentials, sign in to")
 	}
 
 	if strings.Contains(respStr, "Help us protect your account") {
 		return errors.New("2fa is enabled, which is not supported now")
 	}
 
-	fmt.Println(respStr)
-
 	if !strings.Contains(redirect, "access_token") || redirect == urlPost {
-		return errors.New("invalid credentials")
+		return errors.New("invalid credentials, no access_token in redirect")
 	}
 
 	params := strings.Split(redirect, "#")[1]
@@ -331,3 +326,4 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 
 	return nil
 }
+
