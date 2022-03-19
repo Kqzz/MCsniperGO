@@ -14,7 +14,7 @@ import (
 
 const (
 	authOffset = time.Hour * 8
-	spread = 0
+	spread     = 0
 )
 
 func snipe(username string, offset float64) error {
@@ -62,25 +62,27 @@ func snipe(username string, offset float64) error {
 			log.Log("success", "authenticated %s", account.Email)
 		}
 
-		isGc, checkErr := account.HasGcApplied()
+		account.Type = mc.Ms
+
+		ncInfo, checkErr := account.NameChangeInfo()
 
 		if checkErr != nil {
-			log.Log("err", "failed to check %v's type: %v", account.Email, checkErr)
+			log.Log("err", "failed to check %v's acc: %v", account.Email, checkErr)
 			continue
 		}
 
-		if isGc {
-			account.Type = mc.MsPr
+		if ncInfo.Namechangeallowed {
+			account.Type = mc.Ms
 		} else {
-			ncInfo, checkErr := account.NameChangeInfo()
+			isGc, checkErr := account.HasGcApplied()
 
 			if checkErr != nil {
-				log.Log("err", "failed to check %v's acc: %v", account.Email, checkErr)
+				log.Log("err", "failed to check %v's type: %v", account.Email, checkErr)
 				continue
 			}
 
-			if ncInfo.Namechangeallowed {
-				account.Type = mc.Ms
+			if isGc {
+				account.Type = mc.MsPr
 			}
 		}
 
@@ -98,10 +100,10 @@ func snipe(username string, offset float64) error {
 
 	for {
 		if time.Until(changeTime) > time.Second*20 {
-			color.Printf("\r[<fg=blue>info</>] sniping in %v    ", time.Until(droptime).Round(time.Second))
+			color.Printf("\r[<fg=blue>*</>] sniping in %v    ", time.Until(droptime).Round(time.Second))
 			time.Sleep(time.Second * 1)
 		} else {
-			color.Printf("\r[<fg=blue>info</>] starting snipe...\n")
+			color.Printf("\r[<fg=blue>*</>] starting snipe...\n")
 			break
 		}
 	}
@@ -142,6 +144,8 @@ func snipe(username string, offset float64) error {
 			time.Sleep(time.Millisecond * 2)
 		}
 	}
+
+	wg.Wait()
 
 	for _, r := range resps {
 		log.Log(
