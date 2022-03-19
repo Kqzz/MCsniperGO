@@ -80,8 +80,6 @@ type msGetMojangBearerResponse struct {
 
 func (account *MCaccount) MicrosoftAuthenticate() error {
 
-	fmt.Println(account.Email, account.Password)
-
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return err

@@ -46,7 +46,7 @@ func snipe(username string, offset float64) error {
 			color.Printf("\r[<fg=blue>*</>] authing in %v    ", time.Until(droptime).Round(time.Second))
 			time.Sleep(time.Second * 1)
 		} else {
-			color.Printf("\r[<fg=blue>*</>] starting auth...\n")
+			color.Printf("\r[<fg=blue>*</>] starting auth...\n\n")
 			break
 		}
 	}
@@ -58,6 +58,8 @@ func snipe(username string, offset float64) error {
 		if authErr != nil {
 			log.Log("err", "failed to authenticate %v: %v", account.Email, authErr)
 			continue
+		} else {
+			log.Log("success", "authenticated %s", account.Email)
 		}
 
 		isGc, checkErr := account.HasGcApplied()
@@ -69,18 +71,17 @@ func snipe(username string, offset float64) error {
 
 		if isGc {
 			account.Type = mc.MsPr
-			continue
-		}
+		} else {
+			ncInfo, checkErr := account.NameChangeInfo()
 
-		ncInfo, checkErr := account.NameChangeInfo()
+			if checkErr != nil {
+				log.Log("err", "failed to check %v's acc: %v", account.Email, checkErr)
+				continue
+			}
 
-		if checkErr != nil {
-			log.Log("err", "failed to check %v's acc: %v", account.Email, checkErr)
-			continue
-		}
-
-		if ncInfo.Namechangeallowed {
-			account.Type = mc.Ms
+			if ncInfo.Namechangeallowed {
+				account.Type = mc.Ms
+			}
 		}
 
 		usableAccounts = append(usableAccounts, account)
@@ -89,6 +90,8 @@ func snipe(username string, offset float64) error {
 
 	if len(usableAccounts) == 0 {
 		return errors.New("no accounts successfully authenticated")
+	} else {
+		log.Log("success", "authenticated %d accounts\n", len(usableAccounts))
 	}
 
 	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
