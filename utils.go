@@ -268,7 +268,7 @@ func customServerAnnounce(name string) error {
 				Title:       "Successful Snipe",
 				URL:         "https://github.com/Kqzz/MCsniperGO",
 				Color:       3118847,
-				Description: fmt.Sprintf("Name: [`%v`](https://namemc.com/search?q=%v)", name, name),
+				Description: fmt.Sprintf("Name: [`%v`](https://laby.net/@%v)", name, name),
 			},
 		},
 	})
