@@ -1,4 +1,5 @@
 # MCsniperGO
+# MCsniperGO NO LONGER WORKS SINCE THE NAME HISTORY API REMOVAL
 <a href="https://mcsniperpy.com/discord"><img src="https://invidget.switchblade.xyz/yp69ZqtxNk"/><a/>
 
 This project was made possible by my [donators](https://kqzz.me/donators)
