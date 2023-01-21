@@ -54,28 +54,6 @@ func main() {
 				},
 			},
 			{
-				Name:    "autosnipe",
-				Aliases: []string{"as", "auto"},
-				Usage:   "Auto-snipe 3 character names",
-				Action: func(c *cli.Context) error {
-					color.Printf(genHeader())
-					err := autoSnipeCommand(c.Float64("offset"))
-					if err != nil {
-						log("fatal", err.Error())
-					}
-					userInput("press enter to exit")
-					return nil
-				},
-				Flags: []cli.Flag{
-					&cli.Float64Flag{
-						Name:    "offset",
-						Aliases: []string{"o", "delay", "time-offset"},
-						Usage:   "snipe x ms early",
-						Value:   -1000,
-					},
-				},
-			},
-			{
 				Name:    "ping",
 				Aliases: []string{"p"},
 				Usage:   "Ping Mojang servers",

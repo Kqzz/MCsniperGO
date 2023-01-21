@@ -237,23 +237,6 @@ func snipeCommand(targetName string, offset float64) error {
 	return nil
 }
 
-func autoSnipeCommand(offset float64) error {
-	if offset == -10000 {
-		offset, _ = pingMojang()
-	}
-
-	for {
-		nameSlice, err := getNext3c()
-		if err != nil {
-			return err
-		} else {
-			for _, i := range nameSlice {
-				snipeCommand(i.Name, offset)
-			}
-		}
-	}
-}
-
 func pingCommand() {
 	ping, err := pingMojang()
 	if err != nil {
