@@ -3,14 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
 	"github.com/Kqzz/MCsniperGO/mc"
 )
 
-func parseAccounts(accs []string) ([]*mc.MCaccount, []error) {
+func parseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error) {
 	parsed, errs := []*mc.MCaccount{}, []error{}
 	for i, l := range accs {
 		s := strings.Split(l, ":")
@@ -19,7 +18,7 @@ func parseAccounts(accs []string) ([]*mc.MCaccount, []error) {
 			continue
 		}
 
-		acc := &mc.MCaccount{}
+		acc := &mc.MCaccount{Type: accType}
 
 		if len(s) >= 2 {
 			acc.Email = s[0]
@@ -44,21 +43,12 @@ func readLines(filename string) ([]string, error) {
 
 	defer file.Close()
 
-	rd := bufio.NewReader(file)
+	scanner := bufio.NewScanner(file)
 
 	lines := []string{}
 
-	for {
-		line, err := rd.ReadString('\n')
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-
-			return []string{}, err
-		}
-
-		lines = append(lines, line)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
 	}
 
 	return lines, nil

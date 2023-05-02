@@ -1,24 +1,62 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 
 	"github.com/Kqzz/MCsniperGO/log"
 )
 
+const help = `usage:
+    mcsnipergo [options]
+options:
+    --username, -u <str>    username to snipe
+    --offset, -o <float>    offset to use
+    --autosnipe             auto snipe 3chars
+    --queue, -q             run snipes from queue.txt 
+`
+
+func init() {
+	flag.Usage = func() {
+		fmt.Print(help)
+	}
+}
+
+func isFlagPassed(names ...string) bool {
+	found := false
+	for _, name := range names {
+		flag.Visit(func(f *flag.Flag) {
+			if f.Name == name {
+				found = true
+			}
+		})
+	}
+	return found
+}
+
 func main() {
 
-	c := make(chan os.Signal)
+	var startUsername string
+	flag.StringVar(&startUsername, "username", "", "username(s) to snipe")
+	flag.StringVar(&startUsername, "u", "", "username(s) to snipe")
+
+	var startOffset float64
+
+	flag.Float64Var(&startOffset, "offset", 0, "offset to use")
+	flag.Float64Var(&startOffset, "o", 0, "offset to use")
+
+	flag.Parse()
+
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
 		<-c
 		fmt.Print("\r")
-		log.Log("err", "ctrl-c pressed, exiting...")
+		log.Log("err", "ctrl-c pressed, exiting...      ")
 		os.Exit(0)
 	}()
 
@@ -26,21 +64,15 @@ func main() {
 
 		log.Log("", log.GetHeader())
 
-		username := log.Input("target username")
+		var username string
 
-		var offset float64
-
-	offsetLoop:
-		for {
-			o := log.Input("offset")
-			var err error
-			offset, err = strconv.ParseFloat(o, 64)
-			if err == nil {
-				break offsetLoop
-			}
+		if !isFlagPassed("u", "username") {
+			username = log.Input("target username(s)")
+		} else {
+			username = startUsername
 		}
 
-		err := snipe(username, offset)
+		err := snipe(username)
 
 		if err != nil {
 			log.Log("err", "fatal: %v", err)

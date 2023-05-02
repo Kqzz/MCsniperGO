@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	droptimePkg "github.com/Kqzz/MCsniperGO/droptime"
@@ -17,33 +16,36 @@ const (
 	spread     = 0
 )
 
-func snipe(username string, offset float64) error {
+func snipe(username string) error {
 
-	accountsLines, err := readLines("accounts.txt")
+	giftCodeLines, err := readLines("gc.txt")
 
 	if err != nil {
 		return err
 	}
 
-	accounts, errs := parseAccounts(accountsLines)
+	gcs, parseErrors := parseAccounts(giftCodeLines, mc.MsPr)
+
+	for _, er := range parseErrors {
+		if er == nil {
+			continue
+		}
+		log.Log("err", "%v", err)
+	}
+
+	startDroptime, endDroptime := droptimePkg.GetDroptime(username)
 
 	if err != nil {
-		log.Log("err", "%v", errs)
+		log.Log("err", "%v", err)
 		return errors.New("failed to parse accounts")
 	}
 
-	droptime, err := droptimePkg.GetDroptime(username)
-
-	if err != nil {
-		return err
-	}
-
 	fmt.Print("\n")
-	log.Log("info", "sniping %s at %s", username, droptime.Format("02 Jan 06 15:04 MST"))
+	log.Log("info", "sniping %s at %s", username, startDroptime.Format("02 Jan 06 15:04 MST"))
 
 	for {
-		if time.Until(droptime) > authOffset {
-			color.Printf("\r[<fg=blue>*</>] authing in %v    ", time.Until(droptime).Round(time.Second))
+		if time.Until(startDroptime) > authOffset {
+			color.Printf("\r[<fg=blue>*</>] authing in %v    ", time.Until(startDroptime.Add(-time.Hour*8)).Round(time.Second))
 			time.Sleep(time.Second * 1)
 		} else {
 			color.Printf("\r[<fg=blue>*</>] starting auth...\n\n")
@@ -53,7 +55,7 @@ func snipe(username string, offset float64) error {
 
 	usableAccounts := []*mc.MCaccount{}
 
-	for _, account := range accounts {
+	for _, account := range gcs {
 		authErr := account.MicrosoftAuthenticate()
 		if authErr != nil {
 			log.Log("err", "failed to authenticate %v: %v", account.Email, authErr)
@@ -62,31 +64,26 @@ func snipe(username string, offset float64) error {
 			log.Log("success", "authenticated %s", account.Email)
 		}
 
-		account.Type = mc.Ms
-
-		ncInfo, checkErr := account.NameChangeInfo()
-
-		if checkErr != nil {
-			log.Log("err", "failed to check %v's acc: %v", account.Email, checkErr)
+		if account.Type == mc.Ms {
+			_, checkErr := account.NameChangeInfo()
+			if checkErr != nil {
+				log.Log("err", "failed to confirm name change for %v: %v", account.Email, checkErr)
+				continue
+			}
+			usableAccounts = append(usableAccounts, account)
 			continue
 		}
 
-		if ncInfo.Namechangeallowed {
-			account.Type = mc.Ms
-		} else {
+		if account.Type == mc.MsPr {
 			isGc, checkErr := account.HasGcApplied()
 
-			if checkErr != nil {
-				log.Log("err", "failed to check %v's type: %v", account.Email, checkErr)
+			if checkErr != nil || !isGc {
+				log.Log("err", "failed to confirm gift code claim for %v: %v", account.Email, checkErr)
 				continue
 			}
 
-			if isGc {
-				account.Type = mc.MsPr
-			}
+			usableAccounts = append(usableAccounts, account)
 		}
-
-		usableAccounts = append(usableAccounts, account)
 
 	}
 
@@ -96,11 +93,9 @@ func snipe(username string, offset float64) error {
 		log.Log("success", "authenticated %d account(s)\n", len(usableAccounts))
 	}
 
-	changeTime := droptime.Add(time.Millisecond * time.Duration(0-offset))
-
 	for {
-		if time.Until(changeTime) > time.Second*20 {
-			color.Printf("\r[<fg=blue>*</>] sniping in %v    ", time.Until(droptime).Round(time.Second))
+		if time.Until(startDroptime) > time.Second*20 {
+			color.Printf("\r[<fg=blue>*</>] sniping in %v    ", time.Until(startDroptime).Round(time.Second))
 			time.Sleep(time.Second * 1)
 		} else {
 			color.Printf("\r[<fg=blue>*</>] starting snipe...\n")
@@ -108,64 +103,16 @@ func snipe(username string, offset float64) error {
 		}
 	}
 
-	var wg sync.WaitGroup
-	var resps []mc.NameChangeReturn
-	var sentReqs int
-
-	for _, account := range usableAccounts {
-		reqCount := 3
-		if account.Type == mc.MsPr {
-			reqCount = 6
-		}
-
-		for i := 0; i < reqCount; i++ {
-			wg.Add(1)
-			go func(acc *mc.MCaccount) {
-				defer wg.Done()
-				resp, err := acc.ChangeName(
-					username,
-					changeTime.Add(
-						time.Millisecond*time.Duration(
-							float64(sentReqs)*spread,
-						),
-					),
-					acc.Type == mc.MsPr,
-				)
-
-				if err != nil {
-					log.Log("err", "encountered err on nc for %v: %v", acc.Email, err)
-				} else {
-					resps = append(resps, resp)
-				}
-
-				sentReqs++
-			}(account)
-
-			time.Sleep(time.Millisecond * 2)
-		}
+	snipe := &Snipe{
+		Username:    username,
+		Accounts:    usableAccounts,
+		Droptime:    startDroptime,
+		DroptimeEnd: endDroptime,
+		Running:     true,
+		Proxy:       "",
 	}
 
-	wg.Wait()
-
-	for _, r := range resps {
-		log.Log(
-			"info",
-			"[%s] sent @ %s | recv @ %s | %s",
-			log.PrettyStatus(r.StatusCode),
-			log.FmtTimestamp(r.SendTime),
-			log.FmtTimestamp(r.ReceiveTime),
-			log.PrettyTimestampStatus(r.ReceiveTime, droptime, r.StatusCode),
-		)
-
-		if r.StatusCode < 300 && r.StatusCode > 199 {
-			log.Log(
-				"success",
-				"sniped %s onto %s",
-				username,
-				r.Account.Email,
-			)
-		}
-	}
+	snipe.runClaim()
 
 	return nil
 }

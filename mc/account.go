@@ -2,16 +2,17 @@ package mc
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/valyala/fasthttp"
+	"github.com/valyala/fasthttp/fasthttpproxy"
 )
 
 func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*http.Request, error) {
@@ -260,7 +261,7 @@ func (account *MCaccount) HasGcApplied() (bool, error) {
 
 	if resp.StatusCode == 200 {
 		return false, errors.New("successfully created profile with name test. unintended behavior, function is meant to check if gc is applied")
-		
+
 	} else if resp.StatusCode == 401 {
 		return false, errors.New("received unauthorized response")
 	} else if resp.StatusCode == 400 {
@@ -292,12 +293,11 @@ func (account *MCaccount) HasGcApplied() (bool, error) {
 
 	}
 
-
 	if strings.Contains(string(bodyBytes), "Request blocked") {
 		return false, errors.New("blocked by cloudfront (ip block)")
 	}
 
-	return false, fmt.Errorf("got status: %v body: %v", resp.Status, string(bodyBytes)) 
+	return false, fmt.Errorf("got status: %v body: %v", resp.Status, string(bodyBytes))
 
 }
 
@@ -322,10 +322,10 @@ func (account *MCaccount) NameChangeInfo() (nameChangeInfoResponse, error) {
 
 	if resp.StatusCode >= 400 {
 		return nameChangeInfoResponse{
-				Changedat:         time.Time{},
-				Createdat:         time.Time{},
-				Namechangeallowed: false,
-			}, errors.New("failed to grab name change info")
+			Changedat:         time.Time{},
+			Createdat:         time.Time{},
+			Namechangeallowed: false,
+		}, errors.New("failed to grab name change info")
 	}
 
 	var parsedNameChangeInfo nameChangeInfoResponse
@@ -339,77 +339,52 @@ func (account *MCaccount) NameChangeInfo() (nameChangeInfoResponse, error) {
 	return parsedNameChangeInfo, nil
 }
 
-func (account *MCaccount) ChangeName(username string, changeTime time.Time, createProfile bool) (NameChangeReturn, error) {
+func (account *MCaccount) ChangeName(username string, changeTime time.Time, createProfile bool, proxy string) (NameChangeReturn, error) {
+	client := &fasthttp.Client{
+		Dial: fasthttp.Dial,
+	}
 
-	var payload string
+	if proxy != "" {
+		proxy = strings.TrimPrefix(proxy, "http://")
+		proxy = strings.TrimPrefix(proxy, "https://")
+		client.Dial = fasthttpproxy.FasthttpHTTPDialer(proxy)
+	}
+
+	var err error
+
+	req := fasthttp.AcquireRequest()
+	resp := fasthttp.AcquireResponse()
+
 	if createProfile {
-		data := fmt.Sprintf(`{"profileName": "%s"}`, username)
-		payload = fmt.Sprintf(
-			"POST /minecraft/profile HTTP/1.1\r\n"+
-				"Host: api.minecraftservices.com\r\n"+
-				"Authorization: Bearer %s\r\n"+
-				"Content-Type: application/json\r\n"+
-				"Content-Length: %d\r\n"+
-				"\r\n"+
-				"%s",
-			account.Bearer,
-			len(data),
-			data,
-		)
-		// credit to peet for that ^
-		// and credit to tenscape for teaching me how HTTP works lol
+		req.Header.SetRequestURI("https://api.minecraftservices.com/minecraft/profile")
+		req.Header.SetMethod("POST")
+		req.SetBodyString(fmt.Sprintf(`{"profileName": "%s"}`, username))
 	} else {
-		payload = fmt.Sprintf("PUT /minecraft/profile/name/%s HTTP/1.1\r\nHost: api.minecraftservices.com\r\nAuthorization: Bearer %s\r\n\r\n", username, account.Bearer)
-		// and that
+		req.Header.SetRequestURI(fmt.Sprintf("https://api.minecraftservices.com/minecraft/profile/name/%s", username))
+		req.Header.SetMethod("PUT")
 	}
 
-	recvd := make([]byte, 1024)
-
-	time.Sleep(time.Until(changeTime) - time.Second*20)
-
-	conn, err := tls.Dial("tcp", "api.minecraftservices.com"+":443", nil)
-	conn.Write([]byte(payload[:len(payload)-2]))
-	if err != nil {
-		return NameChangeReturn{
-			Account:     MCaccount{},
-			Username:    username,
-			ChangedName: false,
-			StatusCode:  0,
-			SendTime:    time.Time{},
-			ReceiveTime: time.Time{},
-		}, err
-	}
+	req.Header.Set("Authorization", "Bearer "+account.Bearer)
+	req.Header.SetContentType("application/json")
 
 	time.Sleep(time.Until(changeTime))
 
-	conn.Write([]byte(payload[len(payload)-2:]))
 	sendTime := time.Now()
-
-	conn.Read(recvd)
+	err = client.Do(req, resp)
 	recvTime := time.Now()
-	conn.Close()
-	status, err := strconv.Atoi(string(recvd[9:12]))
 
 	if err != nil {
-		return NameChangeReturn{
-			Account:     MCaccount{},
-			Username:    username,
-			ChangedName: false,
-			StatusCode:  0,
-			SendTime:    sendTime,
-			ReceiveTime: time.Time{},
-		}, err
+		return NameChangeReturn{Username: username}, err
 	}
 
-	toRet := NameChangeReturn{
-		Account:     *account,
+	return NameChangeReturn{
 		Username:    username,
-		ChangedName: status < 300,
-		StatusCode:  status,
+		ChangedName: resp.StatusCode() < 300,
+		StatusCode:  resp.StatusCode(),
 		SendTime:    sendTime,
 		ReceiveTime: recvTime,
-	}
-	return toRet, nil
+		Account:     *account,
+	}, nil
 }
 
 func (account *MCaccount) ChangeSkinFromUrl(url, variant string) error {

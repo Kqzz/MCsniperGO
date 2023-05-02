@@ -29,13 +29,13 @@ var formats = map[string]string{
 	"input":   "[<fg=blue>*</>] %s: ",
 }
 
-func Log(l, m string, params ...interface{}) {
-	format, e := formats[l]
+func Log(level, message string, params ...interface{}) {
+	format, e := formats[level]
 	if !e {
 		format = "%s"
 	}
 
-	color.Printf(format, fmt.Sprintf(m, params...))
+	color.Printf(format, fmt.Sprintf(message, params...))
 }
 
 func Input(m string, params ...interface{}) string {
