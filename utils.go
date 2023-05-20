@@ -39,8 +39,6 @@ func pingMojang() (float64, error) {
 	return float64(sumNanos / 1000000), nil
 }
 
-// readLines reads a whole file into memory
-// and returns a slice of its lines.
 func readLines(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -53,20 +51,32 @@ func readLines(path string) ([]string, error) {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	return lines, scanner.Err()
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return lines, nil
 }
 
 func strSliceContainsMultiOption(s []string, strs []string) bool {
+	lookup := make(map[string]bool)
+
+	// Populate the lookup map with strings from s
+	for _, v := range s {
+		lookup[v] = true
+	}
+
+	// Check if any string from strs is present in the lookup map
 	for _, str := range strs {
-		for _, v := range s {
-			if v == str {
-				return true
-			}
+		if lookup[str] {
+			return true
 		}
 	}
 
 	return false
 }
+
 
 func loadAccStr(accStr string) (mcgo.MCaccount, error) {
 	if strings.HasPrefix(accStr, "#") {
@@ -182,7 +192,7 @@ func genHeader() string {
 
 func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
+	return err == nil
 }
 
 func prettyAccType(acc mcgo.AccType) string {
@@ -280,9 +290,9 @@ func accID(acc *mcgo.MCaccount) string {
 		return acc.Email
 	} else if acc.Bearer != "" {
 		return acc.Bearer[len(acc.Bearer)-10:]
-	} else {
-		return "<unknown account>"
 	}
+
+	return "<unknown account>"
 }
 
 func authAccount(acc *mcgo.MCaccount, droptime time.Time) error {
