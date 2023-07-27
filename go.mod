@@ -1,19 +1,19 @@
-module github.com/kqzz/mcsnipergo
+module github.com/Kqzz/MCsniperGO
 
 go 1.17
 
+require github.com/gookit/color v1.5.0
+
 require (
-	github.com/ecnepsnai/discord v1.2.1
-	github.com/gookit/color v1.5.2
-	github.com/kqzz/mcgo v0.2.99
-	github.com/pelletier/go-toml/v2 v2.0.5
-	github.com/urfave/cli/v2 v2.17.1
+	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 )
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
+	github.com/valyala/fasthttp v1.45.0
+	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 )

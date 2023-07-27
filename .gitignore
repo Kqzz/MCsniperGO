@@ -1,5 +1,4 @@
 accounts.txt
-accounts-backup.txt
-dist/
-logs/
-config.toml
+gc.txt
+ms.txt
+*.exe
