@@ -124,7 +124,7 @@ func claimName(claim Claim) {
 
 	log.Log("info", "%v %vms [%v] %v %v #%d", resp.ReceiveTime.Format("15:04:05.999"), resp.ReceiveTime.Sub(resp.SendTime).Milliseconds(), claim.Name, resp.StatusCode, acc.Type, claim.AccNum)
 	if resp.StatusCode == 200 {
-		log.Log("success", "Claimed %v on %v acc, %v", "info", claim.Name, acc.Type, acc.Bearer[len(acc.Bearer)/2:])
+		log.Log("success", "Claimed %v on %v acc, %v", claim.Name, acc.Type, acc.Bearer[len(acc.Bearer)/2:])
 	}
 
 }
