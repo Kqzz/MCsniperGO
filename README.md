@@ -16,7 +16,8 @@
 Use the following Javascript bookmarklet in your browser to obtain the droptime while on `namemc.com/search?q=<username>`:
 
 ```js
-javascript:(function()%7Bfunction%20parseIsoDatetime(dtstr)%20%7B%0A%20%20%20%20return%20new%20Date(dtstr)%3B%0A%7D%3B%0A%0AstartElement%20%3D%20document.getElementById('availability-time')%3B%0AendElement%20%3D%20document.getElementById('availability-time2')%3B%0A%0Astart%20%3D%20parseIsoDatetime(startElement.getAttribute('datetime'))%3B%0Aend%20%3D%20parseIsoDatetime(endElement.getAttribute('datetime'))%3B%0A%0Apara%20%3D%20document.createElement(%22p%22)%3B%0Apara.innerText%20%3D%20Math.floor(start.getTime()%20%2F%201000)%20%2B%20'-'%20%2B%20Math.ceil(end.getTime()%20%2F%201000)%3B%0A%0AendElement.parentElement.appendChild(para)%3B%7D)()%3B```
+javascript:(function()%7Bfunction%20parseIsoDatetime(dtstr)%20%7B%0A%20%20%20%20return%20new%20Date(dtstr)%3B%0A%7D%3B%0A%0AstartElement%20%3D%20document.getElementById('availability-time')%3B%0AendElement%20%3D%20document.getElementById('availability-time2')%3B%0A%0Astart%20%3D%20parseIsoDatetime(startElement.getAttribute('datetime'))%3B%0Aend%20%3D%20parseIsoDatetime(endElement.getAttribute('datetime'))%3B%0A%0Apara%20%3D%20document.createElement(%22p%22)%3B%0Apara.innerText%20%3D%20Math.floor(start.getTime()%20%2F%201000)%20%2B%20'-'%20%2B%20Math.ceil(end.getTime()%20%2F%201000)%3B%0A%0AendElement.parentElement.appendChild(para)%3B%7D)()%3B
+```
 
 ## accounts formatting
 
