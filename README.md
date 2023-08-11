@@ -24,3 +24,11 @@ javascript:(function()%7Bfunction%20parseIsoDatetime(dtstr)%20%7B%0A%20%20%20%20
 ```txt
 EMAIL:PASSWORD
 ```
+
+## understanding logs
+
+Each request made to change your username will return a 3 digit HTTP status code, the meanings are as follows:
+
+- 400 / 403: Failed to claim username (will continue trying)
+- 401: Unauthorized (restart claimer if it appears)
+- 429: Too many requests (add more proxies if this occurs frequently)
