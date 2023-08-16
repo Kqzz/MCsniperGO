@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	droptimePkg "github.com/Kqzz/MCsniperGO/droptime"
@@ -18,15 +19,29 @@ const (
 
 func snipe(username string) error {
 
-	giftCodeLines, err := readLines("gc.txt")
+	proxies, err := readLines("proxies.txt")
 
 	if err != nil {
-		return err
+		log.Log("err", "failed to load proxies: %v", err)
 	}
+
+	err = nil
+
+	giftCodeLines, _ := readLines("gc.txt")
+
+	microsoftLines, _ := readLines("ms.txt")
 
 	gcs, parseErrors := parseAccounts(giftCodeLines, mc.MsPr)
 
 	for _, er := range parseErrors {
+		if er == nil {
+			continue
+		}
+		log.Log("err", "%v", err)
+	}
+	microsofts, msParseErrors := parseAccounts(microsoftLines, mc.Ms)
+
+	for _, er := range msParseErrors {
 		if er == nil {
 			continue
 		}
@@ -53,9 +68,15 @@ func snipe(username string) error {
 		}
 	}
 
+	accounts := append(gcs, microsofts...)
+
+	if len(accounts) == 0 {
+		return errors.New("no accounts loaded")
+	}
+
 	usableAccounts := []*mc.MCaccount{}
 
-	for _, account := range gcs {
+	for _, account := range accounts {
 		authErr := account.MicrosoftAuthenticate()
 		if authErr != nil {
 			log.Log("err", "failed to authenticate %v: %v", account.Email, authErr)
@@ -109,7 +130,7 @@ func snipe(username string) error {
 		Droptime:    startDroptime,
 		DroptimeEnd: endDroptime,
 		Running:     true,
-		Proxy:       "",
+		Proxy:       strings.Join(proxies, ","),
 	}
 
 	snipe.runClaim()
