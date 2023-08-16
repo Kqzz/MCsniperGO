@@ -8,19 +8,35 @@
 
 - [Install go](https://go.dev/dl/)
 - open MCsniperGO folder in terminal / cmd
-- put your prename accounts in [`gc.txt`](#accounts-formatting) (proxy support + normal MS support soon)
+- put your prename accounts (no claimed username) in [`gc.txt`](#accounts-formatting) and your normal accounts in [`ms.txt`](#accounts-formatting)
+- put proxies into `proxies.txt` in the format `user:pass@ip:port` (there should NOT be 4 `:` in it as many proxy providers provide it as)
 - run `go run ./cmd/cli`
-- Enter username + [claim range](#claim-range)
+- enter username + [claim range](#claim-range)
 
 ## Claim Range
 Use the following Javascript bookmarklet in your browser to obtain the droptime while on `namemc.com/search?q=<username>`:
 
 ```js
-javascript:(function()%7Bfunction%20parseIsoDatetime(dtstr)%20%7B%0A%20%20%20%20return%20new%20Date(dtstr)%3B%0A%7D%3B%0A%0AstartElement%20%3D%20document.getElementById('availability-time')%3B%0AendElement%20%3D%20document.getElementById('availability-time2')%3B%0A%0Astart%20%3D%20parseIsoDatetime(startElement.getAttribute('datetime'))%3B%0Aend%20%3D%20parseIsoDatetime(endElement.getAttribute('datetime'))%3B%0A%0Apara%20%3D%20document.createElement(%22p%22)%3B%0Apara.innerText%20%3D%20Math.floor(start.getTime()%20%2F%201000)%20%2B%20'-'%20%2B%20Math.ceil(end.getTime()%20%2F%201000)%3B%0A%0AendElement.parentElement.appendChild(para)%3B%7D)()%3B
+javascript:(function(){function parseIsoDatetime(dtstr) {
+    return new Date(dtstr);
+};
+
+startElement = document.getElementById('availability-time');
+endElement = document.getElementById('availability-time2');
+
+start = parseIsoDatetime(startElement.getAttribute('datetime'));
+end = parseIsoDatetime(endElement.getAttribute('datetime'));
+
+para = document.createElement("p");
+para.innerText = Math.floor(start.getTime() / 1000) + '-' + Math.ceil(end.getTime() / 1000);
+
+endElement.parentElement.appendChild(para);})();
+
 ```
 
 ## accounts formatting
 
+`gc.txt` and `ms.txt`
 ```txt
 EMAIL:PASSWORD
 ```
