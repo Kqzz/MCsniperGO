@@ -12,6 +12,7 @@
 - put proxies into `proxies.txt` in the format `user:pass@ip:port` (there should NOT be 4 `:` in it as many proxy providers provide it as)
 - run `go run ./cmd/cli`
 - enter username + [claim range](#claim-range)
+- wait, and hope you claim the username!
 
 ## Claim Range
 Use the following Javascript bookmarklet in your browser to obtain the droptime while on `namemc.com/search?q=<username>`:
