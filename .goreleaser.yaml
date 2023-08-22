@@ -28,7 +28,7 @@ changelog:
       - "^test:"
 # .goreleaser.yaml
 upx:
-  - enabled: true
+  - enabled: false
     compress: best
     lzma: false
     brute: true

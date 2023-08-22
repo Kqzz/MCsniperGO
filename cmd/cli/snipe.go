@@ -28,7 +28,7 @@ func snipe(username string) error {
 	err = nil
 
 	giftCodeLines, _ := readLines("gc.txt")
-	gamepassLines, _ := readLines("gc.txt")
+	gamepassLines, _ := readLines("gp.txt")
 	microsoftLines, _ := readLines("ms.txt")
 
 	gcs, parseErrors := parseAccounts(giftCodeLines, mc.MsPr)
@@ -114,9 +114,9 @@ func snipe(username string) error {
 		}
 
 		if account.Type == mc.MsPr {
-			isGc, checkErr := account.HasGcApplied()
+			_, checkErr := account.HasGcApplied()
 
-			if checkErr != nil || !isGc {
+			if checkErr != nil {
 				log.Log("err", "failed to confirm gift code claim for %v: %v", account.Email, checkErr)
 				continue
 			}
