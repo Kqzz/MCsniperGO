@@ -79,7 +79,7 @@ func generator(workChan chan Claim, killChan chan bool, bearers []string, name s
 			sleepTime = 10500 / len(bearers)
 		}
 	}
-	loopCount := 3
+	loopCount := 2
 	if accType == mc.Ms {
 		loopCount = 3
 	}
@@ -116,7 +116,7 @@ func claimName(claim Claim) {
 		Type:   claim.AccType,
 	}
 
-	resp, err := acc.ChangeName(claim.Name, time.Now(), acc.Type == mc.MsPr, claim.Proxy)
+	resp, err := acc.ChangeName(claim.Name, time.Now(), acc.Type != mc.Ms, claim.Proxy)
 	if err != nil {
 		log.Log("err", err.Error())
 		log.Log("err", "Proxy: "+claim.Proxy)

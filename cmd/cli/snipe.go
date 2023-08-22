@@ -101,6 +101,7 @@ func snipe(username string) error {
 				log.Log("err", "failed to license %v: %v", account.Email, err)
 				continue
 			}
+			usableAccounts = append(usableAccounts, account)
 		}
 
 		if account.Type == mc.Ms {
