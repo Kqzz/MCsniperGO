@@ -7,7 +7,8 @@
 ## Usage
 
 - [Install go](https://go.dev/dl/)
-- open MCsniperGO folder in terminal / cmd
+- Download or clone MCsniperGO repository 
+- open MCsniperGO folder in your terminal / cmd
 - put your prename accounts (no claimed username) in [`gc.txt`](#accounts-formatting) and your normal accounts in [`ms.txt`](#accounts-formatting)
 - put proxies into `proxies.txt` in the format `user:pass@ip:port` (there should NOT be 4 `:` in it as many proxy providers provide it as)
 - run `go run ./cmd/cli`
