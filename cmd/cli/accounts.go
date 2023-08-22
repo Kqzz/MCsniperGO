@@ -38,6 +38,7 @@ func readLines(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 
 	if err != nil {
+		os.Create(filename)
 		return []string{}, err
 	}
 

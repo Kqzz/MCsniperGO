@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -14,6 +15,50 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpproxy"
 )
+
+func randomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
+}
+
+func (account *MCaccount) License() error {
+	url := fmt.Sprintf("https://api.minecraftservices.com/entitlements/license?requestId=%v", randomString(10))
+
+	req, err := account.AuthenticatedReq("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("authority", "api.minecraftservices.com")
+	req.Header.Add("accept", "*/*")
+	req.Header.Add("accept-language", "en-US,en;q=0.6")
+	req.Header.Add("origin", "https://www.minecraft.net")
+	req.Header.Add("referer", "https://www.minecraft.net/")
+	req.Header.Add("sec-ch-ua-mobile", "?0")
+	req.Header.Add("sec-fetch-dest", "empty")
+	req.Header.Add("sec-fetch-mode", "cors")
+	req.Header.Add("sec-fetch-site", "cross-site")
+	req.Header.Add("sec-gpc", "1")
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == 200 {
+		return nil
+	}
+
+	return errors.New(resp.Status)
+}
 
 func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequest(method, url, body)

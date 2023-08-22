@@ -5,9 +5,9 @@ import "time"
 type AccType string
 
 const (
-	Ms   AccType = "ms"
-	Mj   AccType = "mj"
-	MsPr AccType = "mspr"
+	Ms   AccType = "ms"   // microsoft account
+	MsPr AccType = "mspr" // microsoft gift card account
+	MsGp AccType = "msgp" // microsoft game pass account
 )
 
 /// RETURNS  / API-FACING ///
@@ -83,7 +83,7 @@ type authenticateReqResp struct {
 	Clienttoken string `json:"clientToken"`
 }
 
-/// SEND BODIES ///
+// / SEND BODIES ///
 type submitPostJson struct {
 	ID     int    `json:"id"`
 	Answer string `json:"answer"`

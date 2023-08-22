@@ -28,7 +28,7 @@ func snipe(username string) error {
 	err = nil
 
 	giftCodeLines, _ := readLines("gc.txt")
-
+	gamepassLines, _ := readLines("gc.txt")
 	microsoftLines, _ := readLines("ms.txt")
 
 	gcs, parseErrors := parseAccounts(giftCodeLines, mc.MsPr)
@@ -42,6 +42,15 @@ func snipe(username string) error {
 	microsofts, msParseErrors := parseAccounts(microsoftLines, mc.Ms)
 
 	for _, er := range msParseErrors {
+		if er == nil {
+			continue
+		}
+		log.Log("err", "%v", err)
+	}
+
+	gamepasses, gpParseErrors := parseAccounts(gamepassLines, mc.MsGp)
+
+	for _, er := range gpParseErrors {
 		if er == nil {
 			continue
 		}
@@ -69,6 +78,7 @@ func snipe(username string) error {
 	}
 
 	accounts := append(gcs, microsofts...)
+	accounts = append(accounts, gamepasses...)
 
 	if len(accounts) == 0 {
 		return errors.New("no accounts loaded")
@@ -83,6 +93,14 @@ func snipe(username string) error {
 			continue
 		} else {
 			log.Log("success", "authenticated %s", account.Email)
+		}
+
+		if account.Type == mc.MsGp {
+			err := account.License()
+			if err != nil {
+				log.Log("err", "failed to license %v: %v", account.Email, err)
+				continue
+			}
 		}
 
 		if account.Type == mc.Ms {
