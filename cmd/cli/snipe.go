@@ -90,15 +90,17 @@ func snipe(username string) error {
 		authErr := account.MicrosoftAuthenticate()
 		if authErr != nil {
 			log.Log("err", "failed to authenticate %v: %v", account.Email, authErr)
+			time.Sleep(time.Second * 21)
 			continue
 		} else {
 			log.Log("success", "authenticated %s", account.Email)
 		}
 
+		time.Sleep(time.Millisecond * 500)
 		if account.Type == mc.MsGp {
-			err := account.License()
-			if err != nil {
-				log.Log("err", "failed to license %v: %v", account.Email, err)
+			licenseErr := account.License()
+			if licenseErr != nil {
+				log.Log("err", "failed to license %v: %v", account.Email, licenseErr)
 				continue
 			}
 			usableAccounts = append(usableAccounts, account)
@@ -124,6 +126,7 @@ func snipe(username string) error {
 
 			usableAccounts = append(usableAccounts, account)
 		}
+		time.Sleep(time.Second * 21)
 
 	}
 

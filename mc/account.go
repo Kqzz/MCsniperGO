@@ -66,7 +66,7 @@ func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Re
 		return nil, err
 	}
 	if account.Bearer == "" {
-		return nil, errors.New("account is not authenticated")
+		return nil, errors.New("no bearer detected on account")
 	}
 	req.Header.Add("Authorization", "Bearer "+account.Bearer)
 	req.Header.Set("Content-Type", "application/json")
