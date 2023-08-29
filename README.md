@@ -42,8 +42,16 @@ If 3name.xyz has a lower length claim range for a username I would recommend usi
 javascript: (function() {
     startElement = document.getElementById('lower-bound-update');
     endElement = document.getElementById('upper-bound-update');
+  
+  	if (startElement === null) {
+    	startElement = 0;
+    } else {
+      startElement = startElement.getAttribute('data-lower-bound')
+    }
+  
+  
     para = document.createElement("p");
-    para.innerText = startElement.getAttribute('data-lower-bound') + '-' + endElement.getAttribute('data-upper-bound');
+    para.innerText = startElement+ '-' + endElement.getAttribute('data-upper-bound');
     endElement.parentElement.appendChild(para)
 })()
 ```
