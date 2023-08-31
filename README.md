@@ -51,7 +51,7 @@ javascript: (function() {
   
   
     para = document.createElement("p");
-    para.innerText = startElement+ '-' + endElement.getAttribute('data-upper-bound');
+    para.innerText = Math.floor(Number(startElement) / 1000) + '-' + Math.ceil(Number(endElement.getAttribute('data-upper-bound')) / 1000);
     endElement.parentElement.appendChild(para)
 })()
 ```
