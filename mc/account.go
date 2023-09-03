@@ -6,9 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
-	"net/http"
 	"strings"
 	"time"
 
@@ -16,167 +14,55 @@ import (
 	"github.com/valyala/fasthttp/fasthttpproxy"
 )
 
-func randomString(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
-	s := make([]rune, n)
-	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(s)
-}
-
-func (account *MCaccount) License() error {
-	url := fmt.Sprintf("https://api.minecraftservices.com/entitlements/license?requestId=%v", randomString(10))
-
-	req, err := account.AuthenticatedReq("GET", url, nil)
-	if err != nil {
-		return err
+func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*fasthttp.Request, *fasthttp.Response, error) {
+	if account.FastHttpClient == nil {
+		return nil, nil, errors.New("fasthttp client not initialized")
 	}
 
-	req.Header.Add("authority", "api.minecraftservices.com")
-	req.Header.Add("accept", "*/*")
-	req.Header.Add("accept-language", "en-US,en;q=0.6")
-	req.Header.Add("origin", "https://www.minecraft.net")
-	req.Header.Add("referer", "https://www.minecraft.net/")
-	req.Header.Add("sec-ch-ua-mobile", "?0")
-	req.Header.Add("sec-fetch-dest", "empty")
-	req.Header.Add("sec-fetch-mode", "cors")
-	req.Header.Add("sec-fetch-site", "cross-site")
-	req.Header.Add("sec-gpc", "1")
-
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode == 200 {
-		return nil
-	}
-
-	return errors.New(resp.Status)
-}
-
-func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, body)
-	if err != nil {
-		return nil, err
-	}
 	if account.Bearer == "" {
-		return nil, errors.New("no bearer detected on account")
+		return nil, nil, errors.New("bearer token not initialized")
 	}
-	req.Header.Add("Authorization", "Bearer "+account.Bearer)
+
+	req := fasthttp.AcquireRequest()
+	resp := fasthttp.AcquireResponse()
+
+	req.Header.SetRequestURI(url)
+	req.Header.SetMethod(method)
+
+	req.Header.Set("Authorization", "Bearer "+account.Bearer)
 	req.Header.Set("Content-Type", "application/json")
 
-	return req, nil
-}
-
-func (account *MCaccount) authenticate() error {
-	payload := fmt.Sprintf(`{
-    "agent": {                              
-        "name": "Minecraft",                
-        "version": 1                        
-    },
-    "username": "%s",      
-    "password": "%s",
-	"requestUser": true
-}`, account.Email, account.Password)
-
-	u := bytes.NewReader([]byte(payload))
-	request, err := http.NewRequest("POST", "https://authserver.mojang.com/authenticate", u)
-	request.Header.Set("Content-Type", "application/json")
-
-	if err != nil {
-		return err
+	if body != nil {
+		req.SetBodyStream(body, -1)
 	}
 
-	resp, err := http.DefaultClient.Do(request)
-
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 300 {
-		var AccountInfo authenticateReqResp
-		b, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(b, &AccountInfo)
-		if err != nil {
-			return err
-		}
-
-		account.Bearer = AccountInfo.Accesstoken
-		account.Username = AccountInfo.User.Username
-		account.UUID = AccountInfo.User.ID
-		return nil
-
-	} else if resp.StatusCode == 403 {
-		return errors.New("invalid email or password")
-	}
-	return errors.New("reached end of authenticate function! Shouldn't be possible. most likely 'failed to auth' status code changed")
-}
-
-func (account *MCaccount) loadSecurityQuestions() error {
-	req, err := account.AuthenticatedReq("GET", "https://api.mojang.com/user/security/challenges", nil)
-	if err != nil {
-		return err
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode >= 400 {
-		return fmt.Errorf("got status %v when requesting security questions", resp.Status)
-	}
-
-	defer resp.Body.Close()
-
-	var sqAnswers []SqAnswer
-
-	respBytes, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(respBytes, &sqAnswers)
-	if err != nil {
-		return err
-	}
-
-	account.SecurityQuestions = sqAnswers
-
-	return nil
+	return req, resp, nil
 }
 
 // load account information (username, uuid) into accounts attributes, if not already there. When using Mojang authentication it is not necessary to load this info, as it will be automatically loaded.
 func (account *MCaccount) LoadAccountInfo() error {
-	req, err := account.AuthenticatedReq("GET", "https://api.minecraftservices.com/minecraft/profile", nil)
-	if err != nil {
-		return err
-	}
-	resp, err := http.DefaultClient.Do(req)
+	req, resp, err := account.AuthenticatedReq("GET", "https://api.minecraftservices.com/minecraft/profile", nil)
+
+	defer fasthttp.ReleaseRequest(req)
+	defer fasthttp.ReleaseResponse(resp)
 
 	if err != nil {
 		return err
 	}
 
-	defer resp.Body.Close()
+	err = account.FastHttpClient.Do(req, resp)
 
-	if resp.StatusCode == 404 {
+	if err != nil {
+		return err
+	}
+
+	statusCode := resp.StatusCode()
+
+	if statusCode == 404 {
 		return errors.New("account does not own minecraft")
 	}
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes := resp.Body()
 
 	if err != nil {
 		return err
@@ -192,124 +78,31 @@ func (account *MCaccount) LoadAccountInfo() error {
 	return nil
 }
 
-func (account *MCaccount) needToAnswer() (bool, error) {
-	req, err := account.AuthenticatedReq("GET", "https://api.mojang.com/user/security/location", nil)
-	if err != nil {
-		return false, err
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-
-	if err != nil {
-		return true, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == 204 {
-		return false, nil
-	}
-	if resp.StatusCode == 403 {
-		return true, nil
-	}
-	return true, fmt.Errorf("status of %v in needToAnswer not expected", resp.Status)
-}
-
-func (account *MCaccount) submitAnswers() error {
-	if len(account.SecurityAnswers) != 3 {
-		return errors.New("not enough security question answers provided")
-	}
-	if len(account.SecurityQuestions) != 3 {
-		return errors.New("security questions not properly loaded")
-	}
-	var jsonContent []submitPostJson
-	for i, sq := range account.SecurityQuestions {
-		jsonContent = append(jsonContent, submitPostJson{ID: sq.Answer.ID, Answer: account.SecurityAnswers[i]})
-	}
-	jsonStr, err := json.Marshal(jsonContent)
-	if err != nil {
-		return err
-	}
-	req, err := account.AuthenticatedReq("POST", "https://api.mojang.com/user/security/location", bytes.NewBuffer([]byte(jsonStr)))
-	if err != nil {
-		return err
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode == 204 {
-		return nil
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == 403 {
-		return errors.New("at least one security question answer was incorrect")
-	}
-	return fmt.Errorf("got status %v on post request for sqs", resp.Status)
-}
-
-// Runs all steps necessary to have a fully authenticated mojang account. It will submit email & pass and securitty questions (if necessary).
-func (account *MCaccount) MojangAuthenticate() error {
-	err := account.authenticate()
-	if err != nil {
-		return err
-	}
-
-	account.loadSecurityQuestions()
-
-	if len(account.SecurityQuestions) == 0 {
-		account.Authenticated = true
-		return nil
-	}
-
-	answerNeeded, err := account.needToAnswer()
-	if err != nil {
-		return err
-	}
-
-	if !answerNeeded {
-		account.Authenticated = true
-		return nil
-	}
-
-	err = account.submitAnswers()
-	if err != nil {
-		return err
-	}
-
-	account.Authenticated = true
-	return nil
-}
-
 func (account *MCaccount) HasGcApplied() (bool, error) {
 	bodyStr := `{"profileName": "test"}`
-	req, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile", bytes.NewReader([]byte(bodyStr)))
+	req, resp, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile", bytes.NewReader([]byte(bodyStr)))
 	if err != nil {
 		return false, err
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	err = account.FastHttpClient.Do(req, resp)
 	if err != nil {
 		return false, err
 	}
 
-	defer resp.Body.Close()
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes := resp.Body()
 	if err != nil {
 		return false, err
 	}
 
-	if resp.StatusCode == 200 {
+	statusCode := resp.StatusCode()
+
+	if statusCode == 200 {
 		return false, errors.New("successfully created profile with name test. unintended behavior, function is meant to check if gc is applied")
 
-	} else if resp.StatusCode == 401 {
+	} else if statusCode == 401 {
 		return false, errors.New("received unauthorized response")
-	} else if resp.StatusCode == 400 {
+	} else if statusCode == 400 {
 		var respError hasGcAppliedResp
 
 		err = json.Unmarshal(bodyBytes, &respError)
@@ -342,30 +135,32 @@ func (account *MCaccount) HasGcApplied() (bool, error) {
 		return false, errors.New("blocked by cloudfront (ip block)")
 	}
 
-	return false, fmt.Errorf("got status: %v body: %v", resp.Status, string(bodyBytes))
+	return false, fmt.Errorf("got status: %v body: %v", statusCode, string(bodyBytes))
 
 }
 
 // grab information on the availability of name change for this account
 func (account *MCaccount) NameChangeInfo() (nameChangeInfoResponse, error) {
-	req, err := account.AuthenticatedReq("GET", "https://api.minecraftservices.com/minecraft/profile/namechange", nil)
+	req, resp, err := account.AuthenticatedReq("GET", "https://api.minecraftservices.com/minecraft/profile/namechange", nil)
 
 	if err != nil {
 		return nameChangeInfoResponse{}, err
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nameChangeInfoResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := ioutil.ReadAll(resp.Body)
+	err = account.FastHttpClient.Do(req, resp)
 	if err != nil {
 		return nameChangeInfoResponse{}, err
 	}
 
-	if resp.StatusCode >= 400 {
+	respBody := resp.Body()
+
+	if err != nil {
+		return nameChangeInfoResponse{}, err
+	}
+
+	statusCode := resp.StatusCode()
+
+	if statusCode >= 400 {
 		return nameChangeInfoResponse{
 			Changedat:         time.Time{},
 			Createdat:         time.Time{},
@@ -382,6 +177,85 @@ func (account *MCaccount) NameChangeInfo() (nameChangeInfoResponse, error) {
 	}
 
 	return parsedNameChangeInfo, nil
+}
+
+func randomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
+}
+
+func (account *MCaccount) License() error {
+	url := fmt.Sprintf("https://api.minecraftservices.com/entitlements/license?requestId=%v", randomString(10))
+
+	req, resp, err := account.AuthenticatedReq("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("authority", "api.minecraftservices.com")
+	req.Header.Add("accept", "*/*")
+	req.Header.Add("accept-language", "en-US,en;q=0.6")
+	req.Header.Add("origin", "https://www.minecraft.net")
+	req.Header.Add("referer", "https://www.minecraft.net/")
+	req.Header.Add("sec-ch-ua-mobile", "?0")
+	req.Header.Add("sec-fetch-dest", "empty")
+	req.Header.Add("sec-fetch-mode", "cors")
+	req.Header.Add("sec-fetch-site", "cross-site")
+	req.Header.Add("sec-gpc", "1")
+
+	err = account.FastHttpClient.Do(req, resp)
+
+	if err != nil {
+		return err
+	}
+
+	statusCode := resp.StatusCode()
+
+	if statusCode == 200 {
+		return nil
+	}
+
+	return fmt.Errorf("failed w/ status: %v", statusCode)
+}
+
+func (account *MCaccount) CreateProfile(username string, client *fasthttp.Client) (int, error) {
+	body := fmt.Sprintf(`{"profileName": "%s"}`, username)
+	req, resp, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile", strings.NewReader(body))
+	if err != nil {
+		return 0, err
+	}
+
+	err = account.FastHttpClient.Do(req, resp)
+
+	if err != nil {
+		return 0, err
+	}
+
+	statusCode := resp.StatusCode()
+
+	return statusCode, nil
+}
+func (account *MCaccount) ChangeUsername(username string, client *fasthttp.Client) (int, error) {
+	req, resp, err := account.AuthenticatedReq("PUT", fmt.Sprintf("https://api.minecraftservices.com/minecraft/profile/name/%s", username), nil)
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = account.FastHttpClient.Do(req, resp)
+
+	if err != nil {
+		return 0, err
+	}
+
+	statusCode := resp.StatusCode()
+
+	return statusCode, nil
 }
 
 func (account *MCaccount) ChangeName(username string, changeTime time.Time, createProfile bool, proxy string) (NameChangeReturn, error) {
@@ -423,32 +297,34 @@ func (account *MCaccount) ChangeName(username string, changeTime time.Time, crea
 	}
 
 	return NameChangeReturn{
+		Email:       account.Email,
 		Username:    username,
 		ChangedName: resp.StatusCode() < 300,
 		StatusCode:  resp.StatusCode(),
 		SendTime:    sendTime,
 		ReceiveTime: recvTime,
-		Account:     *account,
 	}, nil
 }
 
 func (account *MCaccount) ChangeSkinFromUrl(url, variant string) error {
 	body := fmt.Sprintf(`{"url": "%v", "variant": "%v"}`, url, variant)
-	req, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile/skins", strings.NewReader(body))
+	req, resp, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile/skins", strings.NewReader(body))
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	err = account.FastHttpClient.Do(req, resp)
 
 	if err != nil {
 		return err
 	}
 
-	if resp.StatusCode != 200 {
-		return errors.New("unauthorized")
+	statusCode := resp.StatusCode()
+
+	if statusCode != 200 {
+		return fmt.Errorf("failed with status: %v", statusCode)
 	}
 
 	return nil

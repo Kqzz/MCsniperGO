@@ -6,14 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"time"
 )
 
 /*
-Client ID is 648b1790-3c45-4745-bd7b-d9e828433655, applet name is mcgo Library Authentication
+Client ID is 648b1790-3c45-4745-bd7b-d9e828433655, applet name is mc Library Authentication
 
 Flow is as follows:
 POST https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode
@@ -72,7 +72,8 @@ func authWithToken(account *MCaccount, access_token_from_ms string) error {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			Renegotiation:      tls.RenegotiateOnceAsClient,
-			InsecureSkipVerify: true},
+			InsecureSkipVerify: true,
+		},
 	}
 
 	client := &http.Client{
@@ -113,7 +114,7 @@ func authWithToken(account *MCaccount, access_token_from_ms string) error {
 
 	defer resp.Body.Close()
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if resp.StatusCode == 400 {
 		return errors.New("invalid Rpsticket field probably")
 	}
@@ -158,7 +159,7 @@ func authWithToken(account *MCaccount, access_token_from_ms string) error {
 		return err
 	}
 
-	respBodyBytes, err = ioutil.ReadAll(resp.Body)
+	respBodyBytes, err = io.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
@@ -212,7 +213,7 @@ func authWithToken(account *MCaccount, access_token_from_ms string) error {
 		return err
 	}
 
-	mcBearerResponseBytes, err := ioutil.ReadAll(resp.Body)
+	mcBearerResponseBytes, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
@@ -255,7 +256,7 @@ func (account *MCaccount) InitAuthFlow() error {
 		return err
 	}
 	defer resp.Body.Close()
-	respbytes, err := ioutil.ReadAll(resp.Body)
+	respbytes, err := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		return errors.New("non-200 status on devicecode post")
 	}
@@ -306,7 +307,7 @@ func pollEndpoint(account *MCaccount, device_code string, interval int) error {
 			return err
 		}
 		defer resp.Body.Close()
-		byteRes, err := ioutil.ReadAll(resp.Body)
+		byteRes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}

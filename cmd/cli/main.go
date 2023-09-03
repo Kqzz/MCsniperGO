@@ -7,16 +7,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/Kqzz/MCsniperGO/claimer"
 	"github.com/Kqzz/MCsniperGO/log"
+	"github.com/Kqzz/MCsniperGO/parser"
 )
 
 const help = `usage:
     mcsnipergo [options]
 options:
     --username, -u <str>    username to snipe
-    --offset, -o <float>    offset to use
-    --autosnipe             auto snipe 3chars
-    --queue, -q             run snipes from queue.txt 
 `
 
 func init() {
@@ -43,11 +42,6 @@ func main() {
 	flag.StringVar(&startUsername, "username", "", "username(s) to snipe")
 	flag.StringVar(&startUsername, "u", "", "username(s) to snipe")
 
-	var startOffset float64
-
-	flag.Float64Var(&startOffset, "offset", 0, "offset to use")
-	flag.Float64Var(&startOffset, "o", 0, "offset to use")
-
 	flag.Parse()
 
 	c := make(chan os.Signal, 1)
@@ -72,7 +66,19 @@ func main() {
 			username = startUsername
 		}
 
-		err := snipe(username)
+		dropRange := log.GetDropRange()
+
+		proxies, err := parser.ReadLines("proxies.txt")
+
+		if err != nil {
+			log.Log("err", "failed to load proxies: %v", err)
+		}
+
+		err = nil
+
+		accounts, err := getAccounts("gc.txt", "gp.txt", "ms.txt")
+
+		err = claimer.ClaimWithinRange(username, dropRange, accounts, proxies)
 
 		if err != nil {
 			log.Log("err", "fatal: %v", err)

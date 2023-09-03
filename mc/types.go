@@ -1,21 +1,30 @@
 package mc
 
-import "time"
+import (
+	"time"
+
+	"github.com/valyala/fasthttp"
+)
+
+type DropRange struct {
+	Start time.Time
+	End   time.Time
+}
 
 type AccType string
 
 const (
-	Ms   AccType = "ms"   // microsoft account
-	MsPr AccType = "mspr" // microsoft gift card account
-	MsGp AccType = "msgp" // microsoft game pass account
+	Ms   AccType = "ms"
+	MsPr AccType = "mspr"
+	MsGp AccType = "msgp"
 )
 
 /// RETURNS  / API-FACING ///
-
 // Holds name change information for an account, the time the current account was created, it's name was most recently changed, and if it can currently change its name.
 
 type NameChangeReturn struct {
-	Account     MCaccount
+	Email       string
+	Account     MCaccount `json:"-"`
 	Username    string
 	ChangedName bool
 	StatusCode  int
@@ -25,15 +34,14 @@ type NameChangeReturn struct {
 
 // represents a minecraft account
 type MCaccount struct {
-	Email             string
-	Password          string
-	SecurityQuestions []SqAnswer
-	SecurityAnswers   []string
-	Bearer            string
-	UUID              string
-	Username          string
-	Type              AccType
-	Authenticated     bool
+	Email          string
+	Password       string
+	Bearer         string
+	UUID           string
+	Xuid           string
+	Username       string
+	FastHttpClient *fasthttp.Client // client is used for all requests except create auth, profile create, and name change
+	Type           AccType
 }
 
 /// HTTP RESPONSE BODIES ///
@@ -68,23 +76,4 @@ type SqAnswer struct {
 type accInfoResponse struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
-}
-
-type authenticateReqResp struct {
-	User struct {
-		Properties []struct {
-			Name  string `json:"name"`
-			Value string `json:"value"`
-		} `json:"properties"`
-		Username string `json:"username"`
-		ID       string `json:"id"`
-	} `json:"user"`
-	Accesstoken string `json:"accessToken"`
-	Clienttoken string `json:"clientToken"`
-}
-
-// / SEND BODIES ///
-type submitPostJson struct {
-	ID     int    `json:"id"`
-	Answer string `json:"answer"`
 }

@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"bufio"
@@ -9,7 +9,7 @@ import (
 	"github.com/Kqzz/MCsniperGO/mc"
 )
 
-func parseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error) {
+func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error) {
 	parsed, errs := []*mc.MCaccount{}, []error{}
 	for i, l := range accs {
 		s := strings.Split(l, ":")
@@ -34,7 +34,7 @@ func parseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error)
 	return parsed, errs
 }
 
-func readLines(filename string) ([]string, error) {
+func ReadLines(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 
 	if err != nil {

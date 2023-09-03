@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -78,9 +78,15 @@ type msGetMojangBearerResponse struct {
 	Foci         string `json:"foci"`
 }
 
-func (account *MCaccount) MicrosoftAuthenticate() error {
+func (account *MCaccount) MicrosoftAuthenticate(proxy string) error {
+	fmt.Printf("Authenticating %v with proxy: %v\n", account.Email, proxy)
 
 	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return err
+	}
+
+	proxyUrl, err := url.Parse(proxy)
 	if err != nil {
 		return err
 	}
@@ -90,6 +96,10 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 			Renegotiation:      tls.RenegotiateOnceAsClient,
 			InsecureSkipVerify: true,
 		},
+	}
+
+	if proxy != "" {
+		tr.Proxy = http.ProxyURL(proxyUrl)
 	}
 
 	var redirect string
@@ -111,7 +121,7 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 		return err
 	}
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
@@ -148,7 +158,7 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 		return errors.New("invalid credentials, no access_token")
 	}
 
-	respBytes, err = ioutil.ReadAll(resp.Body)
+	respBytes, err = io.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
@@ -212,7 +222,7 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 
 	defer resp.Body.Close()
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if resp.StatusCode == 400 {
 		return errors.New("invalid Rpsticket field probably")
 	}
@@ -257,7 +267,7 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 		return err
 	}
 
-	respBodyBytes, err = ioutil.ReadAll(resp.Body)
+	respBodyBytes, err = io.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
@@ -311,7 +321,7 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 		return err
 	}
 
-	mcBearerResponseBytes, err := ioutil.ReadAll(resp.Body)
+	mcBearerResponseBytes, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
@@ -325,4 +335,3 @@ func (account *MCaccount) MicrosoftAuthenticate() error {
 
 	return nil
 }
-
