@@ -28,6 +28,8 @@ func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error)
 			continue
 		}
 
+		acc.DefaultFastHttpHandler()
+
 		parsed = append(parsed, acc)
 
 	}

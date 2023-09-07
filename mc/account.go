@@ -15,10 +15,6 @@ import (
 )
 
 func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*fasthttp.Request, *fasthttp.Response, error) {
-	if account.FastHttpClient == nil {
-		return nil, nil, errors.New("fasthttp client not initialized")
-	}
-
 	if account.Bearer == "" {
 		return nil, nil, errors.New("bearer token not initialized")
 	}
@@ -230,7 +226,7 @@ func (account *MCaccount) CreateProfile(username string, client *fasthttp.Client
 		return 0, err
 	}
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = client.Do(req, resp)
 
 	if err != nil {
 		return 0, err
@@ -247,7 +243,7 @@ func (account *MCaccount) ChangeUsername(username string, client *fasthttp.Clien
 		return 0, err
 	}
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = client.Do(req, resp)
 
 	if err != nil {
 		return 0, err

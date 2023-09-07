@@ -55,9 +55,9 @@ func requestGenerator(
 	sleepTime := delay
 
 	if delay == -1 {
-		sleepTime = 15500 / len(bearers)
+		sleepTime = 15000 / len(bearers)
 		if accType == mc.Ms {
-			sleepTime = 10500 / len(bearers)
+			sleepTime = 10000 / len(bearers)
 		}
 	}
 	loopCount := 2
@@ -100,7 +100,9 @@ func claimName(claim ClaimAttempt, client *fasthttp.Client) {
 	status := 0
 	var err error = nil
 
-	client.Dial = fasthttpproxy.FasthttpHTTPDialer(claim.Proxy)
+	if claim.Proxy != "" {
+		client.Dial = fasthttpproxy.FasthttpHTTPDialer(claim.Proxy)
+	}
 
 	before := time.Now()
 	if claim.AccType == mc.Ms {
@@ -140,6 +142,7 @@ func worker(claimChan chan ClaimAttempt, killChan chan bool) {
 func (s *Claim) runClaim() {
 	workChan := make(chan ClaimAttempt)
 	killChan := make(chan bool)
+	s.Running = true
 
 	go func() {
 		for {
@@ -170,10 +173,18 @@ func (s *Claim) runClaim() {
 	log.Log("info", "using %v accounts", len(s.Accounts))
 	log.Log("info", "using %v proxies", len(s.Proxies))
 
+	if len(s.Proxies) == 0 {
+		s.Proxies = []string{""}
+	}
+
 	time.Sleep(time.Until(s.DropRange.End))
 
 	go requestGenerator(workChan, killChan, gcs, s.Username, mc.MsPr, s.DropRange.End, s.Proxies, -1)
 	go requestGenerator(workChan, killChan, mss, s.Username, mc.Ms, s.DropRange.End, s.Proxies, -1)
+
+	if s.DropRange.End.IsZero() {
+		select {}
+	}
 
 	for time.Now().Before(s.DropRange.End) {
 		time.Sleep(10 * time.Second)
