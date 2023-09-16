@@ -32,7 +32,10 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 
 	usableAccounts := []*mc.MCaccount{}
 
-	for _, account := range accounts {
+	for i, account := range accounts {
+		if i != 0 {
+			time.Sleep(time.Second * 21)
+		}
 		authErr := account.MicrosoftAuthenticate("")
 		if authErr != nil {
 			log.Log("err", "failed to authenticate %v: %v", account.Email, authErr)
@@ -75,7 +78,6 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 
 			usableAccounts = append(usableAccounts, account)
 		}
-		time.Sleep(time.Second * 21)
 
 	}
 

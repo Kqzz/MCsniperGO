@@ -79,7 +79,6 @@ type msGetMojangBearerResponse struct {
 }
 
 func (account *MCaccount) MicrosoftAuthenticate(proxy string) error {
-	fmt.Printf("Authenticating %v with proxy: %v\n", account.Email, proxy)
 
 	jar, err := cookiejar.New(nil)
 	if err != nil {
