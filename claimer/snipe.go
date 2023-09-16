@@ -46,6 +46,7 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 		if account.Type == mc.MsGp {
 			licenseErr := account.License()
 			if licenseErr != nil {
+				log.Log("info", "checking license for %v, bearer: %v", account.Email, log.LastQuarter(account.Bearer))
 				log.Log("err", "failed to license %v: %v", account.Email, licenseErr)
 				continue
 			}
@@ -54,6 +55,7 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 
 		if account.Type == mc.Ms {
 			_, checkErr := account.NameChangeInfo()
+			log.Log("info", "checking name change for %v, bearer: %v", account.Email, log.LastQuarter(account.Bearer))
 			if checkErr != nil {
 				log.Log("err", "failed to confirm name change for %v: %v", account.Email, checkErr)
 				continue
@@ -65,6 +67,7 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 		if account.Type == mc.MsPr {
 			_, checkErr := account.HasGcApplied()
 
+			log.Log("info", "checking gift code claim for %v, bearer: %v", account.Email, log.LastQuarter(account.Bearer))
 			if checkErr != nil {
 				log.Log("err", "failed to confirm gift code claim for %v: %v", account.Email, checkErr)
 				continue

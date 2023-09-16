@@ -16,7 +16,7 @@ import (
 
 func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*fasthttp.Request, *fasthttp.Response, error) {
 	if account.Bearer == "" {
-		return nil, nil, errors.New("bearer token not initialized")
+		return nil, nil, errors.New("bearer token not detected on account")
 	}
 
 	req := fasthttp.AcquireRequest()
@@ -76,6 +76,7 @@ func (account *MCaccount) LoadAccountInfo() error {
 
 func (account *MCaccount) HasGcApplied() (bool, error) {
 	bodyStr := `{"profileName": "test"}`
+
 	req, resp, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile", bytes.NewReader([]byte(bodyStr)))
 	if err != nil {
 		return false, err

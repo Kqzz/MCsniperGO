@@ -143,3 +143,9 @@ func GetDropRange() mc.DropRange {
 	}
 
 }
+
+func LastQuarter(s string) string {
+	length := len(s)
+	quarter := length / 4
+	return s[length-quarter:]
+}
