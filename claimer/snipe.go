@@ -36,6 +36,7 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 		if i != 0 {
 			time.Sleep(time.Second * 21)
 		}
+
 		authErr := account.MicrosoftAuthenticate("")
 		if authErr != nil {
 			log.Log("err", "failed to authenticate %v: %v", account.Email, authErr)
@@ -49,7 +50,6 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 		if account.Type == mc.MsGp {
 			licenseErr := account.License()
 			if licenseErr != nil {
-				log.Log("info", "checking license for %v, bearer: %v", account.Email, log.LastQuarter(account.Bearer))
 				log.Log("err", "failed to license %v: %v", account.Email, licenseErr)
 				continue
 			}
@@ -58,7 +58,6 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 
 		if account.Type == mc.Ms {
 			_, checkErr := account.NameChangeInfo()
-			log.Log("info", "checking name change for %v, bearer: %v", account.Email, log.LastQuarter(account.Bearer))
 			if checkErr != nil {
 				log.Log("err", "failed to confirm name change for %v: %v", account.Email, checkErr)
 				continue

@@ -326,9 +326,6 @@ func (account *MCaccount) MicrosoftAuthenticate(proxy string) error {
 		return err
 	}
 
-	fmt.Printf("login_with_xbox status: %v\n", resp.StatusCode)
-	fmt.Printf("login_with_xbox response: %v\n", string(mcBearerResponseBytes))
-
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("login_with_xbox failed: %v", resp.Status)
 	}
