@@ -39,8 +39,8 @@ func isFlagPassed(names ...string) bool {
 func main() {
 
 	var startUsername string
-	flag.StringVar(&startUsername, "username", "", "username(s) to snipe")
-	flag.StringVar(&startUsername, "u", "", "username(s) to snipe")
+	flag.StringVar(&startUsername, "username", "", "username to snipe")
+	flag.StringVar(&startUsername, "u", "", "username to snipe")
 
 	flag.Parse()
 
@@ -58,15 +58,12 @@ func main() {
 
 		log.Log("", log.GetHeader())
 
-		var username string
+		accounts, err := getAccounts("gc.txt", "gp.txt", "ms.txt")
 
-		if !isFlagPassed("u", "username") {
-			username = log.Input("target username(s)")
-		} else {
-			username = startUsername
+		if err != nil {
+			log.Log("err", "fatal: %v", err)
+			continue
 		}
-
-		dropRange := log.GetDropRange()
 
 		proxies, err := parser.ReadLines("proxies.txt")
 
@@ -76,7 +73,15 @@ func main() {
 
 		err = nil
 
-		accounts, err := getAccounts("gc.txt", "gp.txt", "ms.txt")
+		var username string
+
+		if !isFlagPassed("u", "username") {
+			username = log.Input("target username")
+		} else {
+			username = startUsername
+		}
+
+		dropRange := log.GetDropRange()
 
 		err = claimer.ClaimWithinRange(username, dropRange, accounts, proxies)
 

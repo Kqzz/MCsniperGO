@@ -13,6 +13,8 @@ import (
 )
 
 /*
+
+Credit to emma (implied. on discord) for the entire oauth flow!
 Client ID is 648b1790-3c45-4745-bd7b-d9e828433655, applet name is mc Library Authentication
 
 Flow is as follows:
@@ -62,6 +64,53 @@ type msSuccessPollResponse struct {
 const client_id = "648b1790-3c45-4745-bd7b-d9e828433655"
 
 // types in msa.go are used here as well.
+
+func (account *MCaccount) OauthFlow() error {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return err
+	}
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			Renegotiation:      tls.RenegotiateOnceAsClient,
+			InsecureSkipVerify: true},
+	}
+
+	client := &http.Client{
+		Jar:       jar,
+		Transport: tr,
+	}
+
+	reqParams := fmt.Sprintf("client_id=%s&scope=XboxLive.signin", client_id)
+
+	req, _ := http.NewRequest("POST", "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode", bytes.NewBuffer([]byte(reqParams)))
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	respbytes, err := io.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return errors.New("non-200 status on devicecode post")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	var respObj msDeviceInitResponse
+	err = json.Unmarshal(respbytes, &respObj)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("[*] %v", respObj.Message)
+
+	return pollEndpoint(account, respObj.DeviceCode, respObj.Interval)
+}
 
 func authWithToken(account *MCaccount, access_token_from_ms string) error {
 	jar, err := cookiejar.New(nil)
@@ -226,53 +275,6 @@ func authWithToken(account *MCaccount, access_token_from_ms string) error {
 	account.Bearer = mcBearerResp.AccessToken
 
 	return nil
-}
-
-func (account *MCaccount) InitAuthFlow() error {
-	jar, err := cookiejar.New(nil)
-	if err != nil {
-		return err
-	}
-
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			Renegotiation:      tls.RenegotiateOnceAsClient,
-			InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{
-		Jar:       jar,
-		Transport: tr,
-	}
-
-	reqParams := fmt.Sprintf("client_id=%s&scope=XboxLive.signin", client_id)
-
-	req, _ := http.NewRequest("POST", "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode", bytes.NewBuffer([]byte(reqParams)))
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	respbytes, err := io.ReadAll(resp.Body)
-	if resp.StatusCode != 200 {
-		return errors.New("non-200 status on devicecode post")
-	}
-
-	if err != nil {
-		return err
-	}
-
-	var respObj msDeviceInitResponse
-	err = json.Unmarshal(respbytes, &respObj)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("auth for mc account: %s\n", respObj.Message)
-
-	return pollEndpoint(account, respObj.DeviceCode, respObj.Interval)
 }
 
 func pollEndpoint(account *MCaccount, device_code string, interval int) error {

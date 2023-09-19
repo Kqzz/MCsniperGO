@@ -177,7 +177,7 @@ func (s *Claim) runClaim() {
 		s.Proxies = []string{""}
 	}
 
-	time.Sleep(time.Until(s.DropRange.End))
+	time.Sleep(time.Until(s.DropRange.Start))
 
 	go requestGenerator(workChan, killChan, gcs, s.Username, mc.MsPr, s.DropRange.End, s.Proxies, -1)
 	go requestGenerator(workChan, killChan, mss, s.Username, mc.Ms, s.DropRange.End, s.Proxies, -1)
