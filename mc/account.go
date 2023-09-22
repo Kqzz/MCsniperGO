@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/valyala/fasthttp"
-	"github.com/valyala/fasthttp/fasthttpproxy"
 )
 
 type FailType string
@@ -297,54 +296,6 @@ func (account *MCaccount) ChangeUsername(username string, client *fasthttp.Clien
 	}
 
 	return statusCode, fail, nil
-}
-
-func (account *MCaccount) ChangeName(username string, changeTime time.Time, createProfile bool, proxy string) (NameChangeReturn, error) {
-	client := &fasthttp.Client{
-		Dial: fasthttp.Dial,
-	}
-
-	if proxy != "" {
-		proxy = strings.TrimPrefix(proxy, "http://")
-		proxy = strings.TrimPrefix(proxy, "https://")
-		client.Dial = fasthttpproxy.FasthttpHTTPDialer(proxy)
-	}
-
-	var err error
-
-	req := fasthttp.AcquireRequest()
-	resp := fasthttp.AcquireResponse()
-
-	if createProfile {
-		req.Header.SetRequestURI("https://api.minecraftservices.com/minecraft/profile")
-		req.Header.SetMethod("POST")
-		req.SetBodyString(fmt.Sprintf(`{"profileName": "%s"}`, username))
-	} else {
-		req.Header.SetRequestURI(fmt.Sprintf("https://api.minecraftservices.com/minecraft/profile/name/%s", username))
-		req.Header.SetMethod("PUT")
-	}
-
-	req.Header.Set("Authorization", "Bearer "+account.Bearer)
-	req.Header.SetContentType("application/json")
-
-	time.Sleep(time.Until(changeTime))
-
-	sendTime := time.Now()
-	err = client.Do(req, resp)
-	recvTime := time.Now()
-
-	if err != nil {
-		return NameChangeReturn{Username: username}, err
-	}
-
-	return NameChangeReturn{
-		Email:       account.Email,
-		Username:    username,
-		ChangedName: resp.StatusCode() < 300,
-		StatusCode:  resp.StatusCode(),
-		SendTime:    sendTime,
-		ReceiveTime: recvTime,
-	}, nil
 }
 
 func (account *MCaccount) ChangeSkinFromUrl(url, variant string) error {

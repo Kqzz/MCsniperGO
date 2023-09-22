@@ -1,6 +1,7 @@
 package claimer
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/mc"
@@ -102,7 +103,9 @@ func claimName(claim ClaimAttempt, client *fasthttp.Client) {
 	var err error = nil
 	var fail mc.FailType = mc.DUPLICATE
 
-	if claim.Proxy != "" {
+	if strings.HasPrefix(claim.Proxy, "socks5://") {
+		client.Dial = fasthttpproxy.FasthttpSocksDialer(strings.TrimPrefix(claim.Proxy, "socks5://"))
+	} else if claim.Proxy != "" {
 		client.Dial = fasthttpproxy.FasthttpHTTPDialer(claim.Proxy)
 	}
 
