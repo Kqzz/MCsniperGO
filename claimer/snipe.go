@@ -10,10 +10,21 @@ import (
 	"github.com/gookit/color"
 )
 
+type StatsStore struct {
+	Total           int
+	TooManyRequests int
+	Duplicate       int
+	NotAllowed      int
+	Success         int
+	StartTime       time.Time
+}
+
 const (
 	authOffset = time.Hour * 8
 	spread     = 0
 )
+
+var Stats StatsStore
 
 func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MCaccount, proxies []string) error {
 
@@ -69,7 +80,6 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 		if account.Type == mc.MsPr {
 			_, checkErr := account.HasGcApplied()
 
-			log.Log("info", "checking gift code claim for %v, bearer: %v", account.Email, log.LastQuarter(account.Bearer))
 			if checkErr != nil {
 				log.Log("err", "failed to confirm gift code claim for %v: %v", account.Email, checkErr)
 				continue

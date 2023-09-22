@@ -30,6 +30,7 @@ func (c *Claim) Stop() {
 }
 
 type ClaimAttempt struct {
+	Claim   *Claim
 	Name    string
 	Bearer  string
 	AccType mc.AccType
@@ -99,6 +100,7 @@ func claimName(claim ClaimAttempt, client *fasthttp.Client) {
 
 	status := 0
 	var err error = nil
+	var fail mc.FailType = mc.DUPLICATE
 
 	if claim.Proxy != "" {
 		client.Dial = fasthttpproxy.FasthttpHTTPDialer(claim.Proxy)
@@ -106,9 +108,9 @@ func claimName(claim ClaimAttempt, client *fasthttp.Client) {
 
 	before := time.Now()
 	if claim.AccType == mc.Ms {
-		status, err = acc.ChangeUsername(claim.Name, client)
+		status, fail, err = acc.ChangeUsername(claim.Name, client)
 	} else {
-		status, err = acc.CreateProfile(claim.Name, client)
+		status, fail, err = acc.CreateProfile(claim.Name, client)
 	}
 	after := time.Now()
 
@@ -117,10 +119,23 @@ func claimName(claim ClaimAttempt, client *fasthttp.Client) {
 		return
 	}
 
-	log.Log("info", "%v %vms [%v] %v %v #%d", after.Format("15:04:05.999"), after.Sub(before).Milliseconds(), claim.Name, status, acc.Type, claim.AccNum)
+	Stats.Total++
+
+	log.Log("info", "[%v] %v %vms %v %v #%d | %s", claim.Name, after.Format("15:04:05.999"), after.Sub(before).Milliseconds(), log.PrettyStatus(status), acc.Type, claim.AccNum, string(fail))
 	if status == 200 {
 		log.Log("success", "Claimed %v on %v acc, %v", claim.Name, acc.Type, acc.Bearer[len(acc.Bearer)/2:])
 		log.Log("success", "Join https://discord.gg/2BZseKW for more!")
+		Stats.Success++
+		claim.Claim.Running = false
+	}
+
+	switch fail {
+	case mc.DUPLICATE:
+		Stats.Duplicate++
+	case mc.NOT_ALLOWED:
+		Stats.NotAllowed++
+	case mc.TOO_MANY_REQUESTS:
+		Stats.TooManyRequests++
 	}
 
 }
@@ -145,13 +160,41 @@ func (s *Claim) runClaim() {
 	s.Running = true
 
 	go func() {
-		for {
+
+		doChecks := true
+		_, statusCode, err := mc.UsernameToUuid(s.Username)
+
+		if err != nil {
+			log.Log("err", "failed to get uuid of %v for availability checking: %v", s.Username, err)
+		}
+
+		if statusCode != 404 {
+			doChecks = false
+		}
+
+		for i := 0; true; i++ {
+			if i%30 == 0 && doChecks {
+				i = 0
+				_, statusCode, err = mc.UsernameToUuid(s.Username)
+
+				if err != nil {
+					log.Log("err", "failed to get uuid of %v for availability checking: %v", s.Username, err)
+				}
+
+				if statusCode == 200 {
+					log.Log("err", "username %v is taken now", s.Username)
+					s.Running = false
+					close(killChan)
+					return
+				}
+			}
+
 			if !s.Running {
 				log.Log("info", "Stopped claim of %v", s.Username)
 				close(killChan)
 				return
 			}
-			time.Sleep(time.Second * 5)
+			time.Sleep(time.Second * 2)
 		}
 	}()
 

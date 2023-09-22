@@ -14,6 +14,16 @@ import (
 	"github.com/valyala/fasthttp/fasthttpproxy"
 )
 
+type FailType string
+
+var (
+	NOT_ENTITLED         FailType = "NOT_ENTITLED"
+	DUPLICATE            FailType = "DUPLICATE"
+	NOT_ALLOWED          FailType = "NOT_ALLOWED"
+	CONSTRAINT_VIOLATION FailType = "CONSTRAINT_VIOLATION"
+	TOO_MANY_REQUESTS    FailType = "TOO_MANY_REQUESTS"
+)
+
 func (account *MCaccount) AuthenticatedReq(method string, url string, body io.Reader) (*fasthttp.Request, *fasthttp.Response, error) {
 	if account.Bearer == "" {
 		return nil, nil, errors.New("bearer token not detected on account")
@@ -220,39 +230,73 @@ func (account *MCaccount) License() error {
 	return fmt.Errorf("failed w/ status: %v", statusCode)
 }
 
-func (account *MCaccount) CreateProfile(username string, client *fasthttp.Client) (int, error) {
+func (account *MCaccount) CreateProfile(username string, client *fasthttp.Client) (int, FailType, error) {
 	body := fmt.Sprintf(`{"profileName": "%s"}`, username)
 	req, resp, err := account.AuthenticatedReq("POST", "https://api.minecraftservices.com/minecraft/profile", strings.NewReader(body))
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	err = client.Do(req, resp)
 
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	statusCode := resp.StatusCode()
 
-	return statusCode, nil
+	responseBody := resp.Body()
+
+	if statusCode == 200 {
+		return statusCode, "", nil
+	}
+
+	var fail FailType
+
+	if statusCode == 429 {
+		fail = TOO_MANY_REQUESTS
+		return statusCode, fail, nil
+	}
+
+	for _, failType := range []FailType{NOT_ENTITLED, DUPLICATE, NOT_ALLOWED, CONSTRAINT_VIOLATION} {
+		if strings.Contains(string(responseBody), string(failType)) {
+			fail = failType
+			break
+		}
+	}
+
+	return statusCode, fail, nil
 }
-func (account *MCaccount) ChangeUsername(username string, client *fasthttp.Client) (int, error) {
+func (account *MCaccount) ChangeUsername(username string, client *fasthttp.Client) (int, FailType, error) {
 	req, resp, err := account.AuthenticatedReq("PUT", fmt.Sprintf("https://api.minecraftservices.com/minecraft/profile/name/%s", username), nil)
 
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	err = client.Do(req, resp)
 
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	statusCode := resp.StatusCode()
 
-	return statusCode, nil
+	var fail FailType
+	if statusCode == 200 {
+		return statusCode, "", nil
+	}
+
+	if statusCode == 429 {
+		fail = TOO_MANY_REQUESTS
+		return statusCode, fail, nil
+	}
+
+	if statusCode == 403 {
+		fail = DUPLICATE
+	}
+
+	return statusCode, fail, nil
 }
 
 func (account *MCaccount) ChangeName(username string, changeTime time.Time, createProfile bool, proxy string) (NameChangeReturn, error) {

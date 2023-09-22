@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/Kqzz/MCsniperGO/claimer"
 	"github.com/Kqzz/MCsniperGO/log"
@@ -36,6 +37,24 @@ func isFlagPassed(names ...string) bool {
 	return found
 }
 
+func statusBar(startTime time.Time) {
+	fmt.Print("\x1B7")       // Save the cursor position
+	fmt.Print("\x1B[2K")     // Erase the entire line
+	fmt.Print("\x1B[0J")     // Erase from cursor to end of screen
+	fmt.Print("\x1B[?47h")   // Save screen
+	fmt.Print("\x1B[1J")     // Erase from cursor to beginning of screen
+	fmt.Print("\x1B[?47l")   // Restore screen
+	defer fmt.Print("\x1B8") // Restore the cursor position util new size is calculated
+
+	fmt.Printf("\x1B[%d;%dH", 0, 0) // move cursor to row #, col #
+
+	elapsed := time.Since(startTime).Seconds()
+
+	requestsPerSecond := float64(claimer.Stats.Total) / elapsed
+
+	fmt.Printf("[RPS: %.2f | DUPLICATE: %d | NOT_ALLOWED: %d | TOO_MANY_REQUESTS: %d]", requestsPerSecond, claimer.Stats.Duplicate, claimer.Stats.NotAllowed, claimer.Stats.TooManyRequests)
+}
+
 func main() {
 
 	var startUsername string
@@ -62,6 +81,7 @@ func main() {
 
 		if err != nil {
 			log.Log("err", "fatal: %v", err)
+			log.Input("press enter to continue")
 			continue
 		}
 
@@ -82,6 +102,19 @@ func main() {
 		}
 
 		dropRange := log.GetDropRange()
+
+		go func() {
+			if dropRange.Start.After(time.Now()) {
+				time.Sleep(time.Until(dropRange.Start))
+			}
+
+			start := time.Now()
+
+			for {
+				statusBar(start)
+				time.Sleep(time.Second * 1)
+			}
+		}()
 
 		err = claimer.ClaimWithinRange(username, dropRange, accounts, proxies)
 
