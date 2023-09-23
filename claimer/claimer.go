@@ -104,7 +104,7 @@ func claimName(claim ClaimAttempt, client *fasthttp.Client) {
 	var fail mc.FailType = mc.DUPLICATE
 
 	if strings.HasPrefix(claim.Proxy, "socks5://") {
-		client.Dial = fasthttpproxy.FasthttpSocksDialer(strings.TrimPrefix(claim.Proxy, "socks5://"))
+		client.Dial = fasthttpproxy.FasthttpSocksDialer(claim.Proxy)
 	} else if claim.Proxy != "" {
 		client.Dial = fasthttpproxy.FasthttpHTTPDialer(claim.Proxy)
 	}
