@@ -17,7 +17,10 @@ const help = `usage:
     mcsnipergo [options]
 options:
     --username, -u <str>    username to snipe
+	--disable-bar           disables the status bar
 `
+
+var disableBar bool
 
 func init() {
 	flag.Usage = func() {
@@ -60,6 +63,10 @@ func main() {
 	var startUsername string
 	flag.StringVar(&startUsername, "username", "", "username to snipe")
 	flag.StringVar(&startUsername, "u", "", "username to snipe")
+	flag.BoolVar(&disableBar, "disable-bar", false, "disables status bar")
+	if isFlagPassed("disable-bar") {
+		disableBar = true
+	}
 
 	flag.Parse()
 
@@ -104,6 +111,11 @@ func main() {
 		dropRange := log.GetDropRange()
 
 		go func() {
+
+			if disableBar {
+				return
+			}
+
 			if dropRange.Start.After(time.Now()) {
 				time.Sleep(time.Until(dropRange.Start))
 			}
