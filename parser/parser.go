@@ -12,6 +12,20 @@ import (
 func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error) {
 	parsed, errs := []*mc.MCaccount{}, []error{}
 	for i, l := range accs {
+
+		if len(l) > 0 && l[0] == '#' { // commented
+			continue
+		}
+
+		if len(l) > 200 &&
+			!strings.Contains(l, ":") &&
+			strings.HasPrefix(l, "eyJ") { // bearer token
+			acc := &mc.MCaccount{Email: l[40:50], Type: accType, Bearer: l}
+			acc.DefaultFastHttpHandler()
+			parsed = append(parsed, acc)
+			continue
+		}
+
 		s := strings.Split(l, ":")
 
 		if len(s) == 0 {
