@@ -107,7 +107,7 @@ func (account *MCaccount) OauthFlow() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("[*] %v", respObj.Message)
+	fmt.Printf("[*] %v\n", respObj.Message)
 
 	return pollEndpoint(account, respObj.DeviceCode, respObj.Interval)
 }
