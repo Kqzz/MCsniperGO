@@ -81,7 +81,7 @@ type msGetMojangBearerResponse struct {
 func (account *MCaccount) MicrosoftAuthenticate(proxy string) error {
 
 	if account.Password == "code" {
-		go account.OauthFlow()
+		account.OauthFlow()
 		return nil
 	}
 
