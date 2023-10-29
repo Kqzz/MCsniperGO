@@ -44,6 +44,12 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 	usableAccounts := []*mc.MCaccount{}
 
 	for i, account := range accounts {
+
+		if account.Bearer != "" {
+			usableAccounts = append(usableAccounts, account)
+			continue
+		}
+
 		if i != 0 {
 			time.Sleep(time.Second * 21)
 		}
