@@ -41,13 +41,12 @@ func isFlagPassed(names ...string) bool {
 }
 
 func statusBar(startTime time.Time) {
-	fmt.Print("\x1B7") // Save the cursor position
-	// fmt.Print("\x1B[2K")     // Erase the entire line - breaks smth else so idk
-	fmt.Print("\x1B[0J")     // Erase from cursor to end of screen
-	fmt.Print("\x1B[?47h")   // Save screen
-	fmt.Print("\x1B[1J")     // Erase from cursor to beginning of screen
-	fmt.Print("\x1B[?47l")   // Restore screen
-	defer fmt.Print("\x1B8") // Restore the cursor position util new size is calculated
+	fmt.Print("\x1B7")     // Save the cursor position
+	fmt.Print("\x1B[2K")   // Erase the entire line - breaks smth else so idk
+	fmt.Print("\x1B[0J")   // Erase from cursor to end of screen
+	fmt.Print("\x1B[?47h") // Save screen
+	// fmt.Print("\x1B[1J")   // Erase from cursor to beginning of screen
+	fmt.Print("\x1B[?47l") // Restore screen
 
 	fmt.Printf("\x1B[%d;%dH", 0, 0) // move cursor to row #, col #
 
@@ -56,6 +55,7 @@ func statusBar(startTime time.Time) {
 	requestsPerSecond := float64(claimer.Stats.Total) / elapsed
 
 	fmt.Printf("[RPS: %.2f | DUPLICATE: %d | NOT_ALLOWED: %d | TOO_MANY_REQUESTS: %d]     ", requestsPerSecond, claimer.Stats.Duplicate, claimer.Stats.NotAllowed, claimer.Stats.TooManyRequests)
+	fmt.Print("\x1B8") // Restore the cursor position util new size is calculated
 }
 
 func main() {
@@ -120,7 +120,10 @@ func main() {
 				time.Sleep(time.Until(dropRange.Start))
 			}
 
-			start := time.Now()
+			start := dropRange.Start
+			if start.Before(time.Now()) {
+				start = time.Now()
+			}
 
 			for {
 				statusBar(start)
