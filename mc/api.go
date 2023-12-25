@@ -3,7 +3,6 @@ package mc
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/valyala/fasthttp"
 )
@@ -25,7 +24,6 @@ func UsernameToUuid(username string) (ProfileResponse, int, error) {
 
 	err := fasthttp.Do(req, resp)
 	if err != nil {
-		log.Fatalf("Request failed: %s", err)
 		return profile, 0, err
 	}
 
@@ -35,7 +33,6 @@ func UsernameToUuid(username string) (ProfileResponse, int, error) {
 
 	err = json.Unmarshal(bodyBytes, &profile)
 	if err != nil {
-		log.Fatalf("Unmarshalling failed: %s", err)
 		return profile, statusCode, err
 	}
 

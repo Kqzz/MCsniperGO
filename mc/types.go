@@ -37,6 +37,7 @@ type MCaccount struct {
 	Email          string
 	Password       string
 	Bearer         string
+	RefreshToken   string
 	UUID           string
 	Xuid           string
 	Username       string
