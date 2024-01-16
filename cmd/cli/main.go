@@ -10,7 +10,7 @@ import (
 
 	"github.com/Kqzz/MCsniperGO/claimer"
 	"github.com/Kqzz/MCsniperGO/log"
-	"github.com/Kqzz/MCsniperGO/parser"
+	"github.com/Kqzz/MCsniperGO/pkg/parser"
 )
 
 const help = `usage:
@@ -84,14 +84,7 @@ func main() {
 
 		log.Log("", log.GetHeader())
 
-		accounts, err := getAccounts("gc.txt", "gp.txt", "ms.txt")
-
-		if err != nil {
-			log.Log("err", "fatal: %v", err)
-			log.Input("press enter to continue")
-			continue
-		}
-
+		// Get proxies, program continues even if this fails
 		proxies, err := parser.ReadLines("proxies.txt")
 
 		if err != nil {
@@ -99,6 +92,15 @@ func main() {
 		}
 
 		err = nil
+
+		// get accounts, fails if no accs present
+		accounts, err := getAccounts("gc.txt", "gp.txt", "ms.txt")
+
+		if err != nil {
+			log.Log("err", "fatal: %v", err)
+			log.Input("press enter to continue")
+			continue
+		}
 
 		var username string
 

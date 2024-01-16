@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Kqzz/MCsniperGO/mc"
+	"github.com/Kqzz/MCsniperGO/pkg/mc"
 )
 
 func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error) {
@@ -55,7 +55,7 @@ func ReadLines(filename string) ([]string, error) {
 
 	if err != nil {
 		os.Create(filename)
-		return []string{}, err
+		return []string{}, fmt.Errorf("attempted creation of %s following error: %v", filename, err)
 	}
 
 	defer file.Close()

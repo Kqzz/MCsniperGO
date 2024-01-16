@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Kqzz/MCsniperGO/log"
-	"github.com/Kqzz/MCsniperGO/mc"
-	"github.com/Kqzz/MCsniperGO/parser"
+	"github.com/Kqzz/MCsniperGO/pkg/mc"
+	"github.com/Kqzz/MCsniperGO/pkg/parser"
 )
 
 func getAccounts(giftCodePath string, gamepassPath string, microsoftPath string) ([]*mc.MCaccount, error) {

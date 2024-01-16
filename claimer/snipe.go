@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/log"
-	"github.com/Kqzz/MCsniperGO/mc"
+	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/gookit/color"
 )
 

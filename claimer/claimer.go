@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Kqzz/MCsniperGO/mc"
+	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpproxy"
 
