@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "gui",
+  "outputfilename": "gui",
+  "frontend:install": "npm install --force",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "kqzz",
+    "email": "48300938+Kqzz@users.noreply.github.com"
+  }
+}
