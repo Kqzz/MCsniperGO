@@ -13,9 +13,7 @@ export default (props) => {
       bg=""
       ml={{ base: "0" }}
     >
-      <Container flex="1">
-        <h1 style={{ fontSize: "lg" }}>Home</h1>
-      </Container>
+      <Container flex="1">Accounts</Container>
     </Flex>
   );
 };
