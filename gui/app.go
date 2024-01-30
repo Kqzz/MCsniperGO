@@ -3,21 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-
-	accountmanager "github.com/Kqzz/MCsniperGO/account-manager"
 )
 
 // App struct
 type App struct {
-	ctx            context.Context
-	AccountManager *accountmanager.AccountManager
+	ctx context.Context
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{
-		AccountManager: accountmanager.NewAccountManager(),
-	}
+	return &App{}
 }
 
 // startup is called when the app starts. The context is saved

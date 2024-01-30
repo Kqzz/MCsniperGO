@@ -13,7 +13,6 @@ export default ({ children }) => {
           </Box>
           <Box width={{ base: "80%", md: "75%" }}>
             {children}
-
             <Footer />
           </Box>
         </Flex>
