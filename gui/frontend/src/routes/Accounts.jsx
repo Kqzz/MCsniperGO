@@ -1,6 +1,7 @@
 import { Container, Flex, Text, Heading } from "@chakra-ui/react";
 import { GetAccounts } from "../../wailsjs/go/accountmanager/AccountManager";
 import { useEffect, useState } from "react";
+import RefreshIcon from "../assets/images/refresh.svg";
 import {
   Table,
   Thead,
@@ -30,13 +31,26 @@ function AccountStatus(status) {
   );
 }
 
+function Refresh({ onClick }) {
+  return (
+    <Flex onClick={onClick} _hover={{ cursor: "pointer" }}>
+      <img src={RefreshIcon} alt="refresh" width={30} height={30} />
+    </Flex>
+  );
+}
+
 export default (props) => {
   let [accounts, setAccounts] = useState([]);
 
-  useEffect(() => {
+  // function to reset accounts
+  const refreshAccounts = () => {
     GetAccounts().then((res) => {
       setAccounts(res);
     });
+  };
+
+  useEffect(() => {
+    refreshAccounts();
   });
 
   return (
@@ -52,7 +66,10 @@ export default (props) => {
       ml={{ base: "0" }}
     >
       <Container flex="1" ml={"5rem"}>
-        <Heading>Accounts</Heading>
+        <Flex direction={"row"}>
+          <Heading>Accounts</Heading>
+          <Refresh onClick={refreshAccounts} />
+        </Flex>
         <TableContainer>
           <Table variant="simple">
             <Thead>
