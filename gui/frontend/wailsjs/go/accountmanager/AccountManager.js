@@ -10,6 +10,6 @@ export function GetAccounts() {
   return window['go']['accountmanager']['AccountManager']['GetAccounts']();
 }
 
-export function RemoveAccount(arg1) {
-  return window['go']['accountmanager']['AccountManager']['RemoveAccount'](arg1);
+export function RemoveAccountByEmail(arg1) {
+  return window['go']['accountmanager']['AccountManager']['RemoveAccountByEmail'](arg1);
 }

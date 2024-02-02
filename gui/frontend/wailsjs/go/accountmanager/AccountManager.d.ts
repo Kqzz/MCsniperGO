@@ -6,4 +6,4 @@ export function AddAccount(arg1:accountmanager.Account):Promise<void>;
 
 export function GetAccounts():Promise<Array<accountmanager.Account>>;
 
-export function RemoveAccount(arg1:accountmanager.Account):Promise<void>;
+export function RemoveAccountByEmail(arg1:string):Promise<void>;

@@ -17,7 +17,6 @@ function NavButton({ children, path }) {
     </a>
   );
 }
-
 export default function Navbar() {
   return (
     <Flex

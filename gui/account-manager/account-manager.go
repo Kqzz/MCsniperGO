@@ -15,19 +15,19 @@ type AccountManager struct {
 
 type Account struct {
 	gorm.Model
-	Email    string
-	Password string
-	Username string
-	Type     mc.AccType
-	Bearer   string
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
+	Username string     `json:"username"`
+	Type     mc.AccType `json:"type"`
+	Bearer   string     `json:"bearer"`
 }
 
 func (am *AccountManager) AddAccount(account *Account) {
 	am.DB.Create(account)
 }
 
-func (am *AccountManager) RemoveAccount(account *Account) {
-	am.DB.Delete(account)
+func (am *AccountManager) RemoveAccountByEmail(email string) {
+	am.DB.Where("email = ?", email).Delete(&Account{})
 }
 
 func (am *AccountManager) GetAccounts() []*Account {

@@ -1,5 +1,8 @@
-import { Container, Flex, Text, Heading } from "@chakra-ui/react";
-import { GetAccounts } from "../../wailsjs/go/accountmanager/AccountManager";
+import { Container, Flex, Text, Heading, Button } from "@chakra-ui/react";
+import {
+  GetAccounts,
+  RemoveAccountByEmail,
+} from "../../wailsjs/go/accountmanager/AccountManager";
 import { useEffect, useState } from "react";
 import RefreshIcon from "../assets/images/refresh.svg";
 import {
@@ -13,6 +16,7 @@ import {
   TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
+import { accountmanager } from "../../wailsjs/go/models";
 
 function AccountStatus(status) {
   let color = "green";
@@ -39,6 +43,14 @@ function Refresh({ onClick }) {
   );
 }
 
+function RemoveButton({ onClick, email }) {
+  return (
+    <Button onClick={() => onClick(email)} color={"red.300"}>
+      <Text>RM</Text>
+    </Button>
+  );
+}
+
 export default (props) => {
   let [accounts, setAccounts] = useState([]);
 
@@ -52,6 +64,13 @@ export default (props) => {
   useEffect(() => {
     refreshAccounts();
   });
+
+  const removeAccount = (email) => {
+    RemoveAccountByEmail(email).then((res) => {
+      console.debug(res);
+      refreshAccounts();
+    });
+  };
 
   return (
     <Flex
@@ -77,15 +96,20 @@ export default (props) => {
                 <Th>Email</Th>
                 <Th>Type</Th>
                 <Th>Status</Th>
+                <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
               {accounts.map((account, index) => {
                 return (
                   <Tr key={index}>
-                    <Td>{account.Email}</Td>
-                    <Td>{account.Type || "N/A"}</Td>
-                    <Td>{AccountStatus(account.Status)}</Td>
+                    <Td>{account.email}</Td>
+                    <Td>{account.type || "N/A"}</Td>
+                    <Td>{AccountStatus(account.status)}</Td>
+                    <RemoveButton
+                      onClick={removeAccount}
+                      email={account.email}
+                    />
                   </Tr>
                 );
               })}
