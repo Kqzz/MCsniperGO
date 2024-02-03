@@ -28,7 +28,6 @@ func main() {
 	accountManager := accountmanager.NewAccountManager()
 
 	accountManager.DB = db
-	accountManager.DB.Create(&accountmanager.Account{Email: "test@example.com"})
 
 	// Create application with options
 	err = wails.Run(&options.App{
