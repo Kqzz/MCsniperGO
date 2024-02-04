@@ -18,6 +18,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import {
+  AddAccounts,
   GetAccounts,
   RemoveAccountByEmail,
 } from "../../wailsjs/go/accountmanager/AccountManager";
@@ -80,6 +81,8 @@ function PlusButton({ onClick }) {
 
 function AddAccountsModal({ isOpen, onClose, addAccounts }) {
   const [accType, setAccType] = useState("ms");
+  const [accounts, setAccounts] = useState("");
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -89,6 +92,7 @@ function AddAccountsModal({ isOpen, onClose, addAccounts }) {
           <ModalCloseButton />
           <ModalBody>
             <Textarea
+              onChange={(e) => setAccounts(e.target.value)}
               placeholder={"email:password\nemail:password\netc..."}
               mb={2}
             />
@@ -107,7 +111,14 @@ function AddAccountsModal({ isOpen, onClose, addAccounts }) {
             <Button variant="ghost" onClick={onClose}>
               Close
             </Button>
-            <Button colorScheme="blue" mr={2} onClick={onClose}>
+            <Button
+              colorScheme="blue"
+              mr={2}
+              onClick={() => {
+                addAccounts(accounts, accType);
+                onClose();
+              }}
+            >
               Add Accounts
             </Button>
           </ModalFooter>
@@ -139,9 +150,14 @@ export default (props) => {
     });
   };
 
-  const addAccounts = () => {
-    console.log("add account");
+  const addAccountsModalOpen = () => {
     onOpen();
+  };
+
+  const addAccounts = (accountsString, type) => {
+    AddAccounts(accountsString, type).then((res) => {
+      refreshAccounts();
+    });
   };
 
   return (
@@ -166,7 +182,7 @@ export default (props) => {
             <Heading>Accounts</Heading>
             <Flex direction={"row"} alignItems={"center"}>
               <Refresh onClick={refreshAccounts} />
-              <PlusButton onClick={addAccounts} />
+              <PlusButton onClick={addAccountsModalOpen} />
             </Flex>
           </Flex>
           <TableContainer>
@@ -198,7 +214,11 @@ export default (props) => {
           </TableContainer>
         </Container>
       </Flex>
-      <AddAccountsModal isOpen={isOpen} onClose={onClose} />
+      <AddAccountsModal
+        isOpen={isOpen}
+        onClose={onClose}
+        addAccounts={addAccounts}
+      />
     </>
   );
 };

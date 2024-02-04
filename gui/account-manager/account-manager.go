@@ -1,7 +1,12 @@
 package accountmanager
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
+	"github.com/Kqzz/MCsniperGO/pkg/parser"
 	"gorm.io/gorm"
 )
 
@@ -22,8 +27,37 @@ type Account struct {
 	Bearer   string     `json:"bearer"`
 }
 
-func (am *AccountManager) AddAccount(account *Account) {
-	am.DB.Create(account)
+func (am *AccountManager) AddAccounts(accounts string, accountType mc.AccType) error {
+
+	fmt.Println(accounts, accountType)
+	lines := strings.Split(accounts, "\n")
+
+	if len(lines) == 0 {
+		return errors.New("no accounts to add")
+	}
+
+	mcAccounts, errs := parser.ParseAccounts(lines, accountType)
+
+	if len(errs) > 0 {
+		fmt.Println("Errors parsing accounts:", errs)
+	}
+
+	parsedAccounts := []*Account{}
+
+	for _, acc := range mcAccounts {
+		parsedAccounts = append(parsedAccounts, &Account{
+			Email:    acc.Email,
+			Password: acc.Password,
+			Username: acc.Username,
+			Type:     accountType,
+		})
+	}
+
+	tx := am.DB.Create(parsedAccounts)
+	fmt.Println("Created accounts:", parsedAccounts)
+
+	return tx.Error
+
 }
 
 func (am *AccountManager) RemoveAccountByEmail(email string) {
