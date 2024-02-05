@@ -4,5 +4,11 @@ ms.txt
 gp.txt
 proxies.txt
 
+node_modules/
+
 *.exe
+*.md5
+*.db
+
+build/
 dist/

@@ -34,15 +34,15 @@ type NameChangeReturn struct {
 
 // represents a minecraft account
 type MCaccount struct {
-	Email          string
-	Password       string
-	Bearer         string
-	RefreshToken   string
-	UUID           string
-	Xuid           string
-	Username       string
+	Email          string           `json:"email"`
+	Password       string           `json:"password"`
+	Bearer         string           `json:"bearer"`
+	RefreshToken   string           `json:"refreshToken"`
+	UUID           string           `json:"uuid"`
+	Xuid           string           `json:"xuid"`
+	Username       string           `json:"username"`
 	FastHttpClient *fasthttp.Client // client is used for all requests except create auth, profile create, and name change
-	Type           AccType
+	Type           AccType          `json:"type"`
 }
 
 /// HTTP RESPONSE BODIES ///

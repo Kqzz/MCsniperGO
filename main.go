@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 
-	accountmanager "github.com/Kqzz/MCsniperGO/account-manager"
+	accountmanager "github.com/Kqzz/MCsniperGO/pkg/account-manager"
 	"github.com/glebarez/sqlite"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
