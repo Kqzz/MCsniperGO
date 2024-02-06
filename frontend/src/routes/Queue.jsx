@@ -1,4 +1,4 @@
-import { Container, Flex } from "@chakra-ui/react";
+import { Container, Flex, Heading } from "@chakra-ui/react";
 
 export default (props) => {
   return (
@@ -13,7 +13,9 @@ export default (props) => {
       bg=""
       ml={{ base: "0" }}
     >
-      <Container flex="1">Queue</Container>
+      <Container flex="1" ml={"5rem"}>
+        <Heading>Queue</Heading>
+      </Container>
     </Flex>
   );
 };

@@ -1,7 +1,6 @@
 import {
   Container,
   Flex,
-  Text,
   Heading,
   Button,
   Modal,
@@ -17,22 +16,22 @@ import {
   RadioGroup,
   Stack,
 } from "@chakra-ui/react";
+
 import {
   AddAccounts,
   GetAccounts,
   RemoveAccountByEmail,
 } from "../../wailsjs/go/accountmanager/AccountManager";
+
 import { useEffect, useState } from "react";
-import RefreshIcon from "../assets/images/refresh.svg";
+import { PlusButton, RefreshButton } from "../components/Buttons"
 import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
 
@@ -53,31 +52,7 @@ function AccountStatus(status) {
   );
 }
 
-function Refresh({ onClick }) {
-  return (
-    <Flex onClick={onClick} _hover={{ cursor: "pointer" }}>
-      <img src={RefreshIcon} alt="refresh" width={30} height={30} />
-    </Flex>
-  );
-}
 
-function RemoveButton({ onClick, email }) {
-  return (
-    <Button onClick={() => onClick(email)} color={"red.300"}>
-      <Text>RM</Text>
-    </Button>
-  );
-}
-
-function PlusButton({ onClick }) {
-  return (
-    <Button onClick={onClick} bgColor={"#1C274C"} width={30} height={30}>
-      <Text alt="add" color={"white"}>
-        +
-      </Text>
-    </Button>
-  );
-}
 
 function AddAccountsModal({ isOpen, onClose, addAccounts }) {
   const [accType, setAccType] = useState("ms");
@@ -156,6 +131,8 @@ export default (props) => {
 
   const addAccounts = (accountsString, type) => {
     AddAccounts(accountsString, type).then((res) => {
+      console.log(res);
+      // TODO notifications
       refreshAccounts();
     });
   };
@@ -181,7 +158,7 @@ export default (props) => {
           >
             <Heading>Accounts</Heading>
             <Flex direction={"row"} alignItems={"center"}>
-              <Refresh onClick={refreshAccounts} />
+              <RefreshButton onClick={refreshAccounts} />
               <PlusButton onClick={addAccountsModalOpen} />
             </Flex>
           </Flex>
