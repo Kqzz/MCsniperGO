@@ -35,6 +35,7 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
+
 function AccountStatus(status) {
   let color = "green";
   if (status === "Inactive") color = "red.500";
@@ -63,7 +64,7 @@ function AddAccountsModal({ isOpen, onClose, addAccounts }) {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Add Accounhts</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Textarea
@@ -156,9 +157,9 @@ export default (props) => {
             alignItems={"center"}
             justifyContent={"space-between"}
           >
-            <Heading>Accounts</Heading>
+            <Heading pl={"6"}>Accounts</Heading>
             <Flex direction={"row"} alignItems={"center"}>
-              <RefreshButton onClick={refreshAccounts} />
+              <RefreshButton onClick={refreshAccounts} mr={1} />
               <PlusButton onClick={addAccountsModalOpen} />
             </Flex>
           </Flex>

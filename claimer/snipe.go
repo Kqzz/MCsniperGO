@@ -2,7 +2,6 @@ package claimer
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/log"
@@ -11,12 +10,12 @@ import (
 )
 
 type StatsStore struct {
-	Total           int
-	TooManyRequests int
-	Duplicate       int
-	NotAllowed      int
-	Success         int
-	StartTime       time.Time
+	Total           int       `json:"total"`
+	TooManyRequests int       `json:"too_many_requests"`
+	Duplicate       int       `json:"duplicate"`
+	NotAllowed      int       `json:"not_allowed"`
+	Success         int       `json:"success"`
+	StartTime       time.Time `json:"start_time"`
 }
 
 const (
@@ -28,8 +27,7 @@ var Stats StatsStore
 
 func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MCaccount, proxies []string) error {
 
-	fmt.Print("\n")
-	log.Log("info", "sniping %s at %s", username, dropRange.Start.Format("02 Jan 06 15:04 MST"))
+	log.Log("info", "\nsniping %s at %s", username, dropRange.Start.Format("02 Jan 06 15:04 MST"))
 
 	for {
 		if time.Until(dropRange.Start) > authOffset {

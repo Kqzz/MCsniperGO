@@ -6,29 +6,37 @@ import {
 
 import RefreshIcon from "../assets/images/refresh.svg";
 
-function RefreshButton({ onClick }) {
+function RefreshButton({ onClick, ...params }) {
   return (
-    <Flex onClick={onClick} _hover={{ cursor: "pointer" }}>
-      <img src={RefreshIcon} alt="refresh" width={30} height={30} />
+    <Flex onClick={onClick} bgColor={"#1C274C"} width={30} height={30} _hover={{ cursor: "pointer" }} style={{
+      borderRadius: 5,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 5,
+    }} {...params} >
+      <img src={RefreshIcon} alt="refresh" color="white"/>
     </Flex>
   );
 }
 
-function RemoveButton({ onClick, data }) {
+function RemoveButton({ onClick, data, ...params}) {
   return (
-    <Button onClick={() => onClick(data)} color={"red.300"}>
+    <Button onClick={() => onClick(data)} color={"red.300"} {...params}>
       <Text>RM</Text>
     </Button>
   );
 }
 
-function PlusButton({ onClick }) {
+function PlusButton({ onClick, ...params }) {
   return (
-    <Button onClick={onClick} bgColor={"#1C274C"} width={30} height={30}>
-      <Text alt="add" color={"white"}>
-        +
-      </Text>
-    </Button>
+    <Flex onClick={onClick} bgColor={"#1C274C"} width={30} height={30} _hover={{ cursor: "pointer" }} style={{
+      borderRadius: 5,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 5,
+    }} {...params} >
+      <Text alt="add" color={"white"} fontSize="xl">+</Text>
+    </Flex>
   );
 }
 
