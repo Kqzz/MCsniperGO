@@ -13,7 +13,7 @@ func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error)
 	parsed, errs := []*mc.MCaccount{}, []error{}
 	for i, l := range accs {
 
-		if len(l) > 0 && l[0] == '#' { // commented
+		if len(l) > 0 && l[0] == '#' || len(l) == 0 { // commented
 			continue
 		}
 

@@ -21,10 +21,10 @@ import {
   AddAccounts,
   GetAccounts,
   RemoveAccountByEmail,
-} from "../../wailsjs/go/accountmanager/AccountManager";
+} from "../../wailsjs/go/backendmanager/AccountManager";
 
 import { useEffect, useState } from "react";
-import { PlusButton, RefreshButton } from "../components/Buttons"
+import { PlusButton, RefreshButton, RemoveButton } from "../components/Buttons"
 import {
   Table,
   Thead,
@@ -182,7 +182,7 @@ export default (props) => {
                       <Td>{AccountStatus(account.status)}</Td>
                       <RemoveButton
                         onClick={removeAccount}
-                        email={account.email}
+                        data={account.email}
                       />
                     </Tr>
                   );

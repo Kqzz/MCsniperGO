@@ -1,4 +1,4 @@
-export namespace accountmanager {
+export namespace backendmanager {
 	
 	export class Account {
 	    email: string;

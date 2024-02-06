@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 
-	accountmanager "github.com/Kqzz/MCsniperGO/pkg/account-manager"
+	backendManager "github.com/Kqzz/MCsniperGO/pkg/backend-manager"
 	"github.com/glebarez/sqlite"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -21,13 +21,13 @@ func main() {
 	app := NewApp()
 
 	db, err := gorm.Open(sqlite.Open("mcsnipergo.db"), &gorm.Config{})
-	db.AutoMigrate(&accountmanager.Account{})
+	db.AutoMigrate(&backendManager.Account{})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	accountManager := accountmanager.NewAccountManager()
+	accountManager := backendManager.NewAccountManager()
 
 	accountManager.DB = db
 

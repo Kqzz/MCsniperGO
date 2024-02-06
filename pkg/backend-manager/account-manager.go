@@ -1,4 +1,4 @@
-package accountmanager
+package backendmanager
 
 import (
 	"errors"
@@ -29,7 +29,6 @@ type Account struct {
 
 func (am *AccountManager) AddAccounts(accounts string, accountType mc.AccType) error {
 
-	fmt.Println(accounts, accountType)
 	lines := strings.Split(accounts, "\n")
 
 	if len(lines) == 0 {
