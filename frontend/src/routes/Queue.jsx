@@ -1,4 +1,5 @@
 import { Container, Flex, Heading } from "@chakra-ui/react";
+import ClaimForm from "../components/ClaimForm";
 
 export default (props) => {
   return (
@@ -13,8 +14,9 @@ export default (props) => {
       bg=""
       ml={{ base: "0" }}
     >
-      <Container flex="1" ml={"5rem"}>
+      <Container maxW={"90%"}>
         <Heading>Queue</Heading>
+        <ClaimForm />
       </Container>
     </Flex>
   );
