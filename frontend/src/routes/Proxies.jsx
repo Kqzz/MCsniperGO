@@ -18,10 +18,10 @@ import {
 } from "@chakra-ui/react";
 
 import {
-  AddAccounts,
-  GetAccounts,
-  RemoveAccountByEmail,
-} from "../../wailsjs/go/backendmanager/AccountManager";
+  AddProxies,
+  GetProxies,
+  RemoveProxies,
+} from "../../wailsjs/go/backendmanager/ProxyManager";
 
 import { useEffect, useState } from "react";
 import { PlusButton, RefreshButton, RemoveButton } from "../components/Buttons";
@@ -35,26 +35,9 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
-function AccountStatus(status) {
-  let color = "green";
-  if (status === "Inactive") color = "red.500";
-
-  return (
-    <div
-      color={color}
-      style={{
-        width: "10px",
-        height: "10px",
-        borderRadius: "50%",
-        backgroundColor: color,
-      }}
-    ></div>
-  );
-}
-
-function AddAccountsModal({ isOpen, onClose, addAccounts }) {
-  const [accType, setAccType] = useState("ms");
-  const [accounts, setAccounts] = useState("");
+function AddProxiesModal({ isOpen, onClose, addProxies }) {
+  const [proxyType, setProxyType] = useState("http");
+  const [proxies, setProxies] = useState("");
 
   return (
     <>
@@ -65,17 +48,18 @@ function AddAccountsModal({ isOpen, onClose, addAccounts }) {
           <ModalCloseButton />
           <ModalBody>
             <Textarea
-              onChange={(e) => setAccounts(e.target.value)}
-              placeholder={"email:password\nemail:password\netc..."}
+              onChange={(e) => setProxies(e.target.value)}
+              placeholder={"10.10.10.10:8080\n10.10.10.11:8080\netc..."}
               mb={2}
             />
 
-            <RadioGroup onChange={setAccType} value={accType}>
+            <RadioGroup onChange={setProxyType} value={proxyType}>
               <Stack direction="row">
-                <Radio value="ms" _selected={true}>
-                  Microsoft (has username)
+                <Radio value="http" _selected={true}>
+                  HTTP
                 </Radio>
-                <Radio value="gc">Giftcard / prename</Radio>
+                <Radio value="socks5">SOCKS5</Radio>
+                <Radio value="socks4">SOCKS4</Radio>
               </Stack>
             </RadioGroup>
           </ModalBody>
@@ -88,11 +72,11 @@ function AddAccountsModal({ isOpen, onClose, addAccounts }) {
               colorScheme="blue"
               mr={2}
               onClick={() => {
-                addAccounts(accounts, accType);
+                addProxies(proxies, proxyType);
                 onClose();
               }}
             >
-              Add Accounts
+              Add Proxies
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -102,36 +86,42 @@ function AddAccountsModal({ isOpen, onClose, addAccounts }) {
 }
 
 export default (props) => {
-  let [accounts, setAccounts] = useState([]);
+  let [proxies, setProxies] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // function to reset accounts
-  const refreshAccounts = () => {
-    GetAccounts().then((res) => {
-      setAccounts(res);
+  // function to reset proxies
+  const refreshProxies = () => {
+    console.log("refreshing proxies");
+    GetProxies().then((res) => {
+      if (res === null) return;
+      setProxies(res);
     });
   };
 
   useEffect(() => {
-    refreshAccounts();
+    refreshProxies();
   }, []);
 
-  const removeAccount = (email) => {
-    RemoveAccountByEmail(email).then((res) => {
+  const removeProxies = (proxies) => {
+    // TODO multi proxy removal
+    proxies = [proxies];
+    RemoveProxies(proxies).then((res) => {
       console.debug(res);
-      refreshAccounts();
+      refreshProxies();
     });
   };
 
-  const addAccountsModalOpen = () => {
+  const addProxiesModalOpen = () => {
     onOpen();
   };
 
-  const addAccounts = (accountsString, type) => {
-    AddAccounts(accountsString, type).then((res) => {
+  const addProxies = (proxyString, type) => {
+    const proxies = proxyString.split("\n").filter((proxy) => proxy !== "");
+    console.log(proxies);
+    AddProxies(proxies, type).then((res) => {
       console.log(res);
       // TODO notifications
-      refreshAccounts();
+      refreshProxies();
     });
   };
 
@@ -154,33 +144,27 @@ export default (props) => {
             alignItems={"center"}
             justifyContent={"space-between"}
           >
-            <Heading pl={"6"}>Accounts</Heading>
+            <Heading pl={"6"}>Proxies</Heading>
             <Flex direction={"row"} alignItems={"center"}>
-              <RefreshButton onClick={refreshAccounts} mr={1} />
-              <PlusButton onClick={addAccountsModalOpen} />
+              <RefreshButton onClick={refreshProxies} mr={1} />
+              <PlusButton onClick={addProxiesModalOpen} />
             </Flex>
           </Flex>
           <TableContainer>
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th>Email</Th>
+                  <Th>Proxy</Th>
                   <Th>Type</Th>
-                  <Th>Status</Th>
-                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {accounts.map((account, index) => {
+                {proxies.map((proxy, index) => {
                   return (
                     <Tr key={index}>
-                      <Td>{account.email}</Td>
-                      <Td>{account.type || "N/A"}</Td>
-                      <Td>{AccountStatus(account.status)}</Td>
-                      <RemoveButton
-                        onClick={removeAccount}
-                        data={account.email}
-                      />
+                      <Td>{proxy.url}</Td>
+                      <Td>{proxy.type || "N/A"}</Td>
+                      <RemoveButton onClick={removeProxies} data={proxy.url} />
                     </Tr>
                   );
                 })}
@@ -189,10 +173,10 @@ export default (props) => {
           </TableContainer>
         </Container>
       </Flex>
-      <AddAccountsModal
+      <AddProxiesModal
         isOpen={isOpen}
         onClose={onClose}
-        addAccounts={addAccounts}
+        addProxies={addProxies}
       />
     </>
   );

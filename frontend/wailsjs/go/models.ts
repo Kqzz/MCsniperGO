@@ -20,6 +20,20 @@ export namespace backendmanager {
 	        this.bearer = source["bearer"];
 	    }
 	}
+	export class Proxy {
+	    url: string;
+	    type: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Proxy(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.url = source["url"];
+	        this.type = source["type"];
+	    }
+	}
 
 }
 

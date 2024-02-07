@@ -41,6 +41,9 @@ export default function Navbar() {
       >
         Accounts
       </NavButton>
+      <NavButton colorScheme="teal" variant="outline" mr={3} path={"/#proxies"}>
+        Proxies
+      </NavButton>
       <NavButton colorScheme="teal" variant="outline" mr={3} path={"/#queue"}>
         Queue
       </NavButton>
