@@ -23,6 +23,7 @@ func main() {
 	db, err := gorm.Open(sqlite.Open("mcsnipergo.db"), &gorm.Config{})
 	db.AutoMigrate(&backendManager.Account{})
 	db.AutoMigrate(&backendManager.Proxy{})
+	db.AutoMigrate(&backendManager.Queue{})
 
 	if err != nil {
 		panic("failed to connect database")
@@ -33,6 +34,9 @@ func main() {
 
 	proxyManager := backendManager.NewProxyManager()
 	proxyManager.DB = db
+
+	queueManager := backendManager.NewQueueManager()
+	queueManager.DB = db
 
 	// Create application with options
 	err = wails.Run(&options.App{
