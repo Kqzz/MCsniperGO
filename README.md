@@ -8,7 +8,7 @@
 <p align="center">
     <a href="https://github.com/Kqzz/MCsniperGO/releases/"><img alt="downloads" src="https://img.shields.io/github/downloads/Kqzz/MCsniperGO/total?color=%233889c4" height="22"></a>
     <a href="https://discord.gg/mcsnipergo-734794891258757160"><img alt="Discord" src="https://img.shields.io/discord/734794891258757160?label=discord&color=%233889c4&logo=discord&logoColor=white" height="22"></a>
-  
+    <h3 align="center" > <a href="https://discord.gg/mcsnipergo-734794891258757160">Join Discord</a> </h3>
 </p>
 
 ## Usage
