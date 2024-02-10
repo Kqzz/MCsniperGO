@@ -9,7 +9,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-function ClaimForm() {
+function ClaimForm({ queueClaim }) {
   const [username, setUsername] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -18,14 +18,25 @@ function ClaimForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (runInfinitely) {
+      setEndTime(-1);
+      setStartTime(-1);
+    }
+
+    queueClaim({
+      username,
+      startTime: new Number(startTime),
+      endTime: new Number(endTime),
+      useProxies,
+    });
   };
 
   const handleStartTimeChange = (e) => {
-    setStartTime(e.target.value);
+    setStartTime(new Number(e.target.value));
   };
 
   const handleEndTimeChange = (e) => {
-    setEndTime(e.target.value);
+    setEndTime(new Number(e.target.value));
   };
 
   const formatTimestamp = (timestamp) => {

@@ -34,6 +34,26 @@ export namespace backendmanager {
 	        this.type = source["type"];
 	    }
 	}
+	export class Queue {
+	    username: string;
+	    startTime: number;
+	    endTime: number;
+	    useProxies: boolean;
+	    status: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Queue(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.username = source["username"];
+	        this.startTime = source["startTime"];
+	        this.endTime = source["endTime"];
+	        this.useProxies = source["useProxies"];
+	        this.status = source["status"];
+	    }
+	}
 
 }
 

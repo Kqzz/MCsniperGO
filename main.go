@@ -53,6 +53,7 @@ func main() {
 			app,
 			accountManager,
 			proxyManager,
+			queueManager,
 		},
 	})
 
