@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Kqzz/MCsniperGO/log"
+	"github.com/Kqzz/MCsniperGO/pkg/log"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/Kqzz/MCsniperGO/pkg/parser"
 )

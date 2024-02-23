@@ -1,4 +1,4 @@
-package claimer
+package legacy
 
 import (
 	"strings"
@@ -8,14 +8,13 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpproxy"
 
-	"github.com/Kqzz/MCsniperGO/log"
+	"github.com/Kqzz/MCsniperGO/pkg/log"
 )
-
-var workerCount = 100
 
 type Claim struct {
 	Username  string
 	Running   bool
+	Complete  bool
 	DropRange mc.DropRange
 	Accounts  []*mc.MCaccount
 	Proxies   []string
@@ -157,49 +156,51 @@ func worker(claimChan chan ClaimAttempt, killChan chan bool) {
 	}
 }
 
-func (s *Claim) runClaim() {
-	workChan := make(chan ClaimAttempt)
-	killChan := make(chan bool)
-	s.Running = true
+func (claim *Claim) claimStopper(killChannel chan bool) {
+	doChecks := true
+	_, statusCode, err := mc.UsernameToUuid(claim.Username)
 
-	go func() {
+	if err != nil {
+		log.Log("err", "failed to get uuid of %v for availability checking: %v", s.Username, err)
+	}
 
-		doChecks := true
-		_, statusCode, err := mc.UsernameToUuid(s.Username)
+	if statusCode != 404 {
+		doChecks = false
+	}
 
-		if err != nil {
-			log.Log("err", "failed to get uuid of %v for availability checking: %v", s.Username, err)
-		}
+	for {
+		if doChecks {
+			_, statusCode, err = mc.UsernameToUuid(claim.Username)
 
-		if statusCode != 404 {
-			doChecks = false
-		}
-
-		for i := 0; true; i++ {
-			if i%30 == 0 && doChecks {
-				i = 0
-				_, statusCode, err = mc.UsernameToUuid(s.Username)
-
-				if err != nil {
-					log.Log("err", "failed to get uuid of %v for availability checking: %v", s.Username, err)
-				}
-
-				if statusCode == 200 {
-					log.Log("err", "username %v is taken now", s.Username)
-					s.Running = false
-					close(killChan)
-					return
-				}
+			if err != nil {
+				log.Log("err", "failed to get uuid of %v for availability checking: %v", claim.Username, err)
 			}
 
-			if !s.Running {
-				log.Log("info", "Stopped claim of %v", s.Username)
-				close(killChan)
+			if statusCode == 200 {
+				log.Log("err", "username %v is taken now", claim.Username)
+				claim.Stop()
 				return
 			}
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Second * 30)
 		}
-	}()
+
+		if !claim.Running {
+			log.Log("info", "Stopped claim of %v", claim.Username)
+			claim.Complete = true
+			close(killChannel)
+		}
+
+		time.Sleep(time.Second * 1)
+	}
+}
+
+func (s *Claim) runClaim() {
+	workChan := make(chan ClaimAttempt)
+
+	// when closed, pushing to workChan will end
+	killChan := make(chan bool)
+
+	go s.claimStopper(killChan)
 
 	gcs := []string{}
 	mss := []string{}
@@ -211,6 +212,8 @@ func (s *Claim) runClaim() {
 			gcs = append(gcs, acc.Bearer)
 		}
 	}
+
+	workerCount := int(float64(len(s.Proxies)) * 1.2)
 
 	for i := 0; i < workerCount; i++ {
 		go worker(workChan, killChan)

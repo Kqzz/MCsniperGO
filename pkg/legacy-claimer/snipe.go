@@ -1,10 +1,10 @@
-package claimer
+package legacy
 
 import (
 	"errors"
 	"time"
 
-	"github.com/Kqzz/MCsniperGO/log"
+	"github.com/Kqzz/MCsniperGO/pkg/log"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/gookit/color"
 )
@@ -20,10 +20,10 @@ type StatsStore struct {
 
 const (
 	authOffset = time.Hour * 8
-	spread     = 0
 )
 
 var Stats StatsStore
+var Setup bool = false
 
 func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MCaccount, proxies []string) error {
 
