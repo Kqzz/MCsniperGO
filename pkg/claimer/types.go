@@ -13,14 +13,15 @@ type ClaimWork struct {
 type Claim struct {
 	Username  string
 	DropRange mc.DropRange
+	Running   bool
 	Claimer   Claimer
 }
 
 type Claimer struct {
-	Dialers               []*fasthttp.DialFunc
+	Dialers               []fasthttp.DialFunc
 	Accounts              []*mc.MCaccount
 	AuthenticatedAccounts []*mc.MCaccount
-	Queue                 []*Claim
+	queue                 []*Claim
 	killChan              chan bool
 	workChan              chan ClaimWork
 }

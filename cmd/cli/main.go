@@ -133,12 +133,19 @@ func main() {
 			// }
 		}()
 
-		err = claimer.ClaimWithinRange(username, dropRange, accounts, proxies)
+		claimer := claimer.Claimer{
+			Accounts: accounts,
+			Dialers:  claimer.GetDialers(proxies),
+		}
+		claimer.Setup()
+
+		claimer.Queue(username, dropRange)
 
 		if err != nil {
 			log.Log("err", "fatal: %v", err)
 		}
 
+		time.Sleep(time.Until(dropRange.End))
 		log.Input("snipe completed, press enter to continue")
 	}
 
