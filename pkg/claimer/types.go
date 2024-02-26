@@ -14,7 +14,13 @@ type Claim struct {
 	Username  string
 	DropRange mc.DropRange
 	Running   bool
-	Claimer   Claimer
+	Claimer   *Claimer
+}
+
+type ClaimResponse struct {
+	StatusCode int
+	FailType   mc.FailType
+	Error      error
 }
 
 type Claimer struct {
@@ -22,6 +28,8 @@ type Claimer struct {
 	Accounts              []*mc.MCaccount
 	AuthenticatedAccounts []*mc.MCaccount
 	queue                 []*Claim
+	running               []*Claim
 	killChan              chan bool
 	workChan              chan ClaimWork
+	respchan              chan ClaimResponse
 }

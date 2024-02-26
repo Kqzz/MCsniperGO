@@ -1,6 +1,7 @@
 package claimer
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/pkg/log"
@@ -19,6 +20,7 @@ func (claimer *Claimer) AuthenticationWorker() {
 			}
 		default:
 			for _, account := range claimer.Accounts {
+				fmt.Println(account)
 				err := account.MicrosoftAuthenticate("")
 				if err != nil {
 					log.Log("err", "failed to authenticate %v: %v", account.Email, err)
@@ -32,6 +34,18 @@ func (claimer *Claimer) AuthenticationWorker() {
 						continue
 					}
 				}
+
+				// Remove the account from the authenticated accounts list if it's already there
+
+				for i, authenticatedAccount := range claimer.AuthenticatedAccounts {
+					if authenticatedAccount.Email == account.Email {
+						claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts[:i], claimer.AuthenticatedAccounts[i+1:]...)
+					}
+				}
+
+				claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts, account)
+
+				log.Log("success", "authenticated %v", account.Email)
 
 			}
 			time.Sleep(time.Second * authPause)
