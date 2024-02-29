@@ -2,6 +2,8 @@ package claimer
 
 import (
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/pkg/log"
@@ -11,11 +13,13 @@ import (
 // Expected API: type Claim, Claim.Start() and it claims the username. Claimer pkg stores accounts, queue, and proxies
 
 func (claimer *Claimer) Start(claim *Claim) {
+	fmt.Println("starting")
 	claim.Running = true
 	claimer.running = append(claimer.running, claim)
 
 }
 func (claimer *Claimer) Stop(claim *Claim) {
+	fmt.Println("stopping")
 	for i, runningClaim := range claimer.running {
 		if runningClaim.Username == claim.Username {
 			claimer.running = append(claimer.running[:i], claimer.running[i+1:]...)
@@ -28,15 +32,16 @@ func (claimer *Claimer) Stop(claim *Claim) {
 func (claimer *Claimer) queueClaimsWithinRange(claims []*Claim) {
 	now := time.Now()
 	for _, claim := range claims {
-		fmt.Println(claim)
-
-		if len(claimer.AuthenticatedAccounts) == 0 {
-			log.Log("err", "no authenticated accounts")
-			time.Sleep(time.Second * 20)
+		if claim.Running {
 			continue
 		}
 
-		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now) && !claim.Running) || claim.DropRange.Start.IsZero() { // The username is currently dropping
+		if len(claimer.AuthenticatedAccounts) == 0 {
+			log.Log("err", "no authenticated accounts")
+			continue
+		}
+
+		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || claim.DropRange.Start.IsZero() { // The username is currently dropping
 			claimer.Start(claim)
 		} else if claim.DropRange.End.Before(now) && claim.Running { // The username has finished dropping
 			claimer.Stop(claim)
@@ -102,6 +107,7 @@ func (claimer *Claimer) sender(accountType mc.AccType) {
 			}
 		default:
 			for _, claim := range claimer.running {
+				fmt.Println(*claim)
 				for _, account := range claimer.AuthenticatedAccounts {
 					if account.Type != accountType {
 						continue
@@ -113,6 +119,7 @@ func (claimer *Claimer) sender(accountType mc.AccType) {
 					}
 				}
 			}
+			time.Sleep(sleepDuration)
 		}
 	}
 }
@@ -124,6 +131,9 @@ func (claimer *Claimer) SendManager() {
 }
 
 func (claimer *Claimer) Setup() {
+	go func() {
+		fmt.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 
 	if claimer.killChan != nil {
 		close(claimer.killChan)
@@ -145,7 +155,8 @@ func (claimer *Claimer) Setup() {
 	go claimer.ResponseManager()
 	go claimer.AuthenticationWorker()
 
-	for _, dial := range claimer.Dialers {
+	for i, dial := range claimer.Dialers {
+		fmt.Printf("starting %v,%v worker\n", i, dial)
 		go claimer.StartWorker(dial)
 	}
 }
