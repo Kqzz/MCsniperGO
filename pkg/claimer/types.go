@@ -27,8 +27,8 @@ type Claimer struct {
 	Dialers               []fasthttp.DialFunc
 	Accounts              []*mc.MCaccount
 	AuthenticatedAccounts []*mc.MCaccount
-	queue                 []*Claim
-	running               []*Claim
+	queue                 map[string]*Claim
+	running               map[string]*Claim
 	killChan              chan bool
 	workChan              chan ClaimWork
 	respchan              chan ClaimResponse

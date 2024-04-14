@@ -20,7 +20,8 @@ func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error)
 		if len(l) > 200 &&
 			!strings.Contains(l, ":") &&
 			strings.HasPrefix(l, "eyJ") { // bearer token
-			acc := &mc.MCaccount{Email: l[40:50], Type: accType, Bearer: l}
+
+			acc := &mc.MCaccount{Email: l[40:50], Type: accType, Bearer: l, BearerAccount: true}
 			acc.DefaultFastHttpHandler()
 			parsed = append(parsed, acc)
 			continue

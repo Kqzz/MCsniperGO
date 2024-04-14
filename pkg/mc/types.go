@@ -37,9 +37,9 @@ type MCaccount struct {
 	Email          string           `json:"email"`
 	Password       string           `json:"password"`
 	Bearer         string           `json:"bearer"`
+	BearerAccount  bool             `json:"bearerAccount"`
 	RefreshToken   string           `json:"refreshToken"`
 	UUID           string           `json:"uuid"`
-	Xuid           string           `json:"xuid"`
 	Username       string           `json:"username"`
 	FastHttpClient *fasthttp.Client // client is used for all requests except create auth, profile create, and name change
 	Type           AccType          `json:"type"`

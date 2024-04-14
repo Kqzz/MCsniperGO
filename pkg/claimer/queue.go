@@ -3,7 +3,7 @@ package claimer
 import (
 	"fmt"
 	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" // TODO REMOVE
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/pkg/log"
@@ -13,23 +13,18 @@ import (
 // Expected API: type Claim, Claim.Start() and it claims the username. Claimer pkg stores accounts, queue, and proxies
 
 func (claimer *Claimer) Start(claim *Claim) {
-	fmt.Println("starting")
 	claim.Running = true
-	claimer.running = append(claimer.running, claim)
+	claimer.running[claim.Username] = claim
 
 }
 func (claimer *Claimer) Stop(claim *Claim) {
 	fmt.Println("stopping")
-	for i, runningClaim := range claimer.running {
-		if runningClaim.Username == claim.Username {
-			claimer.running = append(claimer.running[:i], claimer.running[i+1:]...)
-			claim.Running = false
-		}
-	}
+	claimer.running[claim.Username].Running = false
+	claimer.running[claim.Username] = nil
 
 }
 
-func (claimer *Claimer) queueClaimsWithinRange(claims []*Claim) {
+func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 	now := time.Now()
 	for _, claim := range claims {
 		if claim.Running {
@@ -80,14 +75,14 @@ func (claimer *Claimer) ResponseManager() {
 	}
 }
 
-func (claimer *Claimer) sender(accountType mc.AccType) {
+func (claimer *Claimer) sender(ms bool, gp bool) {
 
 	sleepTime := 15000
 
 	if len(claimer.AuthenticatedAccounts) > 0 {
 		sleepTime = 150000 / len(claimer.AuthenticatedAccounts)
 
-		if accountType == mc.Ms {
+		if ms {
 			sleepTime = 10000 / len(claimer.AuthenticatedAccounts)
 		}
 	}
@@ -95,27 +90,33 @@ func (claimer *Claimer) sender(accountType mc.AccType) {
 	sleepDuration := time.Millisecond * time.Duration(sleepTime)
 
 	loopCount := 2
-	if accountType == mc.Ms {
+	if ms {
 		loopCount = 3
 	}
 
 	for {
 		select {
 		case _, ok := <-claimer.killChan:
+			fmt.Println("killing sender")
 			if !ok {
 				return
 			}
 		default:
 			for _, claim := range claimer.running {
-				fmt.Println(*claim)
 				for _, account := range claimer.AuthenticatedAccounts {
-					if account.Type != accountType {
+					if ms && account.Type != mc.Ms { // skip non ms accounts for ms
+						continue
+					}
+
+					if gp && account.Type == mc.Ms { // skip ms accounts for non ms accounts
 						continue
 					}
 
 					for i := 0; i < loopCount; i++ {
 						claimer.workChan <- ClaimWork{Claim: claim, Account: account}
-						time.Sleep(sleepDuration)
+						if i != loopCount-1 {
+							time.Sleep(sleepDuration)
+						}
 					}
 				}
 			}
@@ -126,14 +127,14 @@ func (claimer *Claimer) sender(accountType mc.AccType) {
 
 func (claimer *Claimer) SendManager() {
 
-	go claimer.sender(mc.Ms)
-	go claimer.sender(mc.MsGp)
+	go claimer.sender(true, false)
+	go claimer.sender(false, true)
 }
 
 func (claimer *Claimer) Setup() {
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
+	}() // TODO rm
 
 	if claimer.killChan != nil {
 		close(claimer.killChan)
@@ -148,20 +149,29 @@ func (claimer *Claimer) Setup() {
 
 	claimer.killChan = make(chan bool)
 	claimer.workChan = make(chan ClaimWork)
-	claimer.respchan = make(chan ClaimResponse, 1000)
+	claimer.respchan = make(chan ClaimResponse)
 
+	fmt.Println(claimer.killChan, claimer.workChan, claimer.respchan)
+
+	claimer.SendManager()
 	go claimer.QueueManager()
-	go claimer.SendManager()
 	go claimer.ResponseManager()
 	go claimer.AuthenticationWorker()
 
-	for i, dial := range claimer.Dialers {
-		fmt.Printf("starting %v,%v worker\n", i, dial)
-		go claimer.StartWorker(dial)
+	claimer.queue = make(map[string]*Claim)
+	claimer.running = make(map[string]*Claim)
+
+	for _, dial := range claimer.Dialers {
+		go claimer.Worker(dial)
 	}
 }
 
 func (claimer *Claimer) Queue(username string, dropRange mc.DropRange) {
-	fmt.Println("queueing username")
-	claimer.queue = append(claimer.queue, &Claim{Username: username, DropRange: dropRange})
+	// claimer.queue = append(claimer.queue, &Claim{Username: username, DropRange: dropRange})
+
+	if claimer.queue[username] != nil {
+		fmt.Println("failed to queue username")
+		return
+	}
+	claimer.queue[username] = &Claim{Username: username, DropRange: dropRange, Claimer: claimer}
 }

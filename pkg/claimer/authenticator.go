@@ -1,14 +1,14 @@
 package claimer
 
 import (
-	"fmt"
+	"slices"
 	"time"
 
 	"github.com/Kqzz/MCsniperGO/pkg/log"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 )
 
-const authPause = 60 * 60 * 18 // 18 hours
+const authPause = 60 * 30 // check every 30 minutes
 
 func (claimer *Claimer) AuthenticationWorker() {
 	// TODO: proxies
@@ -20,7 +20,17 @@ func (claimer *Claimer) AuthenticationWorker() {
 			}
 		default:
 			for _, account := range claimer.Accounts {
-				fmt.Println(account)
+
+				if time.Until(account.AuthenticationExpiration()) > time.Hour*2 {
+					if account.BearerAccount {
+						if !slices.Contains(claimer.AuthenticatedAccounts, account) {
+							claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts, account)
+						}
+					}
+					log.Log("info", "skipping %v, authentication expires in %v", account.Email, time.Until(account.AuthenticationExpiration()))
+					continue
+				}
+
 				err := account.MicrosoftAuthenticate("")
 				if err != nil {
 					log.Log("err", "failed to authenticate %v: %v", account.Email, err)

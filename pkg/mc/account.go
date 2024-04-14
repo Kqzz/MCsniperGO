@@ -2,6 +2,7 @@ package mc
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -295,6 +296,11 @@ func (account *MCaccount) ChangeUsername(username string, client *fasthttp.Clien
 		fail = DUPLICATE
 	}
 
+	if statusCode == 400 {
+		fail = DUPLICATE
+
+	}
+
 	return statusCode, fail, nil
 }
 
@@ -320,4 +326,31 @@ func (account *MCaccount) ChangeSkinFromUrl(url, variant string) error {
 	}
 
 	return nil
+}
+
+func (account *MCaccount) AuthenticationExpiration() time.Time {
+	if account.Bearer == "" {
+		return time.Time{}
+
+	}
+	tSplit := strings.Split(account.Bearer, ".")
+
+	if len(tSplit) != 3 {
+		return time.Time{}
+	}
+
+	td, err := base64.RawStdEncoding.DecodeString(tSplit[1])
+	if err != nil {
+		panic(err)
+	}
+
+	type Token struct {
+		Exp int64 `json:"exp"`
+	}
+
+	var token Token
+
+	json.Unmarshal(td, &token)
+
+	return time.Unix(token.Exp, 0)
 }
