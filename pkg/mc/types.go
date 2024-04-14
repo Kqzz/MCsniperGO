@@ -15,8 +15,7 @@ type AccType string
 
 const (
 	Ms   AccType = "MS"
-	MsPr AccType = "GC"
-	MsGp AccType = "GP"
+	MsGc AccType = "GC"
 )
 
 /// RETURNS  / API-FACING ///

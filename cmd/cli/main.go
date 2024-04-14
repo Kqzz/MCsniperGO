@@ -94,7 +94,7 @@ func main() {
 		err = nil
 
 		// get accounts, fails if no accs present
-		accounts, err := getAccounts("gc.txt", "gp.txt", "ms.txt")
+		accounts, err := getAccounts("gc.txt", "ms.txt")
 
 		if err != nil {
 			log.Log("err", "fatal: %v", err)

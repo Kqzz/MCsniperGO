@@ -2,7 +2,6 @@ package claimer
 
 import (
 	"fmt"
-	"net/http"
 	_ "net/http/pprof" // TODO REMOVE
 	"time"
 
@@ -75,24 +74,38 @@ func (claimer *Claimer) ResponseManager() {
 	}
 }
 
-func (claimer *Claimer) sender(ms bool, gp bool) {
-
+func determineSleep(accType mc.AccType, accountCount int) time.Duration {
 	sleepTime := 15000
 
-	if len(claimer.AuthenticatedAccounts) > 0 {
-		sleepTime = 150000 / len(claimer.AuthenticatedAccounts)
+	if accountCount > 0 {
+		sleepTime = 15000 / accountCount
 
-		if ms {
-			sleepTime = 10000 / len(claimer.AuthenticatedAccounts)
+		if accType == mc.Ms {
+			sleepTime = 10000 / accountCount
 		}
 	}
 
 	sleepDuration := time.Millisecond * time.Duration(sleepTime)
+	return sleepDuration
+}
 
-	loopCount := 2
-	if ms {
+func (claimer *Claimer) sender(accType mc.AccType) {
+
+	loopCount := 2 // # of requests per account per loop
+	if accType == mc.Ms {
 		loopCount = 3
 	}
+
+	var accounts []*mc.MCaccount
+	var sleepDuration time.Duration
+
+	go func() {
+		for {
+			accounts = filter(claimer.AuthenticatedAccounts, func(acc *mc.MCaccount) bool { return acc.Type == accType })
+			sleepDuration = determineSleep(accType, len(accounts)) // time between each request send
+			time.Sleep(time.Second * 15)
+		}
+	}()
 
 	for {
 		select {
@@ -103,14 +116,7 @@ func (claimer *Claimer) sender(ms bool, gp bool) {
 			}
 		default:
 			for _, claim := range claimer.running {
-				for _, account := range claimer.AuthenticatedAccounts {
-					if ms && account.Type != mc.Ms { // skip non ms accounts for ms
-						continue
-					}
-
-					if gp && account.Type == mc.Ms { // skip ms accounts for non ms accounts
-						continue
-					}
+				for _, account := range accounts {
 
 					for i := 0; i < loopCount; i++ {
 						claimer.workChan <- ClaimWork{Claim: claim, Account: account}
@@ -127,14 +133,11 @@ func (claimer *Claimer) sender(ms bool, gp bool) {
 
 func (claimer *Claimer) SendManager() {
 
-	go claimer.sender(true, false)
-	go claimer.sender(false, true)
+	go claimer.sender(mc.Ms)
+	go claimer.sender(mc.MsGc)
 }
 
 func (claimer *Claimer) Setup() {
-	go func() {
-		fmt.Println(http.ListenAndServe("localhost:6060", nil))
-	}() // TODO rm
 
 	if claimer.killChan != nil {
 		close(claimer.killChan)
@@ -150,8 +153,6 @@ func (claimer *Claimer) Setup() {
 	claimer.killChan = make(chan bool)
 	claimer.workChan = make(chan ClaimWork)
 	claimer.respchan = make(chan ClaimResponse)
-
-	fmt.Println(claimer.killChan, claimer.workChan, claimer.respchan)
 
 	claimer.SendManager()
 	go claimer.QueueManager()

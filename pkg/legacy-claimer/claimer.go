@@ -161,7 +161,7 @@ func (claim *Claim) claimStopper(killChannel chan bool) {
 	_, statusCode, err := mc.UsernameToUuid(claim.Username)
 
 	if err != nil {
-		log.Log("err", "failed to get uuid of %v for availability checking: %v", s.Username, err)
+		log.Log("err", "failed to get uuid of %v for availability checking: %v", claim.Username, err)
 	}
 
 	if statusCode != 404 {
@@ -228,7 +228,7 @@ func (s *Claim) runClaim() {
 
 	time.Sleep(time.Until(s.DropRange.Start))
 
-	go requestGenerator(workChan, killChan, gcs, s.Username, mc.MsPr, s.DropRange.End, s.Proxies, -1)
+	go requestGenerator(workChan, killChan, gcs, s.Username, mc.MsGc, s.DropRange.End, s.Proxies, -1)
 	go requestGenerator(workChan, killChan, mss, s.Username, mc.Ms, s.DropRange.End, s.Proxies, -1)
 
 	if s.DropRange.End.IsZero() {

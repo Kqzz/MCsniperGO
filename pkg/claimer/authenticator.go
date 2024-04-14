@@ -27,7 +27,7 @@ func (claimer *Claimer) AuthenticationWorker() {
 							claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts, account)
 						}
 					}
-					log.Log("info", "skipping %v, authentication expires in %v", account.Email, time.Until(account.AuthenticationExpiration()))
+					log.Log("info", "%v authenticated, expires in %v", account.Email, time.Until(account.AuthenticationExpiration()))
 					continue
 				}
 
@@ -37,7 +37,7 @@ func (claimer *Claimer) AuthenticationWorker() {
 					continue
 				}
 
-				if account.Type == mc.MsPr || account.Type == mc.MsGp {
+				if account.Type == mc.MsGc {
 					err = account.License()
 					if err != nil {
 						log.Log("err", "failed to license %v: %v", account.Email, err)

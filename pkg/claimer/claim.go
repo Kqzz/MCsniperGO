@@ -10,9 +10,7 @@ func (claim *Claim) SendRequest(account *mc.MCaccount, client *fasthttp.Client) 
 	var failType mc.FailType
 	var err error
 	switch account.Type {
-	case mc.MsPr:
-		statusCode, failType, err = account.CreateProfile(claim.Username, client)
-	case mc.MsGp:
+	case mc.MsGc:
 		statusCode, failType, err = account.CreateProfile(claim.Username, client)
 	case mc.Ms:
 		statusCode, failType, err = account.ChangeUsername(claim.Username, client)

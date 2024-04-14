@@ -62,7 +62,7 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 		}
 
 		time.Sleep(time.Millisecond * 500)
-		if account.Type == mc.MsGp {
+		if account.Type == mc.MsGc {
 			licenseErr := account.License()
 			if licenseErr != nil {
 				log.Log("err", "failed to license %v: %v", account.Email, licenseErr)
@@ -81,7 +81,7 @@ func ClaimWithinRange(username string, dropRange mc.DropRange, accounts []*mc.MC
 			continue
 		}
 
-		if account.Type == mc.MsPr {
+		if account.Type == mc.MsGc {
 			_, checkErr := account.HasGcApplied()
 
 			if checkErr != nil {
