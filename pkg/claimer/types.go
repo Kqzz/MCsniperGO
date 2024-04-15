@@ -27,9 +27,17 @@ type Claimer struct {
 	Dialers               []fasthttp.DialFunc
 	Accounts              []*mc.MCaccount
 	AuthenticatedAccounts []*mc.MCaccount
-	queue                 map[string]*Claim
-	running               map[string]*Claim
-	killChan              chan bool
-	workChan              chan ClaimWork
-	respchan              chan ClaimResponse
+	Statistics            Statistics
+
+	queue    map[string]*Claim
+	running  map[string]*Claim
+	killChan chan bool
+	workChan chan ClaimWork
+	respchan chan ClaimResponse
+}
+
+type Statistics struct {
+	RequestsPerSecond int
+	Requests          int // total count
+	FailedRequests    int
 }

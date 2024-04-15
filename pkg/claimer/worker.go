@@ -6,7 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func (claimer *Claimer) Worker(dial fasthttp.DialFunc) {
+func (claimer *Claimer) worker(dial fasthttp.DialFunc) {
 	client := &fasthttp.Client{Dial: dial}
 
 	for {

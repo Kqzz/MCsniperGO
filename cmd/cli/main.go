@@ -127,10 +127,6 @@ func main() {
 				start = time.Now()
 			}
 
-			// for {
-			// 	statusBar(start)
-			// 	time.Sleep(time.Second * 1)
-			// }
 		}()
 
 		claimer := claimer.Claimer{
@@ -146,7 +142,6 @@ func main() {
 		}
 
 		time.Sleep(time.Until(dropRange.End))
-		log.Input("snipe completed, press enter to continue")
 	}
 
 }

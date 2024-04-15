@@ -10,7 +10,7 @@ import (
 
 const authPause = 60 * 30 // check every 30 minutes
 
-func (claimer *Claimer) AuthenticationWorker() {
+func (claimer *Claimer) authenticationWorker() {
 	// TODO: proxies
 	for {
 		select {

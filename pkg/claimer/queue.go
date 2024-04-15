@@ -11,12 +11,12 @@ import (
 
 // Expected API: type Claim, Claim.Start() and it claims the username. Claimer pkg stores accounts, queue, and proxies
 
-func (claimer *Claimer) Start(claim *Claim) {
+func (claimer *Claimer) start(claim *Claim) {
 	claim.Running = true
 	claimer.running[claim.Username] = claim
 
 }
-func (claimer *Claimer) Stop(claim *Claim) {
+func (claimer *Claimer) stop(claim *Claim) {
 	fmt.Println("stopping")
 	claimer.running[claim.Username].Running = false
 	claimer.running[claim.Username] = nil
@@ -36,15 +36,15 @@ func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 		}
 
 		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || claim.DropRange.Start.IsZero() { // The username is currently dropping
-			claimer.Start(claim)
+			claimer.start(claim)
 		} else if claim.DropRange.End.Before(now) && claim.Running { // The username has finished dropping
-			claimer.Stop(claim)
+			claimer.stop(claim)
 		} // TODO: stop usernames if username is claimed by other user, will involve creating checker thread
 	}
 
 }
 
-func (claimer *Claimer) QueueManager() {
+func (claimer *Claimer) queueManager() {
 	for {
 		select {
 		case _, ok := <-claimer.killChan:
@@ -58,7 +58,7 @@ func (claimer *Claimer) QueueManager() {
 	}
 }
 
-func (claimer *Claimer) ResponseManager() {
+func (claimer *Claimer) responseManager() {
 	for {
 		select {
 		case _, ok := <-claimer.killChan:
@@ -131,7 +131,7 @@ func (claimer *Claimer) sender(accType mc.AccType) {
 	}
 }
 
-func (claimer *Claimer) SendManager() {
+func (claimer *Claimer) sendManager() {
 
 	go claimer.sender(mc.Ms)
 	go claimer.sender(mc.MsGc)
@@ -154,16 +154,16 @@ func (claimer *Claimer) Setup() {
 	claimer.workChan = make(chan ClaimWork)
 	claimer.respchan = make(chan ClaimResponse)
 
-	claimer.SendManager()
-	go claimer.QueueManager()
-	go claimer.ResponseManager()
-	go claimer.AuthenticationWorker()
+	claimer.sendManager()
+	go claimer.queueManager()
+	go claimer.responseManager()
+	go claimer.authenticationWorker()
 
 	claimer.queue = make(map[string]*Claim)
 	claimer.running = make(map[string]*Claim)
 
 	for _, dial := range claimer.Dialers {
-		go claimer.Worker(dial)
+		go claimer.worker(dial)
 	}
 }
 
