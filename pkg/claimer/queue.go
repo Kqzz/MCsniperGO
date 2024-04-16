@@ -17,7 +17,7 @@ func (claimer *Claimer) start(claim *Claim) {
 
 }
 func (claimer *Claimer) stop(claim *Claim) {
-	fmt.Println("stopping")
+	log.Log("info", "stopping %s", claim.Username)
 	claimer.running[claim.Username].Running = false
 	claimer.running[claim.Username] = nil
 
@@ -129,50 +129,4 @@ func (claimer *Claimer) sender(accType mc.AccType) {
 			time.Sleep(sleepDuration)
 		}
 	}
-}
-
-func (claimer *Claimer) sendManager() {
-
-	go claimer.sender(mc.Ms)
-	go claimer.sender(mc.MsGc)
-}
-
-func (claimer *Claimer) Setup() {
-
-	if claimer.killChan != nil {
-		close(claimer.killChan)
-	}
-	if claimer.workChan != nil {
-		close(claimer.workChan)
-	}
-
-	if claimer.respchan != nil {
-		close(claimer.respchan)
-	}
-
-	claimer.killChan = make(chan bool)
-	claimer.workChan = make(chan ClaimWork)
-	claimer.respchan = make(chan ClaimResponse)
-
-	claimer.sendManager()
-	go claimer.queueManager()
-	go claimer.responseManager()
-	go claimer.authenticationWorker()
-
-	claimer.queue = make(map[string]*Claim)
-	claimer.running = make(map[string]*Claim)
-
-	for _, dial := range claimer.Dialers {
-		go claimer.worker(dial)
-	}
-}
-
-func (claimer *Claimer) Queue(username string, dropRange mc.DropRange) {
-	// claimer.queue = append(claimer.queue, &Claim{Username: username, DropRange: dropRange})
-
-	if claimer.queue[username] != nil {
-		fmt.Println("failed to queue username")
-		return
-	}
-	claimer.queue[username] = &Claim{Username: username, DropRange: dropRange, Claimer: claimer}
 }

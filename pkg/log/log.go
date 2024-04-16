@@ -79,7 +79,16 @@ func GetDropRange() mc.DropRange {
 		rawDroptimes := Input("droptime range (start-end/infinite)")
 
 		if rawDroptimes == "inf" || rawDroptimes == "infinite" {
-			return mc.DropRange{Start: time.Time{}, End: time.Time{}}
+			return mc.DropRange{Start: time.Now(), End: time.Time{}}
+		}
+
+		if rawDroptimes[0] == '+' { // for x seconds
+			droptimeDurationStr := rawDroptimes[1:]
+			droptimeInt, err := strconv.Atoi(droptimeDurationStr)
+			if err != nil {
+				continue
+			}
+			return mc.DropRange{Start: time.Now(), End: time.Now().Add(time.Duration(droptimeInt))}
 		}
 
 		rawDroptimesSplit := strings.Split(rawDroptimes, "-")
