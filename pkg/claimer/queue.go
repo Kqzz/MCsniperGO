@@ -9,8 +9,6 @@ import (
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 )
 
-// Expected API: type Claim, Claim.Start() and it claims the username. Claimer pkg stores accounts, queue, and proxies
-
 func (claimer *Claimer) start(claim *Claim) {
 	claim.Running = true
 	claimer.running[claim.Username] = claim
@@ -26,6 +24,12 @@ func (claimer *Claimer) stop(claim *Claim) {
 func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 	now := time.Now()
 	for _, claim := range claims {
+
+		if claim.Running && !claim.DropRange.End.IsZero() && claim.DropRange.End.Before(now) {
+			claimer.stop(claim)
+			continue
+		}
+
 		if claim.Running {
 			continue
 		}
@@ -37,9 +41,8 @@ func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 
 		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || claim.DropRange.Start.IsZero() { // The username is currently dropping
 			claimer.start(claim)
-		} else if claim.DropRange.End.Before(now) && claim.Running { // The username has finished dropping
-			claimer.stop(claim)
-		} // TODO: stop usernames if username is claimed by other user, will involve creating checker thread
+		}
+		// TODO: stop usernames if username is claimed by other user, will involve creating checker thread
 	}
 
 }
@@ -100,6 +103,7 @@ func (claimer *Claimer) sender(accType mc.AccType) {
 	var sleepDuration time.Duration
 
 	go func() {
+		time.Sleep(time.Microsecond * 200)
 		for {
 			accounts = filter(claimer.AuthenticatedAccounts, func(acc *mc.MCaccount) bool { return acc.Type == accType })
 			sleepDuration = determineSleep(accType, len(accounts)) // time between each request send
@@ -117,8 +121,10 @@ func (claimer *Claimer) sender(accType mc.AccType) {
 		default:
 			for _, claim := range claimer.running {
 				for _, account := range accounts {
-
 					for i := 0; i < loopCount; i++ {
+						if claim == nil {
+							continue
+						}
 						claimer.workChan <- ClaimWork{Claim: claim, Account: account}
 						if i != loopCount-1 {
 							time.Sleep(sleepDuration)

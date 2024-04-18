@@ -3,6 +3,7 @@ package claimer
 import (
 	"fmt"
 
+	"github.com/Kqzz/MCsniperGO/pkg/log"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/valyala/fasthttp"
 )
@@ -22,6 +23,12 @@ func (claimer *Claimer) worker(dial fasthttp.DialFunc) {
 }
 
 func (claim *Claim) SendRequest(account *mc.MCaccount, client *fasthttp.Client) {
+
+	if claim == nil {
+		log.Log("warn", "[debug] claim == nil")
+		return
+	}
+
 	var statusCode int
 	var failType mc.FailType
 	var err error

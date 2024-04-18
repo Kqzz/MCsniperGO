@@ -31,6 +31,7 @@ var formats = map[string]string{
 	"input":   "[<fg=blue>*</>] %s: ",
 }
 
+// levels: info, err, warn, success
 func Log(level, message string, params ...interface{}) {
 	format, e := formats[level]
 	if !e {
@@ -84,11 +85,11 @@ func GetDropRange() mc.DropRange {
 
 		if rawDroptimes[0] == '+' { // for x seconds
 			droptimeDurationStr := rawDroptimes[1:]
-			droptimeInt, err := strconv.Atoi(droptimeDurationStr)
+			droptimeFloat, err := strconv.ParseFloat(droptimeDurationStr, 64)
 			if err != nil {
 				continue
 			}
-			return mc.DropRange{Start: time.Now(), End: time.Now().Add(time.Duration(droptimeInt))}
+			return mc.DropRange{Start: time.Now(), End: time.Now().Add(time.Duration(droptimeFloat * float64(time.Second)))}
 		}
 
 		rawDroptimesSplit := strings.Split(rawDroptimes, "-")
