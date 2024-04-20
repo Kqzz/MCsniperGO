@@ -65,7 +65,11 @@ javascript: (function() {
 
 ## accounts formatting
 
-`gc.txt` and `ms.txt`
+- place in `gc.txt` or `ms.txt` depending on their account type.
+  - `gc.txt` is for accounts without usernames
+  - `ms.txt` is for accounts that already have usernames on them
+- a bearer token can be obtained by following  [this guide](https://kqzz.github.io/mc-bearer-token/)
+
 ```txt
 EMAIL:PASSWORD
 BEARER
