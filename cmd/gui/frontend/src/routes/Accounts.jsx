@@ -137,58 +137,48 @@ export default (props) => {
 
   return (
     <>
-      <Flex
-        as="main"
-        role="main"
-        direction="column"
-        flex="1"
-        py="16"
-        height="100vh"
-        {...props}
-        bg=""
-        ml={{ base: "0" }}
-      >
-        <Container flex="1" ml={"5rem"}>
-          <Flex
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Heading pl={"6"}>Accounts</Heading>
-            <Flex direction={"row"} alignItems={"center"}>
-              <RefreshButton onClick={refreshAccounts} mr={1} />
-              <PlusButton onClick={addAccountsModalOpen} />
-            </Flex>
+      <Container flex="1" ml={"2rem"} maxWidth={"80%"}>
+        <Flex
+          direction={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <Heading pl={"6"}>Accounts</Heading>
+          <Flex direction={"row"} alignItems={"center"}>
+            <RefreshButton onClick={refreshAccounts} mr={1} />
+            <PlusButton onClick={addAccountsModalOpen} />
           </Flex>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Email</Th>
-                  <Th>Type</Th>
-                  <Th>Status</Th>
-                  <Th></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {accounts.map((account, index) => {
-                  return (
-                    <Tr key={index}>
-                      <Td>{account.email}</Td>
-                      <Td>{account.type || "N/A"}</Td>
-                      <Td>{AccountStatus(account.status)}</Td>
+        </Flex>
+        <TableContainer>
+          <Table variant="simple" size={"md"}>
+            <Thead>
+              <Tr>
+                <Th>Email</Th>
+                <Th>Type</Th>
+                <Th>Status</Th>
+                <Th></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {accounts.map((account, index) => {
+                return (
+                  <Tr key={index}>
+                    <Td>{account.email}</Td>
+                    <Td>{account.type || "N/A"}</Td>
+                    <Td>{AccountStatus(account.status)}</Td>
+                    <Td>
                       <RemoveButton
                         onClick={removeAccount}
                         data={account.email}
                       />
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Container>
-      </Flex>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </Container>
       <AddAccountsModal
         isOpen={isOpen}
         onClose={onClose}

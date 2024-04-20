@@ -11,7 +11,17 @@ export default ({ children }) => {
             <Navbar />
           </Box>
           <Box width={{ base: "80%", md: "75%" }}>
-            {children}
+            <Flex
+              as="main"
+              role="main"
+              direction="column"
+              flex="1"
+              py="16"
+              height="100vh"
+              ml={{ base: "0" }}
+            >
+              {children}
+            </Flex>
             <Footer />
           </Box>
         </Flex>

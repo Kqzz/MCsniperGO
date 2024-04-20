@@ -127,52 +127,42 @@ export default (props) => {
 
   return (
     <>
-      <Flex
-        as="main"
-        role="main"
-        direction="column"
-        flex="1"
-        py="16"
-        height="100vh"
-        {...props}
-        bg=""
-        ml={{ base: "0" }}
-      >
-        <Container flex="1" ml={"5rem"}>
-          <Flex
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Heading pl={"6"}>Proxies</Heading>
-            <Flex direction={"row"} alignItems={"center"}>
-              <RefreshButton onClick={refreshProxies} mr={1} />
-              <PlusButton onClick={addProxiesModalOpen} />
-            </Flex>
+      <Container flex="1" ml={"2rem"} maxWidth={"80%"}>
+        <Flex
+          direction={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <Heading pl={"6"}>Proxies</Heading>
+          <Flex direction={"row"} alignItems={"center"}>
+            <RefreshButton onClick={refreshProxies} mr={1} />
+            <PlusButton onClick={addProxiesModalOpen} />
           </Flex>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Proxy</Th>
-                  <Th>Type</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {proxies.map((proxy, index) => {
-                  return (
-                    <Tr key={index}>
-                      <Td>{proxy.url}</Td>
-                      <Td>{proxy.type || "N/A"}</Td>
+        </Flex>
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Proxy</Th>
+                <Th>Type</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {proxies.map((proxy, index) => {
+                return (
+                  <Tr key={index}>
+                    <Td>{proxy.url}</Td>
+                    <Td>{proxy.type || "N/A"}</Td>
+                    <Td>
                       <RemoveButton onClick={removeProxies} data={proxy.url} />
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Container>
-      </Flex>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </Container>
       <AddProxiesModal
         isOpen={isOpen}
         onClose={onClose}

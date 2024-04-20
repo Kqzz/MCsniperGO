@@ -1,4 +1,4 @@
-import { Flex, Text, Button } from "@chakra-ui/react";
+import { Flex, Text, Button, Image } from "@chakra-ui/react";
 
 import RefreshIcon from "../assets/images/refresh.svg";
 import TrashIcon from "../assets/images/trash.svg";
@@ -26,8 +26,14 @@ function RefreshButton({ onClick, ...params }) {
 
 function RemoveButton({ onClick, data, ...params }) {
   return (
-    <Button onClick={() => onClick(data)} color={"red.300"} {...params}>
-      <img src={TrashIcon} alt="remove" width={25} />
+    <Button
+      onClick={() => onClick(data)}
+      color={"red.300"}
+      colorScheme="blue"
+      marginTop={""}
+      {...params}
+    >
+      <Image src={TrashIcon} alt="remove" width={25} />
     </Button>
   );
 }

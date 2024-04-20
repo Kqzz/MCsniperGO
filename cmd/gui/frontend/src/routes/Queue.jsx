@@ -37,58 +37,46 @@ export default (props) => {
   };
 
   return (
-    <Flex
-      as="main"
-      role="main"
-      direction="column"
-      flex="1"
-      py="16"
-      height="100vh"
-      {...props}
-      bg=""
-      ml={{ base: "0" }}
-    >
-      <Container maxW={"90%"}>
-        <Heading>Queue</Heading>
-        <ClaimForm queueClaim={queueClaim} />
-        <TableContainer>
-          <Heading mt={5}>Queued Claims</Heading>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Username</Th>
-                <Th>Date</Th>
-                <Th>Status</Th>
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {
-                // map through the queued claims and render them
-                queuedClaims.map((claim, index) => {
-                  return (
-                    <Tr key={index}>
-                      <Td>{claim.username}</Td>
-                      <Td>{claim.startTime}</Td>
-                      <Td>{claim.status}</Td>
-                      <Td>
-                        <RemoveButton
-                          onClick={() => {
-                            DeleteQueue(claim.username);
-                            getQueuedClaims();
-                          }}
-                          data={claim}
-                          ml={1}
-                        />
-                      </Td>
-                    </Tr>
-                  );
-                })
-              }
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Container>
-    </Flex>
+    <Container maxW={"80%"}>
+      <Heading>Queue</Heading>
+      <ClaimForm queueClaim={queueClaim} />
+      <TableContainer>
+        <Heading mt={5}>Queued Claims</Heading>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Username</Th>
+              <Th>Date</Th>
+              <Th>Status</Th>
+              <Th></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {
+              // map through the queued claims and render them
+              queuedClaims.map((claim, index) => {
+                return (
+                  <Tr key={index}>
+                    <Td>{claim.username}</Td>
+                    <Td>{claim.startTime}</Td>
+                    <Td>{claim.status}</Td>
+                    <Td>
+                      <RemoveButton
+                        onClick={() => {
+                          DeleteQueue(claim.username);
+                          getQueuedClaims();
+                        }}
+                        data={claim}
+                        ml={1}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })
+            }
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
