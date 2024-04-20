@@ -70,6 +70,17 @@ javascript: (function() {
 EMAIL:PASSWORD
 ```
 
+### Example accounts file
+
+```txt
+kqzz@gmail.com:SecurePassword3
+teun@example.com:SafePassword!
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+```
+> This will load 3 accounts into the sniper, two of which are supplied with email / password. The last is loaded by bearer token, and will last 24 hours (the sniper will show the remaining time).
+
+> Their account types are determined by if they are placed in `gc.txt` or `ms.txt`.
+
 ## understanding logs
 
 Each request made to change your username will return a 3 digit HTTP status code, the meanings are as follows:
