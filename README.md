@@ -68,6 +68,7 @@ javascript: (function() {
 `gc.txt` and `ms.txt`
 ```txt
 EMAIL:PASSWORD
+BEARER
 ```
 
 ### Example accounts file
