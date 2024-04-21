@@ -3,6 +3,7 @@ package backendmanager
 import (
 	"fmt"
 
+	"github.com/Kqzz/MCsniperGO/pkg/claimer"
 	"gorm.io/gorm"
 )
 
@@ -11,7 +12,8 @@ func NewProxyManager() *ProxyManager {
 }
 
 type ProxyManager struct {
-	DB *gorm.DB
+	DB      *gorm.DB
+	Claimer *claimer.Claimer
 }
 
 type ProxyType string
@@ -42,11 +44,11 @@ func (pm *ProxyManager) AddProxies(urls []string, proxyType ProxyType) error {
 	return tx.Error
 }
 
-func (pm *ProxyManager) GetProxies() ([]Proxy, error) {
+func (pm *ProxyManager) GetProxies() []Proxy {
 	var proxies []Proxy
-	tx := pm.DB.Find(&proxies)
+	pm.DB.Find(&proxies)
 
-	return proxies, tx.Error
+	return proxies
 }
 
 func (pm *ProxyManager) RemoveProxies(urls []string) error {

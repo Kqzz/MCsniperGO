@@ -49,10 +49,19 @@ func (claimer *Claimer) Queue(username string, dropRange mc.DropRange) error {
 	return nil
 }
 
-func (claimer *Claimer) Dequeue(username string) {
-	// TODO
+func (claimer *Claimer) Dequeue(username string) error {
+	if claimer.queue[username] == nil {
+		return fmt.Errorf("%s is not in queue", username)
+	}
+
+	claimer.stop(&Claim{Username: username})
+	claimer.queue[username] = nil
+	return nil
 }
 
+// TODO: test
 func (claimer *Claimer) Shutdown() {
-	// TODO
+	close(claimer.killChan) // kills all goroutines
+	close(claimer.workChan)
+	close(claimer.respchan)
 }

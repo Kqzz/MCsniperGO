@@ -1,13 +1,17 @@
 package backendmanager
 
 import (
-	"fmt"
+	"time"
 
+	"github.com/Kqzz/MCsniperGO/pkg/claimer"
+	"github.com/Kqzz/MCsniperGO/pkg/log"
+	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"gorm.io/gorm"
 )
 
 type QueueManager struct {
-	DB *gorm.DB
+	DB      *gorm.DB
+	Claimer *claimer.Claimer
 }
 
 type Status string
@@ -34,12 +38,13 @@ func NewQueueManager() *QueueManager {
 }
 
 func (qm *QueueManager) CreateQueue(queue Queue) error {
-	fmt.Println("Creating queue")
-	fmt.Println(queue)
-
+	log.Log("debug", "creating queue %s", queue.Username)
 	if err := qm.DB.Create(&queue).Error; err != nil {
 		return err
 	}
+
+	qm.Claimer.Queue(queue.Username, mc.DropRange{Start: time.Unix(queue.StartTime, 0), End: time.Unix(queue.EndTime, 0)})
+
 	return nil
 }
 
@@ -55,5 +60,8 @@ func (qm *QueueManager) DeleteQueue(username string) error {
 	if err := qm.DB.Where("username = ?", username).Delete(&Queue{}).Error; err != nil {
 		return err
 	}
-	return nil
+
+	err := qm.Claimer.Dequeue(username)
+
+	return err
 }

@@ -19,6 +19,8 @@ type Logger struct {
 	Color bool
 }
 
+const DEBUG = true
+
 var formats = map[string]string{
 	/* "info":  "[<fg=blue>info</>] %s\n",
 	"err":   "[<fg=red>erro</>] %s\n",
@@ -29,10 +31,16 @@ var formats = map[string]string{
 	"warn":    "[<fg=yellow>*</>] %s\n",
 	"success": "[<fg=green>*</>] %s\n",
 	"input":   "[<fg=blue>*</>] %s: ",
+	"debug":   "[<fg=yellow>*</>] [debug] %s: ",
 }
 
 // levels: info, err, warn, success
 func Log(level, message string, params ...interface{}) {
+
+	if level == "debug" && !DEBUG {
+		return
+	}
+
 	format, e := formats[level]
 	if !e {
 		format = "%s"

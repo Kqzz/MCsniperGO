@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Kqzz/MCsniperGO/pkg/claimer"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/Kqzz/MCsniperGO/pkg/parser"
 	"gorm.io/gorm"
@@ -15,7 +16,8 @@ func NewAccountManager() *AccountManager {
 }
 
 type AccountManager struct {
-	DB *gorm.DB
+	DB      *gorm.DB
+	Claimer *claimer.Claimer
 }
 
 type Account struct {
