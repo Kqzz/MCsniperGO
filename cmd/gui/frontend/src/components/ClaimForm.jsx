@@ -19,8 +19,8 @@ function ClaimForm({ queueClaim }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (runInfinitely) {
-      setEndTime(-1);
-      setStartTime(-1);
+      setEndTime(0);
+      setStartTime(0);
     }
 
     queueClaim({

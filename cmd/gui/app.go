@@ -33,16 +33,19 @@ func NewApp() *App {
 		panic("failed to connect database")
 	}
 
+	claimer := &claimer.Claimer{}
+
 	accountManager := backendManager.NewAccountManager()
 	accountManager.DB = db
+	accountManager.Claimer = claimer
 
 	proxyManager := backendManager.NewProxyManager()
 	proxyManager.DB = db
+	proxyManager.Claimer = claimer
 
 	queueManager := backendManager.NewQueueManager()
 	queueManager.DB = db
-
-	claimer := &claimer.Claimer{}
+	queueManager.Claimer = claimer
 
 	return &App{
 		AccountManager: accountManager,
@@ -87,6 +90,7 @@ func (a *App) startup(ctx context.Context) {
 	a.Claimer.Dialers = dialers
 
 	a.Claimer.Setup()
+
 }
 
 func Recast(a, b interface{}) error {

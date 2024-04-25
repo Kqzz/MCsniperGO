@@ -16,6 +16,12 @@ func (claimer *Claimer) start(claim *Claim) {
 }
 func (claimer *Claimer) stop(claim *Claim) {
 	log.Log("info", "stopping %s", claim.Username)
+
+	_, e := claimer.running[claim.Username]
+	if !e {
+		return
+	}
+
 	claimer.running[claim.Username].Running = false
 	claimer.running[claim.Username] = nil
 

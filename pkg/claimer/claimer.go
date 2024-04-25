@@ -19,6 +19,7 @@ func (claimer *Claimer) Setup() {
 	if claimer.respchan != nil {
 		close(claimer.respchan)
 	}
+	fmt.Println("We are doing setup")
 
 	claimer.killChan = make(chan bool)
 	claimer.workChan = make(chan ClaimWork)
@@ -38,10 +39,14 @@ func (claimer *Claimer) Setup() {
 	for _, dial := range claimer.Dialers {
 		go claimer.worker(dial)
 	}
+
+	fmt.Println(claimer.queue, "QUEUEUE")
 }
+
 func (claimer *Claimer) Queue(username string, dropRange mc.DropRange) error {
 	// claimer.queue = append(claimer.queue, &Claim{Username: username, DropRange: dropRange})
 
+	fmt.Println(claimer.queue)
 	if claimer.queue[username] != nil {
 		return fmt.Errorf("%s is already in queue", username)
 	}
