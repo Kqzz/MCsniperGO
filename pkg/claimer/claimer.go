@@ -39,8 +39,6 @@ func (claimer *Claimer) Setup() {
 	for _, dial := range claimer.Dialers {
 		go claimer.worker(dial)
 	}
-
-	fmt.Println(claimer.queue, "QUEUEUE")
 }
 
 func (claimer *Claimer) Queue(username string, dropRange mc.DropRange) error {
@@ -60,7 +58,7 @@ func (claimer *Claimer) Dequeue(username string) error {
 	}
 
 	claimer.stop(&Claim{Username: username})
-	claimer.queue[username] = nil
+	delete(claimer.queue, username)
 	return nil
 }
 

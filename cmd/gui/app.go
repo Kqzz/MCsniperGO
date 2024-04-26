@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+	"time"
 
 	backendManager "github.com/Kqzz/MCsniperGO/pkg/backend-manager"
 	"github.com/Kqzz/MCsniperGO/pkg/claimer"
@@ -91,6 +92,11 @@ func (a *App) startup(ctx context.Context) {
 
 	a.Claimer.Setup()
 
+	dbQueues, _ := a.QueueManager.GetQueues()
+
+	for _, queue := range dbQueues {
+		a.Claimer.Queue(queue.Username, mc.DropRange{Start: time.Unix(queue.StartTime, 0), End: time.Unix(queue.EndTime, 0)})
+	}
 }
 
 func Recast(a, b interface{}) error {

@@ -17,21 +17,22 @@ func (claimer *Claimer) start(claim *Claim) {
 func (claimer *Claimer) stop(claim *Claim) {
 	log.Log("info", "stopping %s", claim.Username)
 
-	_, e := claimer.running[claim.Username]
-	if !e {
+	if _, e := claimer.running[claim.Username]; !e {
 		return
 	}
 
 	claimer.running[claim.Username].Running = false
-	claimer.running[claim.Username] = nil
+	delete(claimer.running, claim.Username)
 
 }
 
 func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 	now := time.Now()
 	for _, claim := range claims {
+		isUnixZero := claim.DropRange.Start.Before(time.Unix(1, 0))
+		fmt.Println(isUnixZero)
 
-		if claim.Running && !claim.DropRange.End.IsZero() && claim.DropRange.End.Before(now) {
+		if claim.Running && !isUnixZero && claim.DropRange.End.Before(now) {
 			claimer.stop(claim)
 			continue
 		}
@@ -45,7 +46,7 @@ func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 			continue
 		}
 
-		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || claim.DropRange.Start.IsZero() { // The username is currently dropping
+		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || isUnixZero { // The username is currently dropping
 			claimer.start(claim)
 		}
 		// TODO: stop usernames if username is claimed by other user, will involve creating checker thread
