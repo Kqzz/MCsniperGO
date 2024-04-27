@@ -19,7 +19,6 @@ func (claimer *Claimer) Setup() {
 	if claimer.respchan != nil {
 		close(claimer.respchan)
 	}
-	fmt.Println("We are doing setup")
 
 	claimer.killChan = make(chan bool)
 	claimer.workChan = make(chan ClaimWork)

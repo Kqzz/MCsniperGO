@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Kqzz/MCsniperGO/pkg/claimer"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
@@ -12,7 +13,20 @@ import (
 )
 
 func NewAccountManager() *AccountManager {
-	return &AccountManager{}
+	a := &AccountManager{}
+	go func() {
+		time.Sleep(time.Second * 10)
+		for _, account := range a.Claimer.AuthenticatedAccounts {
+			var acc Account
+			a.DB.Where("email = ?", account.Email).First(&acc)
+
+			acc.Bearer = account.Bearer
+			a.DB.Save(&acc)
+
+			time.Sleep(time.Minute * 30)
+		}
+	}()
+	return a
 }
 
 type AccountManager struct {

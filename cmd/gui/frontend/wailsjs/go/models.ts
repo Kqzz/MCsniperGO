@@ -38,6 +38,7 @@ export namespace backendmanager {
 	    username: string;
 	    startTime: number;
 	    endTime: number;
+	    infinite: boolean;
 	    useProxies: boolean;
 	    status: string;
 	
@@ -50,6 +51,7 @@ export namespace backendmanager {
 	        this.username = source["username"];
 	        this.startTime = source["startTime"];
 	        this.endTime = source["endTime"];
+	        this.infinite = source["infinite"];
 	        this.useProxies = source["useProxies"];
 	        this.status = source["status"];
 	    }

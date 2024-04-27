@@ -29,6 +29,7 @@ type Queue struct {
 	Username   string `json:"username"`
 	StartTime  int64  `json:"startTime"`
 	EndTime    int64  `json:"endTime"`
+	Infinite   bool   `json:"infinite"`
 	UseProxies bool   `json:"useProxies"`
 	Status     Status `json:"status"`
 }
@@ -43,7 +44,11 @@ func (qm *QueueManager) CreateQueue(queue Queue) error {
 		return err
 	}
 
-	qm.Claimer.Queue(queue.Username, mc.DropRange{Start: time.Unix(queue.StartTime, 0), End: time.Unix(queue.EndTime, 0)})
+	qm.Claimer.Queue(queue.Username, mc.DropRange{
+		Start:    time.Unix(queue.StartTime, 0),
+		End:      time.Unix(queue.EndTime, 0),
+		Infinite: queue.Infinite,
+	})
 
 	return nil
 }

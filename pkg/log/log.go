@@ -31,7 +31,7 @@ var formats = map[string]string{
 	"warn":    "[<fg=yellow>*</>] %s\n",
 	"success": "[<fg=green>*</>] %s\n",
 	"input":   "[<fg=blue>*</>] %s: ",
-	"debug":   "[<fg=yellow>*</>] [debug] %s: ",
+	"debug":   "[<fg=yellow>*</>] [debug] %s: \n",
 }
 
 // levels: info, err, warn, success
@@ -88,7 +88,7 @@ func GetDropRange() mc.DropRange {
 		rawDroptimes := Input("droptime range (start-end/infinite)")
 
 		if rawDroptimes == "inf" || rawDroptimes == "infinite" {
-			return mc.DropRange{Start: time.Now(), End: time.Time{}}
+			return mc.DropRange{Start: time.Now(), End: time.Time{}, Infinite: true}
 		}
 
 		if rawDroptimes[0] == '+' { // for x seconds

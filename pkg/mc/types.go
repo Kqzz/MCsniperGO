@@ -7,8 +7,9 @@ import (
 )
 
 type DropRange struct {
-	Start time.Time
-	End   time.Time
+	Start    time.Time
+	End      time.Time
+	Infinite bool
 }
 
 type AccType string

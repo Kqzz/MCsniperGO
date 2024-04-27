@@ -18,15 +18,12 @@ function ClaimForm({ queueClaim }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (runInfinitely) {
-      setEndTime(0);
-      setStartTime(0);
-    }
 
     queueClaim({
       username,
       startTime: new Number(startTime),
       endTime: new Number(endTime),
+      infinite: runInfinitely,
       useProxies,
     });
   };

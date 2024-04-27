@@ -8,7 +8,7 @@ import (
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 )
 
-const authPause = 60 * 30 // check every 30 minutes
+const authPause = 30 // check every 30 seconds
 
 func (claimer *Claimer) authenticationWorker() {
 	// TODO: proxies
@@ -22,10 +22,8 @@ func (claimer *Claimer) authenticationWorker() {
 			for _, account := range claimer.Accounts {
 
 				if time.Until(account.AuthenticationExpiration()) > time.Hour*2 {
-					if account.BearerAccount {
-						if !slices.Contains(claimer.AuthenticatedAccounts, account) {
-							claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts, account)
-						}
+					if !slices.Contains(claimer.AuthenticatedAccounts, account) {
+						claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts, account)
 					}
 					log.Log("info", "%v authenticated, expires in %v", account.Email, time.Until(account.AuthenticationExpiration()))
 					continue

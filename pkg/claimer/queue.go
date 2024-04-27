@@ -23,16 +23,15 @@ func (claimer *Claimer) stop(claim *Claim) {
 
 	claimer.running[claim.Username].Running = false
 	delete(claimer.running, claim.Username)
+	log.Log("debug", "%v", claimer.running)
 
 }
 
 func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 	now := time.Now()
 	for _, claim := range claims {
-		isUnixZero := claim.DropRange.Start.Before(time.Unix(1, 0))
-		fmt.Println(isUnixZero)
 
-		if claim.Running && !isUnixZero && claim.DropRange.End.Before(now) {
+		if claim.Running && !claim.DropRange.Infinite && claim.DropRange.End.Before(now) {
 			claimer.stop(claim)
 			continue
 		}
@@ -46,7 +45,10 @@ func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 			continue
 		}
 
-		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || isUnixZero { // The username is currently dropping
+		log.Log("debug", "claim: %v", claim)
+
+		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || claim.DropRange.Infinite { // The username is currently dropping
+			log.Log("debug", "starting claim %v", claim.Username)
 			claimer.start(claim)
 		}
 		// TODO: stop usernames if username is claimed by other user, will involve creating checker thread
@@ -100,6 +102,7 @@ func determineSleep(accType mc.AccType, accountCount int) time.Duration {
 }
 
 func (claimer *Claimer) sender(accType mc.AccType) {
+	log.Log("debug", "starting sender %v", accType)
 
 	loopCount := 2 // # of requests per account per loop
 	if accType == mc.Ms {
