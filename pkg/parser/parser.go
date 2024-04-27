@@ -22,7 +22,6 @@ func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error)
 			strings.HasPrefix(l, "eyJ") { // bearer token
 
 			acc := &mc.MCaccount{Email: l[40:50], Type: accType, Bearer: l, BearerAccount: true}
-			acc.DefaultFastHttpHandler()
 			parsed = append(parsed, acc)
 			continue
 		}
@@ -42,8 +41,6 @@ func ParseAccounts(accs []string, accType mc.AccType) ([]*mc.MCaccount, []error)
 			errs = append(errs, fmt.Errorf("invalid split count on line %v", i))
 			continue
 		}
-
-		acc.DefaultFastHttpHandler()
 
 		parsed = append(parsed, acc)
 

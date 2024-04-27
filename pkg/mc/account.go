@@ -56,7 +56,7 @@ func (account *MCaccount) LoadAccountInfo() error {
 		return err
 	}
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = fasthttp.Do(req, resp)
 
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (account *MCaccount) HasGcApplied() (bool, error) {
 		return false, err
 	}
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = fasthttp.Do(req, resp)
 	if err != nil {
 		return false, err
 	}
@@ -154,7 +154,7 @@ func (account *MCaccount) NameChangeInfo() (nameChangeInfoResponse, error) {
 		return nameChangeInfoResponse{}, err
 	}
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = fasthttp.Do(req, resp)
 	if err != nil {
 		return nameChangeInfoResponse{}, err
 	}
@@ -215,7 +215,7 @@ func (account *MCaccount) License() error {
 	req.Header.Add("sec-fetch-site", "cross-site")
 	req.Header.Add("sec-gpc", "1")
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = fasthttp.Do(req, resp)
 
 	if err != nil {
 		return err
@@ -313,7 +313,7 @@ func (account *MCaccount) ChangeSkinFromUrl(url, variant string) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	err = account.FastHttpClient.Do(req, resp)
+	err = fasthttp.Do(req, resp)
 
 	if err != nil {
 		return err

@@ -23,7 +23,7 @@ func NewAccountManager() *AccountManager {
 			acc.Bearer = account.Bearer
 			a.DB.Save(&acc)
 
-			time.Sleep(time.Minute * 30)
+			time.Sleep(time.Second * 30)
 		}
 	}()
 	return a
@@ -66,6 +66,16 @@ func (am *AccountManager) AddAccounts(accounts string, accountType mc.AccType) e
 			Username: acc.Username,
 			Type:     accountType,
 		})
+
+		mcAccount := &mc.MCaccount{
+			Email:    acc.Email,
+			Password: acc.Password,
+			Username: acc.Username,
+			Type:     accountType,
+		}
+
+		am.Claimer.Accounts = append(am.Claimer.Accounts, mcAccount)
+
 	}
 
 	tx := am.DB.Create(parsedAccounts)

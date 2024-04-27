@@ -2,8 +2,6 @@ package mc
 
 import (
 	"time"
-
-	"github.com/valyala/fasthttp"
 )
 
 type DropRange struct {
@@ -34,15 +32,15 @@ type NameChangeReturn struct {
 
 // represents a minecraft account
 type MCaccount struct {
-	Email          string           `json:"email"`
-	Password       string           `json:"password"`
-	Bearer         string           `json:"bearer"`
-	BearerAccount  bool             `json:"bearerAccount"`
-	RefreshToken   string           `json:"refreshToken"`
-	UUID           string           `json:"uuid"`
-	Username       string           `json:"username"`
-	FastHttpClient *fasthttp.Client // client is used for all requests except create auth, profile create, and name change
-	Type           AccType          `json:"type"`
+	Email                     string    `json:"email"`
+	Password                  string    `json:"password"`
+	Bearer                    string    `json:"bearer"`
+	BearerAccount             bool      `json:"bearerAccount"`
+	RefreshToken              string    `json:"refreshToken"`
+	LastAuthenticationAttempt time.Time `json:"last_authentication_attempt"`
+	UUID                      string    `json:"uuid"`
+	Username                  string    `json:"username"`
+	Type                      AccType   `json:"type"`
 }
 
 /// HTTP RESPONSE BODIES ///

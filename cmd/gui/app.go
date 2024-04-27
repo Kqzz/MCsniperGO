@@ -95,7 +95,7 @@ func (a *App) startup(ctx context.Context) {
 	dbQueues, _ := a.QueueManager.GetQueues()
 
 	for _, queue := range dbQueues {
-		a.Claimer.Queue(queue.Username, mc.DropRange{Start: time.Unix(queue.StartTime, 0), End: time.Unix(queue.EndTime, 0)})
+		a.Claimer.Queue(queue.Username, mc.DropRange{Start: time.Unix(queue.StartTime, 0), End: time.Unix(queue.EndTime, 0), Infinite: queue.Infinite})
 	}
 }
 

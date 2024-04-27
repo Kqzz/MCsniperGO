@@ -31,7 +31,7 @@ var formats = map[string]string{
 	"warn":    "[<fg=yellow>*</>] %s\n",
 	"success": "[<fg=green>*</>] %s\n",
 	"input":   "[<fg=blue>*</>] %s: ",
-	"debug":   "[<fg=yellow>*</>] [debug] %s: \n",
+	"debug":   "[<fg=yellow>*</>] [debug] %s\n",
 }
 
 // levels: info, err, warn, success

@@ -22,10 +22,10 @@ func (claimer *Claimer) authenticationWorker() {
 			for _, account := range claimer.Accounts {
 
 				if time.Until(account.AuthenticationExpiration()) > time.Hour*2 {
+					log.Log("info", "%v authenticated, expires in %v", account.Email, time.Until(account.AuthenticationExpiration()))
 					if !slices.Contains(claimer.AuthenticatedAccounts, account) {
 						claimer.AuthenticatedAccounts = append(claimer.AuthenticatedAccounts, account)
 					}
-					log.Log("info", "%v authenticated, expires in %v", account.Email, time.Until(account.AuthenticationExpiration()))
 					continue
 				}
 
