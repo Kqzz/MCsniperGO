@@ -139,18 +139,18 @@ func (claimer *Claimer) sender(accType mc.AccType) {
 			for _, claim := range claimer.running {
 				for _, account := range accounts {
 					for i := 0; i < loopCount; i++ {
-						log.Log("debug", "push for %v", claim.Username)
 						if claim == nil {
 							continue
 						}
+						log.Log("debug", "[%v] push to workChan", claim.Username)
 						claimer.workChan <- ClaimWork{Claim: claim, Account: account}
 						if i != loopCount-1 {
 							time.Sleep(sleepDuration)
 						}
 					}
 				}
+				time.Sleep(sleepDuration)
 			}
-			time.Sleep(sleepDuration)
 		}
 	}
 }

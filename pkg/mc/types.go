@@ -13,8 +13,8 @@ type DropRange struct {
 type AccType string
 
 const (
-	Ms   AccType = "MS"
-	MsGc AccType = "GC"
+	Ms   AccType = "ms"
+	MsGc AccType = "gc"
 )
 
 /// RETURNS  / API-FACING ///
