@@ -47,7 +47,7 @@ func (claimer *Claimer) Queue(username string, dropRange mc.DropRange) error {
 	if claimer.queue[username] != nil {
 		return fmt.Errorf("%s is already in queue", username)
 	}
-	claimer.queue[username] = &Claim{Username: username, DropRange: dropRange, Claimer: claimer}
+	claimer.queue[username] = &Claim{Username: username, DropRange: dropRange}
 	return nil
 }
 

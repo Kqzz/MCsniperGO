@@ -11,6 +11,10 @@ import (
 
 func (claimer *Claimer) start(claim *Claim) {
 	claim.Running = true
+	if _, e := claimer.running[claim.Username]; e {
+		log.Log("debug", "claim %v already exists and cannot be started", claim.Username)
+		return
+	}
 	claimer.running[claim.Username] = claim
 
 }
@@ -45,12 +49,13 @@ func (claimer *Claimer) queueClaimsWithinRange(claims map[string]*Claim) {
 			continue
 		}
 
-		log.Log("debug", "claim: %v", claim)
-
 		if (claim.DropRange.Start.Before(now) && claim.DropRange.End.After(now)) || claim.DropRange.Infinite { // The username is currently dropping
 			log.Log("debug", "starting claim %v", claim.Username)
 			claimer.start(claim)
 		}
+
+		log.Log("debug", "claim: %v", claim)
+
 		// TODO: stop usernames if username is claimed by other user, will involve creating checker thread
 	}
 
@@ -115,8 +120,10 @@ func (claimer *Claimer) sender(accType mc.AccType) {
 	go func() {
 		time.Sleep(time.Microsecond * 200)
 		for {
+			log.Log("debug", "%v", claimer.AuthenticatedAccounts)
 			accounts = filter(claimer.AuthenticatedAccounts, func(acc *mc.MCaccount) bool { return acc.Type == accType })
 			sleepDuration = determineSleep(accType, len(accounts)) // time between each request send
+			log.Log("debug", "accounts for %v sender: %v", accType, accounts)
 			time.Sleep(time.Second * 15)
 		}
 	}()

@@ -14,7 +14,7 @@ func (claimer *Claimer) worker(dial fasthttp.DialFunc) {
 	for {
 		select {
 		case claim := <-claimer.workChan:
-			claim.Claim.SendRequest(claim.Account, client)
+			claim.Claim.SendRequest(claim.Account, client, claimer.respchan)
 		case <-claimer.killChan:
 			fmt.Println("killing worker")
 			return
@@ -22,7 +22,7 @@ func (claimer *Claimer) worker(dial fasthttp.DialFunc) {
 	}
 }
 
-func (claim *Claim) SendRequest(account *mc.MCaccount, client *fasthttp.Client) {
+func (claim *Claim) SendRequest(account *mc.MCaccount, client *fasthttp.Client, respChan chan ClaimResponse) {
 
 	if claim == nil {
 		log.Log("warn", "[debug] claim == nil")
@@ -39,5 +39,5 @@ func (claim *Claim) SendRequest(account *mc.MCaccount, client *fasthttp.Client) 
 		statusCode, failType, err = account.ChangeUsername(claim.Username, client)
 	}
 
-	claim.Claimer.respchan <- ClaimResponse{statusCode, failType, err}
+	respChan <- ClaimResponse{statusCode, failType, err}
 }

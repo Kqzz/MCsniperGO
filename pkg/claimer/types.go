@@ -14,7 +14,6 @@ type Claim struct {
 	Username  string
 	DropRange mc.DropRange
 	Running   bool
-	Claimer   *Claimer
 }
 
 type ClaimResponse struct {

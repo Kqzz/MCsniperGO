@@ -7,7 +7,7 @@ toolchain go1.21.6
 require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/gookit/color v1.5.4
-	github.com/wailsapp/wails/v2 v2.7.1
+	github.com/wailsapp/wails/v2 v2.8.1
 	gorm.io/gorm v1.25.9
 )
 

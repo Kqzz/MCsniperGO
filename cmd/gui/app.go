@@ -8,6 +8,7 @@ import (
 
 	backendManager "github.com/Kqzz/MCsniperGO/pkg/backend-manager"
 	"github.com/Kqzz/MCsniperGO/pkg/claimer"
+	"github.com/Kqzz/MCsniperGO/pkg/log"
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
@@ -91,6 +92,8 @@ func (a *App) startup(ctx context.Context) {
 	a.Claimer.Dialers = dialers
 
 	a.Claimer.Setup()
+
+	log.Log("debug", "dialers: %v", a.Claimer.Dialers)
 
 	dbQueues, _ := a.QueueManager.GetQueues()
 
