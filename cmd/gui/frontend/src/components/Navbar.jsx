@@ -1,20 +1,26 @@
 import { Box, Button, Flex } from "@chakra-ui/react";
-import { Img } from "@chakra-ui/react";
+import { Img, Link } from "@chakra-ui/react";
 import Logo from "../assets/images/logo.png";
 
-function NavButton({ children, path }) {
+import ArticleIcon from "@mui/icons-material/Article";
+import QueueIcon from "@mui/icons-material/Queue";
+import CloudIcon from "@mui/icons-material/Cloud";
+import GroupIcon from "@mui/icons-material/Group";
+import HomeIcon from "@mui/icons-material/Home";
+
+function NavButton({ children, path, leftIcon }) {
   return (
-    <a href={path}>
+    <Link href={path} mt={2}>
       <Button
         variant="outline"
-        mt={2}
         color={"gray.50"}
         width={"100%"}
         _hover={{ bg: "gray.700" }}
+        leftIcon={leftIcon}
       >
         {children}
       </Button>
-    </a>
+    </Link>
   );
 }
 export default function Navbar() {
@@ -30,7 +36,13 @@ export default function Navbar() {
       <Box mb={10}>
         <Img src={Logo} width="100%" margin={0}></Img>
       </Box>
-      <NavButton colorScheme="teal" variant="outline" mr={3} path={"#"}>
+      <NavButton
+        colorScheme="teal"
+        variant="outline"
+        mr={3}
+        path={"#"}
+        leftIcon={<HomeIcon />}
+      >
         Home
       </NavButton>
       <NavButton
@@ -38,14 +50,36 @@ export default function Navbar() {
         variant="outline"
         mr={3}
         path={"/#accounts"}
+        leftIcon={<GroupIcon />}
       >
         Accounts
       </NavButton>
-      <NavButton colorScheme="teal" variant="outline" mr={3} path={"/#proxies"}>
+      <NavButton
+        colorScheme="teal"
+        variant="outline"
+        mr={3}
+        path={"/#proxies"}
+        leftIcon={<CloudIcon />}
+      >
         Proxies
       </NavButton>
-      <NavButton colorScheme="teal" variant="outline" mr={3} path={"/#queue"}>
+      <NavButton
+        colorScheme="teal"
+        variant="outline"
+        mr={3}
+        path={"/#queue"}
+        leftIcon={<QueueIcon />}
+      >
         Queue
+      </NavButton>
+      <NavButton
+        colorScheme="teal"
+        variant="outline"
+        mr={3}
+        path={"/#logs"}
+        leftIcon={<ArticleIcon />}
+      >
+        Logs
       </NavButton>
     </Flex>
   );

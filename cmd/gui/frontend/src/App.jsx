@@ -6,6 +6,8 @@ import Main from "./routes/Main";
 import Accounts from "./routes/Accounts";
 import Proxies from "./routes/Proxies";
 import Queue from "./routes/Queue";
+import Logs from "./routes/Logs";
+
 import { ChakraUIProvider } from "./chakra-ui/custom-provider";
 
 const config = {
@@ -25,6 +27,7 @@ export default function App() {
             <Route path="/accounts" element={<Accounts />}></Route>
             <Route path="/queue" element={<Queue />}></Route>
             <Route path="/proxies" element={<Proxies />}></Route>
+            <Route path="/logs" element={<Logs />}></Route>
           </Routes>
         </HashRouter>
       </MainLayout>

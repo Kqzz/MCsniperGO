@@ -1,6 +1,6 @@
 import { Flex, Box } from "@chakra-ui/react";
-import Navbar from "../Navbar";
 import Footer from "../Footer";
+import Navbar from "../Navbar";
 
 export default ({ children }) => {
   return (
