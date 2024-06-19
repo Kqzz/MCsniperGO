@@ -18,42 +18,16 @@ const theme = extendBaseTheme({ config });
 export default function App() {
   return (
     <ChakraUIProvider>
-      <HashRouter basename="/">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <MainLayout>
-                <Main />
-              </MainLayout>
-            }
-          ></Route>
-          <Route
-            path="/accounts"
-            element={
-              <MainLayout>
-                <Accounts />
-              </MainLayout>
-            }
-          ></Route>
-          <Route
-            path="/queue"
-            element={
-              <MainLayout>
-                <Queue />
-              </MainLayout>
-            }
-          ></Route>
-          <Route
-            path="/proxies"
-            element={
-              <MainLayout>
-                <Proxies />
-              </MainLayout>
-            }
-          ></Route>
-        </Routes>
-      </HashRouter>
+      <MainLayout>
+        <HashRouter basename="/">
+          <Routes>
+            <Route path="/" element={<Main />}></Route>
+            <Route path="/accounts" element={<Accounts />}></Route>
+            <Route path="/queue" element={<Queue />}></Route>
+            <Route path="/proxies" element={<Proxies />}></Route>
+          </Routes>
+        </HashRouter>
+      </MainLayout>
     </ChakraUIProvider>
   );
 }
