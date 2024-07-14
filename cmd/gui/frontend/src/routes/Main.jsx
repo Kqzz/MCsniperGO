@@ -1,14 +1,10 @@
-import { Container, Flex, Heading } from "@chakra-ui/react";
+import MainLayout from "../components/Layouts/MainLayout";
+import Main from "../pages/Main";
 
-export default (props) => {
+export default function MainPage() {
   return (
-    <Container flex="1" ml={"2rem"}>
-      <Heading>Home</Heading>
-      <p>
-        Welcome to MCsniperGO! Join the{" "}
-        <a href="https://discord.gg/mcsnipergo-734794891258757160">Discord</a>{" "}
-        for guides and assistance with using the claimer.
-      </p>
-    </Container>
+    <MainLayout>
+      <Main />
+    </MainLayout>
   );
-};
+}

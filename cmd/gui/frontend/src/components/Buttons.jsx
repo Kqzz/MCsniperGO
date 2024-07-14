@@ -1,11 +1,11 @@
-import { Flex, Text, Button, Image } from "@chakra-ui/react";
-
 import RefreshIcon from "../assets/images/refresh.svg";
 import TrashIcon from "../assets/images/trash.svg";
+import { Button } from "react-bootstrap";
+import Image from "react-bootstrap/Image";
 
 function RefreshButton({ onClick, ...params }) {
   return (
-    <Flex
+    <Button
       onClick={onClick}
       bgColor={"#1C274C"}
       width={30}
@@ -20,7 +20,7 @@ function RefreshButton({ onClick, ...params }) {
       {...params}
     >
       <img src={RefreshIcon} alt="refresh" color="white" />
-    </Flex>
+    </Button>
   );
 }
 
@@ -40,7 +40,7 @@ function RemoveButton({ onClick, data, ...params }) {
 
 function PlusButton({ onClick, ...params }) {
   return (
-    <Flex
+    <Button
       onClick={onClick}
       bgColor={"#1C274C"}
       width={30}
@@ -54,10 +54,10 @@ function PlusButton({ onClick, ...params }) {
       }}
       {...params}
     >
-      <Text alt="add" color={"white"} fontSize="xl">
+      <p alt="add" color={"white"} fontSize="xl">
         +
-      </Text>
-    </Flex>
+      </p>
+    </Button>
   );
 }
 

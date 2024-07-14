@@ -1,7 +1,10 @@
-export default function Logs() {
+import MainLayout from "../components/Layouts/MainLayout";
+import Logs from "../pages/Logs";
+
+export default function LogsPage() {
   return (
-    <>
-      <h1>Logs</h1>
-    </>
+    <MainLayout>
+      <Logs />
+    </MainLayout>
   );
 }

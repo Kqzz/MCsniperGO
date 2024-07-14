@@ -1,5 +1,4 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
-import { ChakraProvider, extendBaseTheme } from "@chakra-ui/react";
 import MainLayout from "./components/Layouts/MainLayout";
 
 import Main from "./routes/Main";
@@ -8,29 +7,18 @@ import Proxies from "./routes/Proxies";
 import Queue from "./routes/Queue";
 import Logs from "./routes/Logs";
 
-import { ChakraUIProvider } from "./chakra-ui/custom-provider";
-
-const config = {
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-};
-
-const theme = extendBaseTheme({ config });
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function App() {
   return (
-    <ChakraUIProvider>
-      <MainLayout>
-        <HashRouter basename="/">
-          <Routes>
-            <Route path="/" element={<Main />}></Route>
-            <Route path="/accounts" element={<Accounts />}></Route>
-            <Route path="/queue" element={<Queue />}></Route>
-            <Route path="/proxies" element={<Proxies />}></Route>
-            <Route path="/logs" element={<Logs />}></Route>
-          </Routes>
-        </HashRouter>
-      </MainLayout>
-    </ChakraUIProvider>
+    <HashRouter basename="/">
+      <Routes>
+        <Route index element={<Main />} />
+        <Route path="accounts" element={<Accounts />} />
+        <Route path="queue" element={<Queue />} />
+        <Route path="proxies" element={<Proxies />} />
+        <Route path="logs" element={<Logs />} />
+      </Routes>
+    </HashRouter>
   );
 }
