@@ -54,10 +54,22 @@ func Input(m string, params ...interface{}) string {
 var headerTxt string
 
 func GetHeader() string {
-
-	headers := strings.Split(headerTxt, "\n\n")
-	src := rand.New(rand.NewSource(time.Now().UnixNano()))
-
+    // Replace Windows line endings with Unix line endings
+    unixLineEndings := strings.ReplaceAll(headerTxt, "\r\n", "\n")
+    
+    // Split the string, handling both single and double line breaks
+    headers := strings.Split(unixLineEndings, "\n\n")
+    
+    // Remove any empty entries
+    var nonEmptyHeaders []string
+    for _, header := range headers {
+        if strings.TrimSpace(header) != "" {
+            nonEmptyHeaders = append(nonEmptyHeaders, header)
+        }
+    }
+    
+    src := rand.New(rand.NewSource(time.Now().UnixNano()))
+    i := src.Intn(len(nonEmptyHeaders))
 	i := src.Intn(len(headers) - 1)
 	return fmt.Sprintf("\033[38;5;8m%v\033[0m\n\n<fg=blue;op=bold>MCsniperGO</> - made by kqzz (kqzz.me)\n\n", headers[i])
 }
