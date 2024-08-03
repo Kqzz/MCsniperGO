@@ -70,8 +70,7 @@ func GetHeader() string {
     
     src := rand.New(rand.NewSource(time.Now().UnixNano()))
     i := src.Intn(len(nonEmptyHeaders))
-	i := src.Intn(len(headers) - 1)
-	return fmt.Sprintf("\033[38;5;8m%v\033[0m\n\n<fg=blue;op=bold>MCsniperGO</> - made by kqzz (kqzz.me)\n\n", headers[i])
+    return fmt.Sprintf("\033[38;5;8m%v\033[0m\n\n<fg=blue;op=bold>MCsniperGO</> - made by kqzz (kqzz.me)\n\n", headers[i])
 }
 
 func FmtTimestamp(timestamp time.Time) string {
