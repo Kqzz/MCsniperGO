@@ -17,7 +17,8 @@ const help = `usage:
     mcsnipergo [options]
 options:
     --username, -u <str>    username to snipe
-	--disable-bar           disables the status bar
+    --drop-range, -d <str>  droptime range (start-end/infinite)
+    --disable-bar           disables the status bar
 `
 
 var disableBar bool
@@ -61,8 +62,11 @@ func statusBar(startTime time.Time) {
 func main() {
 
 	var startUsername string
+	var startDropRange string
 	flag.StringVar(&startUsername, "username", "", "username to snipe")
 	flag.StringVar(&startUsername, "u", "", "username to snipe")
+	flag.StringVar(&startDropRange, "drop-range", "", "droptime range (start-end/infinite)")
+	flag.StringVar(&startDropRange, "d", "", "droptime range (start-end/infinite)")
 	flag.BoolVar(&disableBar, "disable-bar", false, "disables status bar")
 	if isFlagPassed("disable-bar") {
 		disableBar = true
@@ -109,8 +113,16 @@ func main() {
 		} else {
 			username = startUsername
 		}
+		
+		var drop string
 
-		dropRange := log.GetDropRange()
+		if !isFlagPassed("d", "drop-range") {
+			drop = log.Input("droptime range (start-end/infinite)")
+		} else {
+			drop = startDropRange
+		}
+
+		dropRange := log.GetDropRange(drop)
 
 		go func() {
 
