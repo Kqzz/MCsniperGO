@@ -233,7 +233,7 @@ func (s *Claim) runClaim() {
 	}
 
 	for time.Now().Before(s.DropRange.End) {
-		time.Sleep(10 * time.Second)
+		time.Sleep(18 * time.Minute)
 	}
 	s.Running = false
 	_, ok := (<-killChan)
