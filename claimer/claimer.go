@@ -57,7 +57,7 @@ func requestGenerator(
 	sleepTime := delay
 
 	if delay == -1 {
-		sleepTime = 15000 / len(bearers)
+		sleepTime = 1620000 / len(bearers)
 		if accType == mc.Ms {
 			sleepTime = 1080000 / len(bearers)
 		}
