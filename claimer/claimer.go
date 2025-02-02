@@ -57,11 +57,25 @@ func requestGenerator(
 	sleepTime := delay
 
 	if delay == -1 {
-		sleepTime = 15000 / len(bearers)
+		dropRangeMs := int64(mc.DropRange.End.Sub(mc.DropRange.Start).Milliseconds())
+		divisor := 40
+		if dropRangeMs < 86400000 {
+			divisor = dropRangeMs / 40
+		}
+		if dropRangeMs < 400000 {
+			divisor = 3 * (dropRangeMs / 30)
+		}
+		if dropRangeMs > 86400000 {
+			divisor = 86400000 / 40
+		}
+
+		baseSleep := int(divisor / int64(len(bearers)))
+		sleepTime = int(1.5 * float64(baseSleep))
 		if accType == mc.Ms {
-			sleepTime = 1080000 / len(bearers)
+			sleepTime = baseSleep
 		}
 	}
+
 	loopCount := 2
 	if accType == mc.Ms {
 		loopCount = 3
@@ -90,7 +104,6 @@ func requestGenerator(
 		}
 		i++
 	}
-
 }
 
 func claimName(claim ClaimAttempt, client *fasthttp.Client) {
