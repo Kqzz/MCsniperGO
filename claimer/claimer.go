@@ -6,7 +6,7 @@ import (
 
 	"github.com/Kqzz/MCsniperGO/pkg/mc"
 	"github.com/valyala/fasthttp"
-	"github.com/valyala/fasthttpproxy"
+	"github.com/valyala/fasthttp/fasthttpproxy"
 
 	"github.com/Kqzz/MCsniperGO/log"
 )
