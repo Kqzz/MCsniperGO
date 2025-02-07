@@ -1,6 +1,7 @@
 package claimer
 
 import (
+	"math"
 	"strings"
 	"time"
 
@@ -57,10 +58,23 @@ func requestGenerator(
 	sleepTime := delay
 
 	if delay == -1 {
-		sleepTime = 15000 / len(bearers)
+		// prevents overrequesting in cases where there are large discrepencies in account/proxy counts
+		nMax := int(math.Min(float64(len(bearers)), float64(len(proxies))))
+		/*
+			ratelimits are set up as follows - 3 requests / 30s (2/30s for giftcard accounts), 40 requests / 24h.
+			we compute both. this is technically not maximally performant - you need around 9.25 octillion accounts
+			(which is a number 200 quadrillion times larger than every possible ipv4 address) for it to become relevant.
+		*/
+		day := int((time.Hour * 24).Milliseconds())
+		var deltaShort int
 		if accType == mc.Ms {
-			sleepTime = 1080000 / len(bearers)
+			deltaShort = 10000 / nMax
+		} else {
+			deltaShort = 15000 / nMax
 		}
+		deltaLong := day / 40 / nMax
+		// take the higher of the two
+		sleepTime = int(math.Max(float64(deltaShort), float64(deltaLong)))
 	}
 	loopCount := 2
 	if accType == mc.Ms {
