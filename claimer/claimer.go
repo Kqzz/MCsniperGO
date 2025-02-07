@@ -63,16 +63,20 @@ func requestGenerator(
 		/*
 			ratelimits are set up as follows - 3 requests / 30s (2/30s for giftcard accounts), 40 requests / 24h.
 			we compute both. this is technically not maximally performant - you need around 9.25 octillion accounts
-			(which is a number 200 quadrillion times larger than every possible ipv4 address) for it to become relevant.
+			(which is a number 200 quadrillion times larger than every possible ipv4 address) for it to become relevant
+			assuming a constant request stream
 		*/
 		day := int((time.Hour * 24).Milliseconds())
+		// if under ratelimit periods for our drop range, we should use the drop range instead of the ratelimit period
+		shortInterval := int(math.Min(30000, float64(time.Until(endTime).Milliseconds())))
+		longInterval := int(math.Min(float64(day), float64(time.Until(endTime).Milliseconds())))
 		var deltaShort int
 		if accType == mc.Ms {
-			deltaShort = 10000 / nMax
+			deltaShort = shortInterval / 3 / nMax
 		} else {
-			deltaShort = 15000 / nMax
+			deltaShort = shortInterval / 2 / nMax
 		}
-		deltaLong := day / 40 / nMax
+		deltaLong := longInterval / 40 / nMax
 		// take the higher of the two
 		sleepTime = int(math.Max(float64(deltaShort), float64(deltaLong)))
 	}
