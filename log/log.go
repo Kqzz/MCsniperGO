@@ -85,10 +85,8 @@ func PrettyStatus(status int) string {
 	return fmt.Sprintf("<fg=%v;op=underscore>%v</>", color, status)
 }
 
-func GetDropRange() mc.DropRange {
+func GetDropRange(rawDroptimes string) mc.DropRange {
 	for {
-		rawDroptimes := Input("droptime range (start-end/infinite)")
-
 		if rawDroptimes == "inf" || rawDroptimes == "infinite" {
 			return mc.DropRange{Start: time.Time{}, End: time.Time{}}
 		}
