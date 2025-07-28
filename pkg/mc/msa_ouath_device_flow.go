@@ -14,19 +14,19 @@ import (
 
 /*
 
-Credit to emma (implied. on discord) for the entire oauth flow!
-Client ID is 648b1790-3c45-4745-bd7b-d9e828433655, applet name is mc Library Authentication
+Credit to emily (@impliedgg) for the entire oauth flow!
+Client ID is 00000000441cc96b, Minecraft for Nintendo Switch
 
 Flow is as follows:
-POST https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode
-?client_id=648b1790-3c45-4745-bd7b-d9e828433655
+POST https://login.live.com/oauth20_connect.srf
+?client_id={client_id}
 &scope=XboxLive.signin
 
-Put user instructions from response.message in console.
+Inform user to visit link from response.verification_uri and enter code response.user_code.
 
-POST https://
+POST https://login.live.com/oauth20_token.srf
 ?grant_type=urn:ietf:params:oauth:grant-type:device_code
-&client_id=648b1790-3c45-4745-bd7b-d9e828433655
+&client_id={client_id}
 &device_code={respone.device_code}
 
 once every response.interval seconds until expires_in timeout or successful poll.
@@ -46,9 +46,11 @@ expires_in - if implemented, should request reauthentication once expired.
 // we only take the useful fields here.
 
 type msDeviceInitResponse struct {
-	Message    string `json:"message"`
-	Interval   int    `json:"interval"`
-	DeviceCode string `json:"device_code"`
+	VerificationURI string `json:"verification_uri"`
+	UserCode        string `json:"user_code"`
+	Message         string `json:"message"`
+	Interval        int    `json:"interval"`
+	DeviceCode      string `json:"device_code"`
 }
 
 type msErrorPollResponse struct {
@@ -59,9 +61,7 @@ type msSuccessPollResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
-// due to the nature of these requests, the client id may be swapped out for another and work just fine assuming AD is configured properly
-
-const client_id = "648b1790-3c45-4745-bd7b-d9e828433655"
+const client_id = "00000000441cc96b"
 
 // types in msa.go are used here as well.
 
@@ -84,7 +84,7 @@ func (account *MCaccount) OauthFlow() error {
 
 	reqParams := fmt.Sprintf("client_id=%s&scope=XboxLive.signin", client_id)
 
-	req, _ := http.NewRequest("POST", "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode", bytes.NewBuffer([]byte(reqParams)))
+	req, _ := http.NewRequest("POST", "https://login.live.com/oauth20_connect.srf", bytes.NewBuffer([]byte(reqParams)))
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -107,7 +107,7 @@ func (account *MCaccount) OauthFlow() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("[*] %v\n", respObj.Message)
+	fmt.Printf("[*] auth: Please visit %v and use the code %v to continue\n", respObj.VerificationURI, respObj.UserCode)
 
 	return pollEndpoint(account, respObj.DeviceCode, respObj.Interval)
 }
@@ -299,7 +299,7 @@ func pollEndpoint(account *MCaccount, device_code string, interval int) error {
 	reqParams := fmt.Sprintf("grant_type=urn:ietf:params:oauth:grant-type:device_code&device_code=%s&client_id=%s", device_code, client_id)
 	for {
 		time.Sleep(sleepDuration)
-		req, err := http.NewRequest("POST", "https://login.microsoftonline.com/consumers/oauth2/v2.0/token", bytes.NewBuffer([]byte(reqParams)))
+		req, err := http.NewRequest("POST", "https://login.live.com/oauth20_token.srf", bytes.NewBuffer([]byte(reqParams)))
 		if err != nil {
 			return err
 		}
