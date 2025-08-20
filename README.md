@@ -1,3 +1,8 @@
+# ⚠ Warning ⚠
+# Username claiming with this tool is no longer effective
+# Using any claimer (MCsniperGO included) is not recommended due to ratelimits.
+> As of August 2025
+
 <h3 align="center">
   <img src="https://i.imgur.com/ShMq72J.png" alt="MCsniperGO"></img>
 
