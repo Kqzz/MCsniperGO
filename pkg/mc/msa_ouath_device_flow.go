@@ -82,7 +82,7 @@ func (account *MCaccount) OauthFlow() error {
 		Transport: tr,
 	}
 
-	reqParams := fmt.Sprintf("client_id=%s&scope=XboxLive.signin", client_id)
+	reqParams := fmt.Sprintf("client_id=%s&scope=XboxLive.signin&response_type=device_code", client_id)
 
 	req, _ := http.NewRequest("POST", "https://login.live.com/oauth20_connect.srf", bytes.NewBuffer([]byte(reqParams)))
 
