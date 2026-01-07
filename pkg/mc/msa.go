@@ -115,8 +115,8 @@ func (account *MCaccount) MicrosoftAuthenticate(proxy string) error {
 		Transport: tr,
 	}
 	// Grab value and urlpost
-	valRegex := regexp.MustCompile(`value="(.+?)"`)
-	urlPostRegex := regexp.MustCompile(`urlPost:'(.+?)'`)
+	valRegex := regexp.MustCompile(`value=\\\"(.+?)\\\"`)
+	urlPostRegex := regexp.MustCompile(`urlPost":"(.+?)""`)
 
 	resp, err := client.Get("https://login.live.com/oauth20_authorize.srf?client_id=000000004C12AE6F&redirect_uri=https://login.live.com/oauth20_desktop.srf&scope=service::user.auth.xboxlive.com::MBI_SSL&display=touch&response_type=token&locale=en")
 
