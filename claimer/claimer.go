@@ -57,7 +57,12 @@ func requestGenerator(
 
 	sleepTime := delay
 
-	if delay == -1 {
+	if endTime.IsZero() {
+		// catches infinite range and gives it the max delay, more information on the ratelimit below
+		nMax := int(math.Min(float64(len(bearers)), float64(len(proxies))))
+		day := int((time.Hour * 24).Milliseconds())
+		sleepTime = int(day / 40 / nMax)
+	} else if delay == -1 {
 		// prevents overrequesting in cases where there are large discrepencies in account/proxy counts
 		nMax := int(math.Min(float64(len(bearers)), float64(len(proxies))))
 		/*
